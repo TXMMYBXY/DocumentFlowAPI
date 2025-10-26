@@ -1,12 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Data;
+using DocumentFlowAPI.Interfaces.Repositories;
 
 namespace DocumentFlowAPI.Repositories.User
 {
-    public class UserRepository
+    public class UserRepository : BaseRepository<Models.User>, IUserRepository
     {
-        
+        public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+        }
     }
 }

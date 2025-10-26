@@ -1,8 +1,7 @@
 using AutoMapper;
-using Castle.Components.DictionaryAdapter.Xml;
+using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Services.User;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DocumentFlowAPI.Controllers.User
 {
@@ -18,9 +17,15 @@ namespace DocumentFlowAPI.Controllers.User
             _mapper = mapper;
             _userService = userService;
         }
-        
+
         [HttpGet("/all")]
-        public async Task<ActionResult<Models.User>> GetAllUser()
+        public async Task<ActionResult<List<UserInfoViewModel>>> GetAllUser()
+        {
+            return null;
+        }
+
+        [HttpPost("{user}/add-user")]
+        public async Task<ActionResult<NewUserViewModel>> CreateNewUser([FromRoute] NewUserViewModel user)
         {
             return null;
         }

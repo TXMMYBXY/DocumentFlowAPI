@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DocumentFlowAPI.Interfaces.Services;
 
 namespace DocumentFlowAPI.Services.General
 {
@@ -21,10 +18,52 @@ namespace DocumentFlowAPI.Services.General
                 throw new NullReferenceException(message);
             }
         }
-//TODO: Дописать метод проверки на инвалидную операцию
+        //TODO: Дописать метод проверки на инвалидную операцию
         protected static void InvalidOperationCheck<T>(T target, string message)
         {
-            
+
         }
+        
+        class Checker
+        {
+            internal void UniversalCheck<T>(CheckerParam<T> param)
+            {
+                if (param.Predicate)
+                {
+                    throw new Exception(param.Message, param.Exception).InnerException;
+                }
+            }
+        }
+        class CheckerParam<T>
+        {
+            public T User { get; set; }
+            public string Message { get; set; }
+            public Exception Exception { get; set; }
+            public bool Predicate { get; set; }
+
+            public CheckerParam(
+                T user,
+                string message,
+                Exception exception,
+                Predicate<T> predicate)
+            {
+                User = user;
+                Message = message;
+                Exception = exception;
+                Predicate = predicate(user);
+            }
+            public CheckerParam()
+            {
+
+            }
+        }
+        ///Пример реализации
+        /// var checker = new Checker();
+        // checker.UniversalCheck<int>(new CheckerParam<int>(
+        //     65,
+        //     $"Отрицательное",
+        //     new ArgumentException(),
+        //     (param) => param > 0));
+
     }
 }

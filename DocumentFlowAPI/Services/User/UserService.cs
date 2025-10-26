@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DocumentFlowAPI.Interfaces.Services;
 
 namespace DocumentFlowAPI.Services.User
 {
-    public class UserService
+    public class UserService : IUserService
     {
         
     }

@@ -1,12 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Data;
+using DocumentFlowAPI.Interfaces.Repositories;
 
 namespace DocumentFlowAPI.Repositories.Token
 {
-    public class TokenRepository
+    public class TokenRepository : BaseRepository<Models.Token>, ITokenRepository
     {
-        
+        public TokenRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+        }
     }
 }

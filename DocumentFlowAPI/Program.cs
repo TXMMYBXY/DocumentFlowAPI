@@ -1,4 +1,14 @@
 using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Repositories.Contract;
+using DocumentFlowAPI.Repositories.Statement;
+using DocumentFlowAPI.Repositories.Token;
+using DocumentFlowAPI.Repositories.User;
+using DocumentFlowAPI.Services.Contract;
+using DocumentFlowAPI.Services.Statement;
+using DocumentFlowAPI.Services.Token;
+using DocumentFlowAPI.Services.User;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +16,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавляем сервисы
 builder.Services.AddControllers();
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped<IContractRepository, ContractRepository>();
+builder.Services.AddScoped<IStatementRepository, StatementRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IStatementService, StatementService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Настройка Swagger
 builder.Services.AddEndpointsApiExplorer(); // важно: добавляет описание эндпоинтов для Swagger
