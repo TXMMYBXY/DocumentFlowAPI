@@ -1,9 +1,8 @@
 using DocumentFlowAPI.Interfaces.Services;
 
-namespace DocumentFlowAPI.Services.Statement
+namespace DocumentFlowAPI.Services.Statement;
+
+public class StatementService : IStatementService
 {
-    public class StatementService : IStatementService
-    {
-        
-    }
+    
 }

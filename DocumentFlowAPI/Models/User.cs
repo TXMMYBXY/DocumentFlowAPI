@@ -9,11 +9,12 @@ public class User : EntityBase
     public string FullName { get; set; }
     [EmailAddress]
     [MaxLength(63)]
+    public string? Email { get; set; }
     [Required]
-    public string Email { get; set; }
+    public string Login { get; set; }
     [Required]
     public string PasswordHash { get; set; }
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
     public int RoleId { get; set; }
     [ForeignKey(nameof(RoleId))]
     public virtual Role Role { get; set; }

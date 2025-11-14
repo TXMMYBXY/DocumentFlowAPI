@@ -1,13 +1,12 @@
 using DocumentFlowAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DocumentFlowAPI.Services.Token
+namespace DocumentFlowAPI.Services.Token;
+
+public class TokenService : ITokenService
 {
-    public class TokenService : ITokenService
+    public Task<IActionResult> GetTokenById()
     {
-        public Task<IActionResult> GetTokenById()
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

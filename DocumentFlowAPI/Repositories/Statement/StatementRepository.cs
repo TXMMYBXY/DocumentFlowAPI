@@ -2,12 +2,11 @@ using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 
-namespace DocumentFlowAPI.Repositories.Statement
+namespace DocumentFlowAPI.Repositories.Statement;
+
+public class StatementRepository : BaseRepository<Models.Statement>, IStatementRepository
 {
-    public class StatementRepository : BaseRepository<Models.Statement>, IStatementRepository
+    public StatementRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
-        public StatementRepository(ApplicationDbContext dbContext) : base(dbContext)
-        {
-        }
     }
 }

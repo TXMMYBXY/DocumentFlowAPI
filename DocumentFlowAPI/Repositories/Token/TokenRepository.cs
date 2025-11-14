@@ -2,12 +2,11 @@ using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 
-namespace DocumentFlowAPI.Repositories.Token
+namespace DocumentFlowAPI.Repositories.Token;
+
+public class TokenRepository : BaseRepository<Models.Token>, ITokenRepository
 {
-    public class TokenRepository : BaseRepository<Models.Token>, ITokenRepository
+    public TokenRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
-        public TokenRepository(ApplicationDbContext dbContext) : base(dbContext)
-        {
-        }
     }
 }

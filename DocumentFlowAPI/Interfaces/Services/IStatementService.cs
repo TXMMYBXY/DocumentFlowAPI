@@ -1,7 +1,6 @@
-namespace DocumentFlowAPI.Interfaces.Services
+namespace DocumentFlowAPI.Interfaces.Services;
+
+public interface IStatementService
 {
-    public interface IStatementService
-    {
-        
-    }
+    
 }

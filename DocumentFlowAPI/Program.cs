@@ -38,7 +38,10 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
- builder.Services.AddDbContext<ApplicationDbContext>(options =>
+
+builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseLazyLoadingProxies()
                     .UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
