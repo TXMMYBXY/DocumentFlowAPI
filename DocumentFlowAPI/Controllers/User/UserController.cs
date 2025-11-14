@@ -1,33 +1,32 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.User.ViewModels;
-using DocumentFlowAPI.Services.User;
+using DocumentFlowAPI.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DocumentFlowAPI.Controllers.User
+namespace DocumentFlowAPI.Controllers.User;
+
+[ApiController]
+[Route("api/users")]
+public class UserController : ControllerBase
 {
-    [ApiController]
-    [Route("api/users")]
-    public class UserController : ControllerBase
+    private readonly IMapper _mapper;
+    private readonly IUserService _userService;
+
+    public UserController(IMapper mapper, IUserService userService)
     {
-        private readonly IMapper _mapper;
-        private readonly IUserService _userService;
+        _mapper = mapper;
+        _userService = userService;
+    }
 
-        public UserController(IMapper mapper, IUserService userService)
-        {
-            _mapper = mapper;
-            _userService = userService;
-        }
+    [HttpGet("/all")]
+    public async Task<ActionResult<List<UserInfoViewModel>>> GetAllUser()
+    {
+        return null;
+    }
 
-        [HttpGet("/all")]
-        public async Task<ActionResult<List<UserInfoViewModel>>> GetAllUser()
-        {
-            return null;
-        }
-
-        [HttpPost("{user}/add-user")]
-        public async Task<ActionResult<NewUserViewModel>> CreateNewUser([FromRoute] NewUserViewModel user)
-        {
-            return null;
-        }
+    [HttpPost("{user}/add-user")]
+    public async Task<ActionResult<NewUserViewModel>> CreateNewUser([FromRoute] NewUserViewModel user)
+    {
+        return null;
     }
 }

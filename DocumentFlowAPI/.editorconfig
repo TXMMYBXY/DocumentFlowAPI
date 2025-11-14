@@ -1,0 +1,9 @@
+# .editorconfig
+
+# Правило для всех файлов C#
+[*.cs]
+
+# Устанавливаем стиль для объявлений пространств имен
+# file_scoped - предпочитаемый стиль
+# suggestion - показывать как предложение (можно заменить на warning или error)
+csharp_style_namespace_declarations = file_scoped:suggestion
