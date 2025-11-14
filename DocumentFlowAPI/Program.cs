@@ -1,4 +1,6 @@
+using Castle.Core.Configuration;
 using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Repositories.Contract;
@@ -9,6 +11,7 @@ using DocumentFlowAPI.Services.Contract;
 using DocumentFlowAPI.Services.Statement;
 using DocumentFlowAPI.Services.Token;
 using DocumentFlowAPI.Services.User;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,7 +38,12 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
-
+ builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseLazyLoadingProxies()
+                    .UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                        new MySqlServerVersion(new Version(8, 0, 21)));
+            });
 var app = builder.Build();
 
 // Настройка middleware

@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DocumentFlowAPI.Models
+namespace DocumentFlowAPI.Models;
+
+public class Role : EntityBase
 {
-    public class Role : EntityBase
-    {
-        [Required]
-        public string Name { get; set; }
-        public string? Description { get; set; }
-    }
+    [Required]
+    public string Title { get; set; }
+    public string? Description { get; set; }
 }
