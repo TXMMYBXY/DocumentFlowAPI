@@ -1,11 +1,10 @@
 using DocumentFlowAPI.Interfaces.Services;
 
-namespace DocumentFlowAPI.Services.Contract
+namespace DocumentFlowAPI.Services.Contract;
+
+public class ContractService : IContractService
 {
-    public class ContractService : IContractService
+    public ContractService()
     {
-        public ContractService()
-        {
-        }
     }
 }

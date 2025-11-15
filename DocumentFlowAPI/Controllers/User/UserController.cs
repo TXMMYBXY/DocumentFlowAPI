@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Services.User.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.User;
@@ -24,9 +25,13 @@ public class UserController : ControllerBase
         return null;
     }
 
-    [HttpPost("{user}/add-user")]
-    public async Task<ActionResult<NewUserViewModel>> CreateNewUser([FromRoute] NewUserViewModel user)
+    [HttpPost("/add-user")]
+    public async Task<ActionResult<NewUserViewModel>> CreateNewUser([FromBody] NewUserViewModel user)
     {
-        return null;
+        var userDto = _mapper.Map<NewUserDto>(user);
+
+        await _userService.CreateNewUserAsync(userDto);
+
+        return Ok();
     }
 }
