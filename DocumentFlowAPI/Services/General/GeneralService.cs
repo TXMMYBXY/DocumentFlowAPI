@@ -21,7 +21,7 @@ public abstract class GeneralService
     {
 
     }
-    
+        
     class Checker
     {
         internal void UniversalCheck<T>(CheckerParam<T> param)
@@ -50,17 +50,55 @@ public abstract class GeneralService
             Exception = exception;
             Predicate = predicate(user);
         }
-        public CheckerParam()
-        {
-
-        }
+        public CheckerParam(){}
     }
-    ///Пример реализации
-    /// var checker = new Checker();
-    // checker.UniversalCheck<int>(new CheckerParam<int>(
-    //     65,
-    //     $"Отрицательное",
-    //     new ArgumentException(),
-    //     (param) => param > 0));
+        ///Пример реализации
+        /// var checker = new Checker();
+        // checker.UniversalCheck<int>(new CheckerParam<int>(
+        //     65,
+        //     $"Отрицательное",
+        //     new ArgumentException(),
+        //     (param) => param > 0));
 
 }
+
+class Checker
+{
+    internal void UniversalCheck<T>(CheckerParam<T> param)
+    {
+        if (param.Predicate)
+        {
+            throw new Exception(param.Message, param.Exception).InnerException;
+        }
+    }
+}
+class CheckerParam<T>
+{
+    public T User { get; set; }
+    public string Message { get; set; }
+    public Exception Exception { get; set; }
+    public bool Predicate { get; set; }
+
+    public CheckerParam(
+        T user,
+        string message,
+        Exception exception,
+        Predicate<T> predicate)
+    {
+        User = user;
+        Message = message;
+        Exception = exception;
+        Predicate = predicate(user);
+    }
+    public CheckerParam()
+    {
+
+    }
+}
+///Пример реализации
+/// var checker = new Checker();
+// checker.UniversalCheck<int>(new CheckerParam<int>(
+//     65,
+//     $"Отрицательное",
+//     new ArgumentException(),
+//     (param) => param > 0));
