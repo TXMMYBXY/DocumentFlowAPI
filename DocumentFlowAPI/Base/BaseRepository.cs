@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DocumentFlowAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,11 @@ namespace DocumentFlowAPI.Base
             return await _dbset.FindAsync(id);
         }
 
+        public async Task<T> GetEntityById(int id)
+        {
+            return await _dbset.FindAsync(id);
+        }
+
         /// <summary>
         /// Метод для сохранения изменений в БД
         /// </summary>
@@ -45,6 +51,16 @@ namespace DocumentFlowAPI.Base
         public void Update(T entity)
         {
             _dbset.Update(entity);
+        }
+
+        public void UpdateFields(T entity, params Expression<Func<T, object>>[] fields)
+        {
+            _dbContext.Attach(entity);
+
+            foreach (var field in fields)
+            {
+                _dbContext.Entry(entity).Property(field).IsModified = true;
+            }
         }
     }
 }

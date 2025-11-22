@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace DocumentFlowAPI.Base
 {
     public interface IBaseRepository<T> where T : class
@@ -8,5 +10,7 @@ namespace DocumentFlowAPI.Base
         void Update(T entity);
         void Delete(T entity);
         Task SaveChangesAsync();
+        Task<T> GetEntityById(int id);
+        void UpdateFields(T entity, params Expression<Func<T, object>>[] fields);
     }
 }
