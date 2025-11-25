@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DocumentFlowAPI.Models;
+namespace DocumentFlowAPI.Controllers.Template.ViewModels;
 
-public abstract class Template : EntityBase
+public class GetTemplateViewModel
 {
     public string Title { get; set; }
     public string Path { get; set; }

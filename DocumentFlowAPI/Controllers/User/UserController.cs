@@ -26,9 +26,10 @@ public class UserController : ControllerBase
     [HttpGet("/get-all")]
     public async Task<ActionResult<List<UserInfoViewModel>>> GetAllUser()
     {
-        var listUser = await _userService.GetAllUsersAsync();
+        var listUserDto = await _userService.GetAllUsersAsync();
+        var listUserViewModel = _mapper.Map<List<UserInfoViewModel>>(listUserDto);
 
-        return Ok(listUser);
+        return Ok(listUserViewModel);
     }
 
     //FIXME: После авторизации добавить получение id из клайма

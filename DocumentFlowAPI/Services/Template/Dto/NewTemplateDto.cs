@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DocumentFlowAPI.Models;
+namespace DocumentFlowAPI.Services.Template.Dto;
 
-public abstract class Template : EntityBase
+public class NewTemplateDto
 {
     public string Title { get; set; }
     public string Path { get; set; }
