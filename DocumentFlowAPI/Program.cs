@@ -1,60 +1,30 @@
-using DocumentFlowAPI.Base;
-using DocumentFlowAPI.Data;
-using DocumentFlowAPI.Interfaces.Repositories;
-using DocumentFlowAPI.Interfaces.Services;
-using DocumentFlowAPI.Repositories.Template;
-using DocumentFlowAPI.Repositories.User;
-using DocumentFlowAPI.Services.Template;
-using DocumentFlowAPI.Services.User;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using DocumentFlowAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем сервисы
-builder.Services.AddControllers();
-builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped<ITemplateService, TemplateService>();
-builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-
-// Настройка Swagger
-builder.Services.AddEndpointsApiExplorer(); // важно: добавляет описание эндпоинтов для Swagger
-builder.Services.AddSwaggerGen(c =>
+// Добавляем политику CORS
+builder.Services.AddCors(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
+    options.AddPolicy("AllowAll", policy =>
     {
-        Title = "Document Flow API",
-        Version = "v1"
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
-builder.Services.AddAutoMapper(typeof(Program));
+// Создаем экземпляр Startup
+var startup = new Startup(builder.Configuration);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseLazyLoadingProxies()
-                    .UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-                        new MySqlServerVersion(new Version(8, 0, 21)));
-            });
+startup.ConfigureServices(builder.Services);
+
 var app = builder.Build();
 
-// Настройка middleware
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Document Flow API v1");
-        c.RoutePrefix = string.Empty; // Swagger доступен по http://localhost:xxxx/
-    });
-}
+// Включаем CORS (должно быть ДО UseRouting и UseEndpoints)
+app.UseCors("AllowAll");
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
+// Конфигурируем pipeline
+startup.Configure(app, app.Environment);
 
 app.MapControllers(); // ✅ для API (вместо MapControllerRoute)
 
