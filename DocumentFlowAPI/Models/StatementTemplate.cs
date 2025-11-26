@@ -1,7 +1,6 @@
-namespace DocumentFlowAPI.Models
+namespace DocumentFlowAPI.Models;
+
+public class StatementTemplate : Template
 {
-    public class StatementTemplate : Template
-    {
-        
-    }
+    
 }

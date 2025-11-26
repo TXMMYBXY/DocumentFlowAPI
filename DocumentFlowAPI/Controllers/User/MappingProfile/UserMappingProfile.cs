@@ -30,5 +30,6 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
             .ReverseMap();
 
+        CreateMap<UserInfoDto, UserInfoViewModel>().ReverseMap();
     }
 }
