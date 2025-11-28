@@ -21,22 +21,22 @@ public class ErrorHandlingMiddleware
             await _next(context);
             return;
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException ex) //409
         {
             errorCode = HttpStatusCode.Conflict;
             message = ex.Message;
         }
-        catch (ArgumentException ex)
+        catch (ArgumentException ex) //400
         {
             errorCode = HttpStatusCode.BadRequest;
             message = ex.Message;
         }
-        catch (NullReferenceException ex)
+        catch (NullReferenceException ex) //404
         {
             errorCode = HttpStatusCode.NotFound;
             message = ex.Message;
         }
-        catch (Exception ex)
+        catch (Exception ex) //500
         {
             errorCode = HttpStatusCode.InternalServerError;
             message = ex.Message;

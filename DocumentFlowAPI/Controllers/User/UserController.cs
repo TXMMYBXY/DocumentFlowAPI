@@ -1,13 +1,16 @@
+using System.Security.Claims;
 using AutoMapper;
 using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.User.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.User;
 
 [ApiController]
 [Route("api/users")]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -43,7 +46,6 @@ public class UserController : ControllerBase
     {
         var userDto = await _userService.GetUserByIdAsync(userId);
         var userViewModel = _mapper.Map<UserInfoViewModel>(userDto);
-
         return Ok(userViewModel);
     }
 

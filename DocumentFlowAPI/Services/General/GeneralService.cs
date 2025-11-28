@@ -2,6 +2,8 @@ namespace DocumentFlowAPI.Services.General;
 
 public abstract class GeneralService
 {
+    Checker checker = new Checker();
+
     /// <summary>
     /// Проверка на null
     /// </summary>
@@ -16,89 +18,40 @@ public abstract class GeneralService
             throw new NullReferenceException(message);
         }
     }
-    //TODO: Дописать метод проверки на инвалидную операцию
-    protected static void InvalidOperationCheck<T>(T target, string message)
-    {
-
-    }
-        
-    class Checker
-    {
-        internal void UniversalCheck<T>(CheckerParam<T> param)
-        {
-            if (param.Predicate)
-            {
-                throw new Exception(param.Message, param.Exception).InnerException;
-            }
-        }
-    }
-    class CheckerParam<T>
-    {
-        public T User { get; set; }
-        public string Message { get; set; }
-        public Exception Exception { get; set; }
-        public bool Predicate { get; set; }
-
-        public CheckerParam(
-            T user,
-            string message,
-            Exception exception,
-            Predicate<T> predicate)
-        {
-            User = user;
-            Message = message;
-            Exception = exception;
-            Predicate = predicate(user);
-        }
-        public CheckerParam(){}
-    }
-        ///Пример реализации
-        /// var checker = new Checker();
-        // checker.UniversalCheck<int>(new CheckerParam<int>(
-        //     65,
-        //     $"Отрицательное",
-        //     new ArgumentException(),
-        //     (param) => param > 0));
-
-}
-
-class Checker
+public class Checker
 {
-    internal void UniversalCheck<T>(CheckerParam<T> param)
+    internal static void UniversalCheck<T>(CheckerParam<T> param)
     {
         if (param.Predicate)
         {
-            throw new Exception(param.Message, param.Exception).InnerException;
+            throw new Exception(param.Exception.Message, param.Exception).InnerException;
         }
     }
 }
-class CheckerParam<T>
+public class CheckerParam<T>
 {
-    public T User { get; set; }
-    public string Message { get; set; }
     public Exception Exception { get; set; }
     public bool Predicate { get; set; }
+    public T[] Target { get; set; }
 
     public CheckerParam(
-        T user,
-        string message,
-        Exception exception,
-        Predicate<T> predicate)
+        Exception exception, //исключение
+        Predicate<T[]> predicate, //условие
+        params T[]  target) //объект проверки
     {
-        User = user;
-        Message = message;
         Exception = exception;
-        Predicate = predicate(user);
+        Predicate = predicate(target);
+        Target = target;
     }
     public CheckerParam()
     {
 
     }
 }
-///Пример реализации
-/// var checker = new Checker();
+// Пример реализации
+// var checker = new Checker();
 // checker.UniversalCheck<int>(new CheckerParam<int>(
-//     65,
-//     $"Отрицательное",
-//     new ArgumentException(),
-//     (param) => param > 0));
+//     new ArgumentException("Отрицательное"),
+//     param => param > 0,
+//     65);
+}

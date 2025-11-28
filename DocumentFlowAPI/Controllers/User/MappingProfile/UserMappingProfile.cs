@@ -31,5 +31,22 @@ public class UserMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<UserInfoDto, UserInfoViewModel>().ReverseMap();
+
+        CreateMap<NewUserDto, Models.User>()
+            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
+            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
+            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => ""))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => ""));
+
+        CreateMap<UserInfoDto, Models.User>()
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
+            .ReverseMap();
     }
 }

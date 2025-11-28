@@ -1,7 +1,7 @@
-using System.Linq.Expressions;
 using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace DocumentFlowAPI.Repositories.User;
 
@@ -24,22 +24,42 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
         return await _dbContext.Users.FindAsync(userId);
     }
 
-    public Models.User UpdateUserInfo(Models.User user)
+    public async Task<Models.User> GetUserByLoginAsync(string login)
     {
-        UpdateFields(user,
+        return await _dbContext.Users.FirstOrDefaultAsync(x => x.Login.Equals(login));
+    }
+
+    /// <summary>
+    /// Проверка на сущесмтвующий логин
+    /// </summary>
+    /// <param name="login"></param>
+    /// <returns>Возвращает true, если логин уже используется</returns>
+    public async Task<bool> IsUserAlreadyExists(string login)
+    {
+        return await _dbContext.Users.AnyAsync(x => x.Login.Equals(login));
+    }
+
+    public async Task RegisterUserAsync(Models.User userModel)
+    {
+        await _dbContext.Users.AddAsync(userModel);
+    }
+
+    public Models.User UpdateUserInfo(Models.User userModel)
+    {
+        UpdateFields(userModel,
             t => t.FullName,
             t => t.Email,
             t => t.DepartmentId,
             t => t.RoleId);
-        return user;
+        return userModel;
     }
 
-    public Models.User UpdateUserStatus(Models.User user)
+    public Models.User UpdateUserStatus(Models.User userModel)
     {
-        _dbContext.Attach(user);
-        _dbContext.Entry(user)
+        _dbContext.Attach(userModel);
+        _dbContext.Entry(userModel)
             .Property(t => t.IsActive)
             .IsModified = true;
-        return user;
+        return userModel;
     }
 }

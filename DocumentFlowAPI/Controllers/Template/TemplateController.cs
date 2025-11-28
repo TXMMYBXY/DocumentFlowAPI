@@ -2,12 +2,14 @@ using AutoMapper;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.Template.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
 [Route("api/templates")]
+[Authorize]
 public class TemplateController : ControllerBase
 {
     private readonly IMapper _mapper;
