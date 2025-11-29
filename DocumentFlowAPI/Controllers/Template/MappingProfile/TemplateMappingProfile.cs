@@ -8,16 +8,20 @@ public class TemplateMappingProfile : Profile
 {
     public TemplateMappingProfile()
     {
-        CreateMap<TemplateDto, TemplateViewModel>().ReverseMap();
+        //Profiles for GET
 
-        CreateMap<NewTemplateViewModel, NewTemplateDto>().ReverseMap();
-
-        CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>().ReverseMap();
-
-        CreateMap<Models.Template, TemplateDto>().ReverseMap();
-        
-        CreateMap<GetTemplateViewModel, TemplateDto>()
+        CreateMap<GetTemplateViewModel, GetTemplateDto>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ReverseMap();
+
+        CreateMap<Models.Template, GetTemplateDto>().ReverseMap();
+
+        //Profiles for CREATE
+
+        CreateMap<CreateTemplateViewModel, CreateTemplateDto>().ReverseMap();
+
+        //Profiles for UPDATE
+
+        CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>().ReverseMap();
     }
 }

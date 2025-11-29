@@ -15,7 +15,7 @@ public class TemplateService : ITemplateService
         _templateRepository = templateRepository;
     }
 
-    public async Task CreateTemplateAsync<T>(NewTemplateDto templateDto) where T : Models.Template, new()
+    public async Task CreateTemplateAsync<T>(CreateTemplateDto templateDto) where T : Models.Template, new()
     {
         T templateModel = new T
         {
@@ -41,18 +41,18 @@ public class TemplateService : ITemplateService
         await _templateRepository.SaveChangesAsync();
     }
 
-    public async Task<List<TemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template
+    public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template
     {
         var templates = await _templateRepository.GetAllTemplatesAsync<T>();
 
-        return _mapper.Map<List<TemplateDto>>(templates);
+        return _mapper.Map<List<GetTemplateDto>>(templates);
     }
 
-    public async Task<TemplateDto> GetTemplateByIdAsync<T>(int templateId) where T : Models.Template
+    public async Task<GetTemplateDto> GetTemplateByIdAsync<T>(int templateId) where T : Models.Template
     {
         var temaplate = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
 
-        return _mapper.Map<TemplateDto>(temaplate);
+        return _mapper.Map<GetTemplateDto>(temaplate);
     }
 
     public async Task UpdateTemplateAsync<T>(int templateId, UpdateTemplateDto templateDto) where T : Models.Template, new()
