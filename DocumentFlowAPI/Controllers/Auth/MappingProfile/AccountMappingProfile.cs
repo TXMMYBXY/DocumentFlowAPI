@@ -8,12 +8,12 @@ public class AccountMappingProfile : Profile
 {
     public AccountMappingProfile()
     {
-        CreateMap<RegisterUserViewModel, RegisterUserDto>()
+        CreateMap<RegisterRequestViewModel, RegisterUserDto>()
             .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
             .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
             .ReverseMap();
 
-        CreateMap<LoginUserDto, LoginUserViewModel>()
+        CreateMap<LoginUserDto, LoginRequestViewModel>()
             .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
             .ReverseMap();
@@ -34,6 +34,6 @@ public class AccountMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<RegisterResponseDto, RegisterResponseViewModel>().ReverseMap();
-        
+
     }
 }

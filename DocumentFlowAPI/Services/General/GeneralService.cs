@@ -1,3 +1,5 @@
+using DocumentFlowAPI.Interfaces.Services;
+
 namespace DocumentFlowAPI.Services.General;
 
 public abstract class GeneralService
