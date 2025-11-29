@@ -39,12 +39,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
         return await _dbContext.Users.AnyAsync(x => x.Login.Equals(login));
     }
 
-    public async Task RegisterUserAsync(Models.User userModel)
-    {
-        await _dbContext.Users.AddAsync(userModel);
-    }
-
-    public Models.User UpdateUserInfo(Models.User userModel)
+    public Models.User UpdateUser(Models.User userModel)
     {
         UpdateFields(userModel,
             t => t.FullName,

@@ -2,7 +2,7 @@ using DocumentFlowAPI.Models;
 
 namespace DocumentFlowAPI.Services.User.Dto;
 
-public class UserInfoDto
+public class UserInfoForLoginDto
 {
     public string FullName { get; set; }
     public string Email { get; set; }

@@ -19,16 +19,9 @@ public class AuthorizationController : ControllerBase
         _accountService = accountService;
     }
 
-    [HttpPost("register")]
-    public async Task<ActionResult<RegisterResponseViewModel>> Register([FromBody] RegisterRequestViewModel registerUserViewModel)
-    {
-        var registerUserDto = _mapper.Map<RegisterUserDto>(registerUserViewModel);
-        var registerDto = await _accountService.RegisterAsync(registerUserDto);
-        var registerViewModel = _mapper.Map<RegisterResponseViewModel>(registerDto);
-
-        return Ok(registerViewModel);
-    }
-
+    /// <summary>
+    /// че бубнить...
+    /// </summary>
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponseViewModel>> Login([FromBody] LoginRequestViewModel loginUserViewModel)
     {

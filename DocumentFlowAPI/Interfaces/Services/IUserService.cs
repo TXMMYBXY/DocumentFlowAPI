@@ -4,9 +4,10 @@ namespace DocumentFlowAPI.Interfaces.Services;
 
 public interface IUserService
 {
-    Task CreateNewUserAsync(NewUserDto newUserDto);
-    Task<UserInfoDto> GetUserByIdAsync(int id);
-    Task UpdateUserInfoAsync(int userId, UpdateUserInfoDto userDto);
+    Task<List<GetUserDto>> GetAllUsersAsync();
+    Task<GetUserDto> GetUserByIdAsync(int id);
+    Task CreateNewUserAsync(CreateUserDto newUserDto);
+    Task UpdateUserAsync(int userId, UpdateUserDto userDto);
     Task DeleteUserAsync(int userId);
-    Task<List<UserInfoDto>> GetAllUsersAsync();
+    Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto);
 }

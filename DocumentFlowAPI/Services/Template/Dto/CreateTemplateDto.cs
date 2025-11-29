@@ -2,9 +2,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DocumentFlowAPI.Services.Template.Dto;
 
-public class TemplateDto
+public class CreateTemplateDto
 {
-    public int Id { get; set; }
     public string Title { get; set; }
     public string Path { get; set; }
     [ForeignKey(nameof(CreatedBy))]
