@@ -17,15 +17,7 @@ public class UserService : IUserService
 
     public async Task CreateNewUserAsync(NewUserDto newUserDto)
     {
-        var userModel = new Models.User
-        {
-            Login = newUserDto.Login,
-            PasswordHash = newUserDto.PasswordHash,
-            FullName = "",
-            Email = "",
-            DepartmentId = newUserDto.DepartmentId,
-            RoleId = newUserDto.DepartmentId
-        };
+        var userModel = _mapper.Map<Models.User>(newUserDto);
 
         await _userRepository.CreateNewUserAsync(userModel);
         await _userRepository.SaveChangesAsync();

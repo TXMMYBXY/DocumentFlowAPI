@@ -1,6 +1,6 @@
-namespace DocumentFlowAPI.Services.User.Dto;
+namespace DocumentFlowAPI.Services.Auth.Dto;
 
-public class NewUserDto
+public class RegisterUserDto
 {
     public string Login { get; set; }
     public string PasswordHash { get; set; }

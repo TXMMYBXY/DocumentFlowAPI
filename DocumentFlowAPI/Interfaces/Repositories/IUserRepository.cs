@@ -1,13 +1,14 @@
 using DocumentFlowAPI.Base;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace DocumentFlowAPI.Interfaces.Repositories
+namespace DocumentFlowAPI.Interfaces.Repositories;
+
+public interface IUserRepository : IBaseRepository<Models.User>
 {
-    public interface IUserRepository : IBaseRepository<Models.User>
-    {
-        Task CreateNewUserAsync(Models.User userModel);
-        Task<Models.User> GetUserByIdAsync(int userId);
-        Models.User UpdateUserStatus(Models.User user);
-        Models.User UpdateUserInfo(Models.User user);
-    }
+    Task CreateNewUserAsync(Models.User userModel);
+    Task<Models.User> GetUserByIdAsync(int userId);
+    Models.User UpdateUserStatus(Models.User userModel);
+    Models.User UpdateUserInfo(Models.User userModel);
+    Task RegisterUserAsync(Models.User user);
+    Task<Models.User> GetUserByLoginAsync(string login);
+    Task<bool> IsUserAlreadyExists(string login);
 }
