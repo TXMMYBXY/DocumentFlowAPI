@@ -7,5 +7,5 @@
   "**/Properties": true,
   "**/.gitignore": true,
   "**/.editorconfig": true,
-},
+  },
 }

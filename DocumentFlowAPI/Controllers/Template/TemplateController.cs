@@ -9,7 +9,7 @@ namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
 [Route("api/templates")]
-// [Authorize]
+[Authorize]
 ///Этим контроллером могут пользоваться все, за исключением конкретных методов
 public class TemplateController : ControllerBase
 {
@@ -120,7 +120,7 @@ public class TemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Добавление нового шаблона заявлений
     /// </summary>
-    [HttpPost("add-statement-template")]
+    [HttpPost("add-statement-template")]//FIXME:Сделать получение CreatedBy текущего пользователя
     public async Task<ActionResult> CreateStatementTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
