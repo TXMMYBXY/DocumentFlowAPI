@@ -36,6 +36,7 @@ public class Startup
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddHttpContextAccessor();
 
 
         //Настройка JWT

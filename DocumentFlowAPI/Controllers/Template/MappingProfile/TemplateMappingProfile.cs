@@ -18,7 +18,9 @@ public class TemplateMappingProfile : Profile
 
         //Profiles for CREATE
 
-        CreateMap<CreateTemplateViewModel, CreateTemplateDto>().ReverseMap();
+        CreateMap<CreateTemplateViewModel, CreateTemplateDto>()
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .ReverseMap();
 
         //Profiles for UPDATE
 

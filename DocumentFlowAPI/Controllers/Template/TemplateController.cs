@@ -54,7 +54,7 @@ public class TemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Добавляет новый шаблон договора из тела NewTemplateViewModel
     /// </summary>
-    [HttpPost("add-contract-template")]//FIXME:Сделать получение CreatedBy текущего пользователя
+    [HttpPost("add-contract-template")]
     public async Task<ActionResult> CreateContractTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
@@ -120,7 +120,7 @@ public class TemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Добавление нового шаблона заявлений
     /// </summary>
-    [HttpPost("add-statement-template")]//FIXME:Сделать получение CreatedBy текущего пользователя
+    [HttpPost("add-statement-template")]
     public async Task<ActionResult> CreateStatementTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
