@@ -88,7 +88,7 @@ public class UserController : ControllerBase
 
         return Ok();
     }
-    
+
     /// <summary>
     /// Удаление пользователя
     /// </summary>

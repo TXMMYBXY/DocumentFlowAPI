@@ -11,7 +11,7 @@ public class AccountMappingProfile : Profile
     {
 
         CreateMap<LoginUserDto, LoginRequestViewModel>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
             .ReverseMap();
 
@@ -30,7 +30,7 @@ public class AccountMappingProfile : Profile
             .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
             .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
             .ReverseMap();
-            
+
         CreateMap<Models.User, UserInfoForLoginDto>().ReverseMap();
 
     }

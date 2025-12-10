@@ -20,7 +20,7 @@ public class UserService : GeneralService, IUserService
     public async Task CreateNewUserAsync(CreateUserDto newUserDto)
     {
         var userModel = _mapper.Map<Models.User>(newUserDto);
-        var userExists = await _userRepository.IsUserAlreadyExists(newUserDto.Login);
+        var userExists = await _userRepository.IsUserAlreadyExists(newUserDto.Email);
 
         Checker.UniversalCheck(new CheckerParam<bool>(new ArgumentException("Login already in use"),
             x => x[0], userExists));
@@ -59,7 +59,7 @@ public class UserService : GeneralService, IUserService
     public async Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto)
     {
         var userModel = await _userRepository.GetUserByIdAsync(userId);
-
+        
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, resetPasswordDto.PasswordHash);
 
         _userRepository.UpdateFields(userModel, u => u.PasswordHash);

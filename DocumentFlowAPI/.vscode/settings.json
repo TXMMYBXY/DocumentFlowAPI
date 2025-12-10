@@ -2,7 +2,7 @@
   "files.exclude": {
   "**/Data": true,
   "**/bin": true,
-  "**/Migrations": true,
+  "**/Migrations": false,
   "**/obj": true,
   "**/Properties": true,
   "**/.gitignore": true,

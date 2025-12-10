@@ -21,12 +21,11 @@ public class UserMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<CreateUserDto, Models.User>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
             .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
             .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => ""))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => ""));
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
         //Profiles for UPDATE
 
@@ -37,7 +36,6 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
             .ForMember(dest => dest.Id, opt => opt.Ignore());
 
         CreateMap<ResetPasswordViewModel, ResetPasswordDto>()

@@ -35,7 +35,7 @@ public class AccountService : GeneralService, IAccountService
 
     public async Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto)
     {
-        var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Login);
+        var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Email);
         var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
         var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresDays);
         var checker = new Checker();
