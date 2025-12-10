@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DocumentFlowAPI.Services.Template.Dto;
+namespace DocumentFlowAPI.Controllers.Template.ViewModels;
 
-public class NewTemplateDto
+public class CreateTemplateViewModel
 {
     public string Title { get; set; }
     public string Path { get; set; }

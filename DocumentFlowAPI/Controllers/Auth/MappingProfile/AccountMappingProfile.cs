@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Services.Auth.Dto;
+using DocumentFlowAPI.Services.User.Dto;
 
 namespace DocumentFlowAPI.Controllers.Auth.MappingProfile;
 
@@ -8,23 +9,11 @@ public class AccountMappingProfile : Profile
 {
     public AccountMappingProfile()
     {
-        CreateMap<RegisterRequestViewModel, RegisterUserDto>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
-            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
-            .ReverseMap();
 
         CreateMap<LoginUserDto, LoginRequestViewModel>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
             .ReverseMap();
-
-        CreateMap<RegisterUserDto, Models.User>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
-            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
-            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => ""))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => ""));
 
         CreateMap<LoginResponseDto, LoginResponseViewModel>()
             .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
@@ -33,7 +22,16 @@ public class AccountMappingProfile : Profile
             .ForMember(dest => dest.TokenType, opt => opt.MapFrom(src => src.TokenType))
             .ReverseMap();
 
-        CreateMap<RegisterResponseDto, RegisterResponseViewModel>().ReverseMap();
+        CreateMap<UserInfoForLoginDto, Models.User>()
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
+            .ReverseMap();
+
+        CreateMap<Models.User, UserInfoForLoginDto>().ReverseMap();
 
     }
 }

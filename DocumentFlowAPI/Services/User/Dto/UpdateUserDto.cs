@@ -1,6 +1,6 @@
-namespace DocumentFlowAPI.Controllers.User.ViewModels;
+namespace DocumentFlowAPI.Services.User.Dto;
 
-public class UpdateUserInfoViewModel
+public class UpdateUserDto
 {
     public string FullName { get; set; }
     public string Email { get; set; }

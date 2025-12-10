@@ -35,7 +35,7 @@ public class AccountService : GeneralService, IAccountService
 
     public async Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto)
     {
-        var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Login);
+        var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Email);
         var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
         var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresDays);
         var checker = new Checker();
@@ -49,32 +49,9 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("User was deleted"),
             x => !x[0].IsActive, user));
 
-
         return new LoginResponseDto
         {
-            UserInfo = _mapper.Map<UserInfoDto>(user),
-            Token = _jwtService.GenerateToken(user),
-            ExpiresAt = _jwtSettings.ExpiresDays.ToString()
-        };
-    }
-
-    public async Task<RegisterResponseDto> RegisterAsync(RegisterUserDto registerUserDto)
-    {
-        var userExists = await _userRepository.IsUserAlreadyExists(registerUserDto.Login);
-
-        Checker.UniversalCheck(new CheckerParam<bool>(new ArgumentException("Login already in use"),
-            x => x[0], userExists));
-
-        var user = _mapper.Map<Models.User>(registerUserDto);
-
-        user.PasswordHash = new PasswordHasher<Models.User>().HashPassword(user, registerUserDto.PasswordHash);
-
-        await _userRepository.RegisterUserAsync(user);
-        await _userRepository.SaveChangesAsync();
-
-        return new RegisterResponseDto
-        {
-            UserInfo = _mapper.Map<UserInfoDto>(user),
+            UserInfo = _mapper.Map<UserInfoForLoginDto>(user),
             Token = _jwtService.GenerateToken(user),
             ExpiresAt = _jwtSettings.ExpiresDays.ToString()
         };

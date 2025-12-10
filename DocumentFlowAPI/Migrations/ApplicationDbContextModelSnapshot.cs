@@ -30,15 +30,20 @@ namespace DocumentFlowAPI.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("varchar(13)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -53,6 +58,10 @@ namespace DocumentFlowAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contracts");
+
+                    b.HasDiscriminator().HasValue("Contract");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("DocumentFlowAPI.Models.ContractTemplate", b =>
@@ -125,36 +134,6 @@ namespace DocumentFlowAPI.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("DocumentFlowAPI.Models.Statement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Statements");
-                });
-
             modelBuilder.Entity("DocumentFlowAPI.Models.StatementTemplate", b =>
                 {
                     b.Property<int>("Id")
@@ -197,6 +176,7 @@ namespace DocumentFlowAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(63)
                         .HasColumnType("varchar(63)");
 
@@ -206,10 +186,6 @@ namespace DocumentFlowAPI.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -225,6 +201,13 @@ namespace DocumentFlowAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DocumentFlowAPI.Models.Statement", b =>
+                {
+                    b.HasBaseType("DocumentFlowAPI.Models.Contract");
+
+                    b.HasDiscriminator().HasValue("Statement");
                 });
 
             modelBuilder.Entity("DocumentFlowAPI.Models.Contract", b =>

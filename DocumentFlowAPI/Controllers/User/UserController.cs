@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
@@ -11,6 +10,7 @@ namespace DocumentFlowAPI.Controllers.User;
 [ApiController]
 [Route("api/users")]
 [Authorize]
+///Этим контроллером будет пользоваться администратор, поэтому информация которую он получает - полная
 public class UserController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -27,25 +27,25 @@ public class UserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("get-all")]
-    public async Task<ActionResult<List<UserInfoViewModel>>> GetAllUser()
+    public async Task<ActionResult<List<GetUserViewModel>>> GetAllUser()
     {
         var listUserDto = await _userService.GetAllUsersAsync();
-        var listUserViewModel = _mapper.Map<List<UserInfoViewModel>>(listUserDto);
+        var listUserViewModel = _mapper.Map<List<GetUserViewModel>>(listUserDto);
 
         return Ok(listUserViewModel);
     }
 
-    //FIXME: После авторизации добавить получение id из клайма
     /// <summary>
     /// Получение информации о пользователе по его Id
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet("{userId}/get-user-info")]
-    public async Task<ActionResult<UserInfoViewModel>> GetUserByIdAsync([FromRoute] int userId)
+    public async Task<ActionResult<GetUserViewModel>> GetUserByIdAsync([FromRoute] int userId)
     {
         var userDto = await _userService.GetUserByIdAsync(userId);
-        var userViewModel = _mapper.Map<UserInfoViewModel>(userDto);
+        var userViewModel = _mapper.Map<GetUserViewModel>(userDto);
+
         return Ok(userViewModel);
     }
 
@@ -55,9 +55,9 @@ public class UserController : ControllerBase
     /// <param name="user"></param>
     /// <returns></returns>
     [HttpPost("add-user")]
-    public async Task<ActionResult<NewUserViewModel>> CreateNewUser([FromBody] NewUserViewModel user)
+    public async Task<ActionResult<CreateUserViewModel>> CreateNewUser([FromBody] CreateUserViewModel user)
     {
-        var userDto = _mapper.Map<NewUserDto>(user);
+        var userDto = _mapper.Map<CreateUserDto>(user);
 
         await _userService.CreateNewUserAsync(userDto);
 
@@ -68,13 +68,23 @@ public class UserController : ControllerBase
     /// Обновление информации о пользователе
     /// </summary>
     /// <param name="userId"></param>
-    /// <param name="targetUser"></param>
+    /// <param name="userViewModel"></param>
     /// <returns></returns>
-    [HttpPatch("update-user-info")]
-    public async Task<ActionResult> UpdateUserAsync([FromQuery] int userId, [FromBody] UpdateUserInfoViewModel targetUser)
+    [HttpPatch("{userId}/update-user-info")]
+    public async Task<ActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
     {
-        var userDto = _mapper.Map<UpdateUserInfoDto>(targetUser);
-        await _userService.UpdateUserInfoAsync(userId, userDto);
+        var userDto = _mapper.Map<UpdateUserDto>(userViewModel);
+
+        await _userService.UpdateUserAsync(userId, userDto);
+
+        return Ok();
+    }
+
+    [HttpPatch("{userId}/reset-password")]
+    public async Task<ActionResult> ResetPasswordAsync([FromRoute] int userId, ResetPasswordViewModel resetPasswordViewModel)
+    {
+        var resetPasswordDto = _mapper.Map<ResetPasswordDto>(resetPasswordViewModel);
+        await _userService.ResetPasswordAsync(userId, resetPasswordDto);
 
         return Ok();
     }
@@ -85,9 +95,9 @@ public class UserController : ControllerBase
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpDelete("delete-user")]
-    public async Task<ActionResult> DeleteUserAsync([FromBody] int userId)
+    public async Task<ActionResult> DeleteUserAsync([FromBody] DeleteUserViewModel userViewModel)
     {
-        await _userService.DeleteUserAsync(userId);
+        await _userService.DeleteUserAsync(userViewModel.UserId);
 
         return Ok();
     }

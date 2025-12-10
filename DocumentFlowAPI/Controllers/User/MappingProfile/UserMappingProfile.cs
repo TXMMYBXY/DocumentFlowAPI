@@ -8,45 +8,37 @@ public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
-        CreateMap<NewUserViewModel, NewUserDto>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
-            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+        //Profiles for GET
+
+        CreateMap<Models.User, GetUserDto>().ReverseMap();
+
+        CreateMap<GetUserDto, GetUserViewModel>().ReverseMap();
+
+        //Profiles for CREATE
+
+        CreateMap<CreateUserViewModel, CreateUserDto>()
+            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
             .ReverseMap();
 
-        CreateMap<Models.User, UserDto>().ReverseMap();
+        CreateMap<CreateUserDto, Models.User>()
+            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
+            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
+            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
-        CreateMap<Models.User, UserInfoDto>().ReverseMap();
+        //Profiles for UPDATE
 
-        CreateMap<UserInfoViewModel, UserInfoDto>().ReverseMap();
+        CreateMap<UpdateUserViewModel, UpdateUserDto>().ReverseMap();
 
-        CreateMap<UpdateUserInfoViewModel, UpdateUserInfoDto>().ReverseMap();
-
-        CreateMap<UpdateUserInfoDto, Models.User>()
+        CreateMap<UpdateUserDto, Models.User>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-            .ReverseMap();
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
 
-        CreateMap<UserInfoDto, UserInfoViewModel>().ReverseMap();
-
-        CreateMap<NewUserDto, Models.User>()
-            .ForMember(dest => dest.Login, opt => opt.MapFrom(src => src.Login))
-            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.PasswordHash))
-            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => ""))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => ""));
-
-        CreateMap<UserInfoDto, Models.User>()
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
-            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
-            .ReverseMap();
+        CreateMap<ResetPasswordViewModel, ResetPasswordDto>()
+            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
     }
 }

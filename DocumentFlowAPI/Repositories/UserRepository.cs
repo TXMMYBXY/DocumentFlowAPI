@@ -24,27 +24,22 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
         return await _dbContext.Users.FindAsync(userId);
     }
 
-    public async Task<Models.User> GetUserByLoginAsync(string login)
+    public async Task<Models.User> GetUserByLoginAsync(string email)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(x => x.Login.Equals(login));
+        return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
     }
 
     /// <summary>
     /// Проверка на сущесмтвующий логин
     /// </summary>
-    /// <param name="login"></param>
+    /// <param name="email"></param>
     /// <returns>Возвращает true, если логин уже используется</returns>
-    public async Task<bool> IsUserAlreadyExists(string login)
+    public async Task<bool> IsUserAlreadyExists(string email)
     {
-        return await _dbContext.Users.AnyAsync(x => x.Login.Equals(login));
+        return await _dbContext.Users.AnyAsync(x => x.Email.Equals(email));
     }
 
-    public async Task RegisterUserAsync(Models.User userModel)
-    {
-        await _dbContext.Users.AddAsync(userModel);
-    }
-
-    public Models.User UpdateUserInfo(Models.User userModel)
+    public Models.User UpdateUser(Models.User userModel)
     {
         UpdateFields(userModel,
             t => t.FullName,
