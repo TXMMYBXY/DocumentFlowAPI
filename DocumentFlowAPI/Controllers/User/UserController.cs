@@ -1,15 +1,16 @@
 using AutoMapper;
+using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.User.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.User;
 
 [ApiController]
 [Route("api/users")]
-[Authorize]
+[AuthorizeByRoleId((int)Permissions.Admin)]
 ///Этим контроллером будет пользоваться администратор, поэтому информация которую он получает - полная
 public class UserController : ControllerBase
 {
@@ -38,12 +39,12 @@ public class UserController : ControllerBase
     /// <summary>
     /// Получение информации о пользователе по его Id
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="targetUserId"></param>
     /// <returns></returns>
     [HttpGet("{userId}/get-user-info")]
-    public async Task<ActionResult<GetUserViewModel>> GetUserByIdAsync([FromRoute] int userId)
+    public async Task<ActionResult<GetUserViewModel>> GetUserByIdAsync([FromRoute] int targetUserId)
     {
-        var userDto = await _userService.GetUserByIdAsync(userId);
+        var userDto = await _userService.GetUserByIdAsync(targetUserId);
         var userViewModel = _mapper.Map<GetUserViewModel>(userDto);
 
         return Ok(userViewModel);
@@ -67,15 +68,15 @@ public class UserController : ControllerBase
     /// <summary>
     /// Обновление информации о пользователе
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="targetUserId"></param>
     /// <param name="userViewModel"></param>
     /// <returns></returns>
     [HttpPatch("{userId}/update-user-info")]
-    public async Task<ActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
+    public async Task<ActionResult> UpdateUserAsync([FromRoute] int targetUserId, [FromBody] UpdateUserViewModel userViewModel)
     {
         var userDto = _mapper.Map<UpdateUserDto>(userViewModel);
 
-        await _userService.UpdateUserAsync(userId, userDto);
+        await _userService.UpdateUserAsync(targetUserId, userDto);
 
         return Ok();
     }

@@ -1,4 +1,5 @@
 using DocumentFlowAPI;
+using DocumentFlowAPI.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,5 +28,7 @@ app.UseCors("AllowAll");
 startup.Configure(app, app.Environment);
 
 app.MapControllers(); // ✅ для API (вместо MapControllerRoute)
+
+UserIdentity.Initialize(app.Services);
 
 app.Run();

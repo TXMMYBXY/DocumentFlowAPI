@@ -1,15 +1,16 @@
 using AutoMapper;
+using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
 [Route("api/templates")]
-[Authorize]
+[AuthorizeByRoleId((int)Permissions.Boss)]
 ///Этим контроллером могут пользоваться все, за исключением конкретных методов
 public class TemplateController : ControllerBase
 {
@@ -54,7 +55,7 @@ public class TemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Добавляет новый шаблон договора из тела NewTemplateViewModel
     /// </summary>
-    [HttpPost("add-contract-template")]//FIXME:Сделать получение CreatedBy текущего пользователя
+    [HttpPost("add-contract-template")]
     public async Task<ActionResult> CreateContractTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
@@ -120,7 +121,7 @@ public class TemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Добавление нового шаблона заявлений
     /// </summary>
-    [HttpPost("add-statement-template")]//FIXME:Сделать получение CreatedBy текущего пользователя
+    [HttpPost("add-statement-template")]
     public async Task<ActionResult> CreateStatementTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
