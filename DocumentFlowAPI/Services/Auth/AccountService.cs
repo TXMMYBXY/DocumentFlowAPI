@@ -1,15 +1,11 @@
 using AutoMapper;
 using DocumentFlowAPI.Configuration;
-using DocumentFlowAPI.Controllers.Auth.ViewModels;
-using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
-using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Auth.Dto;
 using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.User.Dto;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 
 namespace DocumentFlowAPI.Services.Auth;

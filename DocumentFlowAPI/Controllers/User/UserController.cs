@@ -1,15 +1,16 @@
 using AutoMapper;
+using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.User.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.User;
 
 [ApiController]
 [Route("api/users")]
-[Authorize(Roles ="admin")]
+[AuthorizeByRoleId((int)Permissions.Admin)]
 ///Этим контроллером будет пользоваться администратор, поэтому информация которую он получает - полная
 public class UserController : ControllerBase
 {

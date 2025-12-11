@@ -1,15 +1,16 @@
 using AutoMapper;
+using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
 [Route("api/templates")]
-[Authorize]
+[AuthorizeByRoleId((int)Permissions.Boss)]
 ///Этим контроллером могут пользоваться все, за исключением конкретных методов
 public class TemplateController : ControllerBase
 {

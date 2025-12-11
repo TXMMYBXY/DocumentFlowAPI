@@ -1,6 +1,4 @@
-using System.Text;
 using DocumentFlowAPI.Base;
-using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
@@ -10,9 +8,7 @@ using DocumentFlowAPI.Repositories.User;
 using DocumentFlowAPI.Services.Auth;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.User;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace DocumentFlowAPI;
@@ -38,39 +34,8 @@ public class Startup
         services.AddScoped<IJwtService, JwtService>();
         services.AddHttpContextAccessor();
 
-
-        //Настройка JWT
-        services.Configure<JwtSettings>(Configuration.GetSection("JwtSettings"));
-
-        //Настройка аутентификации
-        var jwtSettings = Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-        var key = Encoding.ASCII.GetBytes(jwtSettings!.SecretKey);
-        //Настройка авторизации
-        services.AddAuthentication(options =>
-        {
-            // Устанавливаем JWT как схему аутентификации по умолчанию
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.RequireHttpsMetadata = false;  // Для разработки (в продакшене должно быть true)
-            options.SaveToken = true;             // Сохраняем токен в контексте
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,                    // Проверяем подпись
-                IssuerSigningKey = new SymmetricSecurityKey(key),   // Ключ для проверки
-                ValidateIssuer = true,                             // Проверяем издателя
-                ValidIssuer = jwtSettings.Issuer,                 // Владидный издатель
-                ValidateAudience = true,                          // Проверяем аудиторию
-                ValidAudience = jwtSettings.Audience,             // Валидная аудитория
-                ValidateLifetime = true,                          // Проверяем время жизни
-                ClockSkew = TimeSpan.Zero                         // Не даем дополнительного времени
-            };
-        });
-
         //Добавляем авторизацию
-        services.AddAuthorization();
+        services.AddAuth(Configuration);
 
         //Регистрация EF Core
         services.AddDbContext<ApplicationDbContext>(options =>
