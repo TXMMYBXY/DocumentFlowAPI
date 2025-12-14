@@ -1,9 +1,12 @@
 using AutoMapper;
 using DocumentFlowAPI.Configuration;
+using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
 using DocumentFlowAPI.Services.General;
+using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.User.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -14,17 +17,20 @@ public class AccountService : GeneralService, IAccountService
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
+    private readonly ITokenRepository _tokenRepository;
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
 
     public AccountService(
         IMapper mapper,
         IUserRepository userRepository,
+        ITokenRepository tokenRepository,
         IJwtService jwtService,
         IOptions<JwtSettings> jwtSettings)
     {
         _mapper = mapper;
         _userRepository = userRepository;
+        _tokenRepository = tokenRepository;
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
     }
@@ -48,8 +54,28 @@ public class AccountService : GeneralService, IAccountService
         return new LoginResponseDto
         {
             UserInfo = _mapper.Map<UserInfoForLoginDto>(user),
-            Token = _jwtService.GenerateToken(user),
-            ExpiresAt = _jwtSettings.ExpiresDays.ToString()
+            AccessToken = _jwtService.GenerateAccessToken(user),
+            ExpiresAt = _jwtSettings.ExpiresDays.ToString(),
+            RefreshToken = _jwtService.GenerateRefreshToken(user.Id)
         };
+    }
+
+    public async Task<RefreshTokenResponseDto> RefreshAsync(RefreshTokenDto refreshTokenDto)
+    {
+        var refreshTokenModel = _mapper.Map<RefreshToken>(refreshTokenDto);
+        var isValid = _jwtService.ValidateRefreshToken(refreshTokenModel);
+
+        Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
+            x => !isValid.Result == true, refreshTokenModel));
+        
+        var refreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(UserIdentity.User.Id);
+
+        _jwtService.RefreshTokenValue(refreshToken);
+
+        await _tokenRepository.SaveChangesAsync();
+
+        var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(refreshToken);
+
+        return refreshTokenResponseDto;
     }
 }

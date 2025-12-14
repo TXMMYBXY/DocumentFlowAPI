@@ -1,5 +1,6 @@
 
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Models.AboutUserModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DocumentFlowAPI.Data;
@@ -17,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Department> Departments { get; set; }
     public DbSet<ContractTemplate> ContractTemplates { get; set; }
     public DbSet<StatementTemplate> StatementTemplates { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

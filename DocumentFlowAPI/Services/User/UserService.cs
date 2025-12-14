@@ -11,10 +11,15 @@ public class UserService : GeneralService, IUserService
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
-    public UserService(IUserRepository userRepository, IMapper mapper)
+    private readonly IJwtService _jwtService;
+    public UserService(
+        IUserRepository userRepository,
+        IMapper mapper,
+        IJwtService jwtService)
     {
         _userRepository = userRepository;
         _mapper = mapper;
+        _jwtService = jwtService;
     }
 
     public async Task CreateNewUserAsync(CreateUserDto newUserDto)
@@ -28,6 +33,9 @@ public class UserService : GeneralService, IUserService
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, newUserDto.PasswordHash);
 
         await _userRepository.CreateNewUserAsync(userModel);
+
+        _jwtService.GenerateRefreshToken(userModel.Id);
+        
         await _userRepository.SaveChangesAsync();
     }
 

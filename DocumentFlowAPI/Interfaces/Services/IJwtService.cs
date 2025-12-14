@@ -1,9 +1,12 @@
+using DocumentFlowAPI.Models.AboutUserModels;
+using DocumentFlowAPI.Services.Auth.Dto;
+
 namespace DocumentFlowAPI.Interfaces.Services;
 
 public interface IJwtService
 {
-    string GenerateToken(Models.User user);
-    bool ValidateToken(string token);
-    int GetUserIdFromToken(string token);
-    string GetUserEmailFromToken(string token);
+    string GenerateAccessToken(Models.User user);
+    string GenerateRefreshToken(int userId);
+    Task<bool> ValidateRefreshToken(RefreshToken refreshToken);
+    void RefreshTokenValue(RefreshToken refreshToken); 
 }
