@@ -21,7 +21,10 @@ public class UserService : GeneralService, IUserService
         _mapper = mapper;
         _jwtService = jwtService;
     }
-
+    /// <summary>
+    /// Создает нового пользователя
+    /// </summary>
+    /// <param name="newUserDto"></param>
     public async Task CreateNewUserAsync(CreateUserDto newUserDto)
     {
         var userModel = _mapper.Map<Models.User>(newUserDto);
@@ -40,9 +43,12 @@ public class UserService : GeneralService, IUserService
         await _jwtService.GenerateRefreshTokenAsync(userId.Id);
     }
 
+    /// <summary>
+    /// Меняет статус пользователя на заблокированного
+    /// </summary>
     public async Task DeleteUserAsync(int userId)
     {
-        var user = await _userRepository.GetEntityById(userId);
+        var user = await _userRepository.GetUserByIdAsync(userId);
 
         user.IsActive = false;
 
@@ -51,6 +57,9 @@ public class UserService : GeneralService, IUserService
         await _userRepository.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Возврат всех пользователей
+    /// </summary>
     public async Task<List<GetUserDto>> GetAllUsersAsync()
     {
         var userModelList = await _userRepository.GetAllAsync();
@@ -58,6 +67,9 @@ public class UserService : GeneralService, IUserService
         return _mapper.Map<List<GetUserDto>>(userModelList);
     }
 
+    /// <summary>
+    /// Возврат пользователя по id
+    /// </summary>
     public async Task<GetUserDto> GetUserByIdAsync(int id)
     {
         var userModel = await _userRepository.GetUserByIdAsync(id);
@@ -65,6 +77,9 @@ public class UserService : GeneralService, IUserService
         return _mapper.Map<GetUserDto>(userModel);
     }
 
+    /// <summary>
+    /// Сброс пароля пользователя
+    /// </summary>
     public async Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto)
     {
         var userModel = await _userRepository.GetUserByIdAsync(userId);
@@ -75,6 +90,12 @@ public class UserService : GeneralService, IUserService
         await _userRepository.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Обновления информации о пользователе
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="userDto"></param>
+    /// <returns></returns>
     public async Task UpdateUserAsync(int userId, UpdateUserDto userDto)
     {
         var userModel = await _userRepository.GetUserByIdAsync(userId);

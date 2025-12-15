@@ -1,7 +1,6 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
-using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Auth.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,12 +34,10 @@ public class AuthorizationController : ControllerBase
         return Ok(loginViewModel);
     }
     /// <summary>
-    /// Метод для обновления рефреш токена
+    /// Метод для обновления рефреш токена(сам генерирую)
     /// </summary>
     /// <param name="tokenViewModel">Старый рефреш токен</param>
     /// <returns></returns>
-    // [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss,
-    //     (int)Permissions.Purchaser, (int)Permissions.Staff)]
     [Authorize]
     [HttpPost("refresh")]
     public async Task<ActionResult<RefreshTokenResponseViewModel>> RefreshToken([FromBody] RefreshTokenRequestViewModel tokenViewModel)
@@ -53,6 +50,11 @@ public class AuthorizationController : ControllerBase
 
         return Ok(tokenResponseViewModel);
     }
+    /// <summary>
+    /// Метод для обновления токена доступа(у меня JWT)
+    /// </summary>
+    /// <param name="tokenViewModel"></param>
+    /// <returns></returns>
     [Authorize]
     [HttpPost("access")]
     public async Task<ActionResult<AccessTokenResponseViewModel>> GetAccessTokenAsync([FromBody] AccessTokenViewModel tokenViewModel)

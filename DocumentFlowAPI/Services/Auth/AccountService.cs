@@ -81,13 +81,12 @@ public class AccountService : GeneralService, IAccountService
     {
         var refreshTokenModel = _mapper.Map<RefreshToken>(refreshTokenDto);
         var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshTokenModel);
-        var userId = UserIdentity.User.Id;
 
         Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
             x => !isValid == true, refreshTokenModel));
 
-        var refreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(userId);
-        var token = await _jwtService.GenerateRefreshTokenAsync(userId);
+        var refreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshTokenDto.UserId);
+        var token = await _jwtService.GenerateRefreshTokenAsync(refreshTokenDto.UserId);
         var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(token);
 
         await _tokenRepository.SaveChangesAsync();

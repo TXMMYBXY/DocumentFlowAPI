@@ -28,18 +28,4 @@ public class TokenRepository : BaseRepository<RefreshToken>, ITokenRepository
     {
         return await _dbContext.RefreshTokens.FirstOrDefaultAsync(t => t.UserId == userId);
     }
-
-    public RefreshToken UpdateRefreshToken(RefreshToken refreshToken)
-    {
-        UpdateFields(refreshToken,
-        t => t.Token,
-        t => t.ExpiresAt);
-
-        return refreshToken;
-    }
-
-    public async Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken)
-    {
-        return await _dbContext.RefreshTokens.ContainsAsync(refreshToken);
-    }
 }

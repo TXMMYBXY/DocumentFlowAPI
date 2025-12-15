@@ -22,11 +22,6 @@ public class JwtService : IJwtService
         _tokenRepository = tokenRepository;
     }
 
-    /// <summary>
-    /// Генерация токена
-    /// </summary>
-    /// <param name="user"></param>
-    /// <returns>токен</returns>
     public string GenerateAccessToken(Models.User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -62,7 +57,7 @@ public class JwtService : IJwtService
     public async Task<RefreshToken> GenerateRefreshTokenAsync(int userId)
     {
         var targetToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(userId);
-        if(targetToken != null)
+        if (targetToken != null)
         {
             _RevokeToken(targetToken);
         }
@@ -71,7 +66,7 @@ public class JwtService : IJwtService
         {
             Token = _GenerateSecret(),
             UserId = userId,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes)
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.ExpiresDays)
         };
 
         await _tokenRepository.CreateRefreshTokenAsync(refreshToken);
@@ -87,14 +82,10 @@ public class JwtService : IJwtService
         return token.Token == refreshToken.Token;
     }
 
-    public void RefreshTokenValue(RefreshToken refreshToken)
-    {
-        refreshToken.Token = _GenerateSecret();
-        refreshToken.ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
-
-        _tokenRepository.UpdateRefreshToken(refreshToken);
-    }
-    private static string _GenerateSecret()
+    /// <summary>
+    /// Метод для генерации посследовательности
+    /// </summary>
+    private string _GenerateSecret()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
@@ -107,6 +98,10 @@ public class JwtService : IJwtService
         return new string(secret);
     }
 
+    /// <summary>
+    /// Метод для удаления токена из таблицы
+    /// </summary>
+    /// <param name="refreshToken"></param>
     private void _RevokeToken(RefreshToken refreshToken)
     {
         _tokenRepository.DeleteRefreshToken(refreshToken);

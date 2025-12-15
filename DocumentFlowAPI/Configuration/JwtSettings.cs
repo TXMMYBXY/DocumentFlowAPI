@@ -1,5 +1,8 @@
 namespace DocumentFlowAPI.Configuration;
 
+/// <summary>
+/// Класс настроек для токенов JWT и токенов обновления
+/// </summary>
 public class JwtSettings
 {
     public string SecretKey { get; set; } = string.Empty;
