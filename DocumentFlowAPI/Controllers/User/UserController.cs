@@ -18,13 +18,11 @@ public class UserController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IUserService _userService;
-    private IAccountService _accountService;
 
-    public UserController(IMapper mapper, IUserService userService, IAccountService accountService)
+    public UserController(IMapper mapper, IUserService userService)
     {
         _mapper = mapper;
         _userService = userService;
-        _accountService = accountService;
     }
 
     /// <summary>
@@ -104,13 +102,6 @@ public class UserController : ControllerBase
     {
         await _userService.DeleteUserAsync(userViewModel.UserId);
 
-        return Ok();
-    }
-
-    [HttpPost("refresh")]
-    public async Task<ActionResult> CreateRefreshTokenForUser()
-    {
-        await _accountService.RefreshAllAsync();
         return Ok();
     }
 }

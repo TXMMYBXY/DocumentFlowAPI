@@ -9,4 +9,5 @@ public interface IJwtService
     Task<RefreshToken> GenerateRefreshTokenAsync(int userId);
     Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken);
     void RefreshTokenValue(RefreshToken refreshToken);
+    Task<bool> ValidateAccessTokenAsync(AccessTokenDto accessTokenDto);
 }

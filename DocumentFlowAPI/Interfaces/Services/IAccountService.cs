@@ -6,5 +6,5 @@ public interface IAccountService
 {
     Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto);
     Task<RefreshTokenResponseDto> RefreshAsync(RefreshTokenDto refreshTokenDto);
-    Task RefreshAllAsync();
+    Task<AccessTokenResponseDto> CreateAccessTokenAsync(AccessTokenDto accessTokenDto);
 }

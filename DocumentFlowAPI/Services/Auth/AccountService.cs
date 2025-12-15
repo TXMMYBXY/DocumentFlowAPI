@@ -55,7 +55,25 @@ public class AccountService : GeneralService, IAccountService
             UserInfo = _mapper.Map<UserInfoForLoginDto>(user),
             AccessToken = _jwtService.GenerateAccessToken(user),
             ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes).ToString(),
-            RefreshToken = _jwtService.GenerateRefreshTokenAsync(user.Id).Result
+            RefreshToken = await _jwtService.GenerateRefreshTokenAsync(user.Id)
+        };
+    }
+
+    public async Task<AccessTokenResponseDto> CreateAccessTokenAsync(AccessTokenDto accessTokenDto)
+    {
+        var isValid = await _jwtService.ValidateAccessTokenAsync(accessTokenDto);
+
+        Checker.UniversalCheck(new CheckerParam<AccessTokenDto>(new NullReferenceException("Incorrect token"),
+            x => !isValid == true, accessTokenDto));
+
+        var user = await _userRepository.GetUserByIdAsync(accessTokenDto.UserId);
+
+        return new AccessTokenResponseDto
+        {
+            UserInfo = _mapper.Map<UserInfoForLoginDto>(user),
+            AccessToken = _jwtService.GenerateAccessToken(user),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes).ToString(),
+            RefreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(user.Id)
         };
     }
 
@@ -75,18 +93,5 @@ public class AccountService : GeneralService, IAccountService
         await _tokenRepository.SaveChangesAsync();
 
         return refreshTokenResponseDto;
-    }
-
-    public async Task RefreshAllAsync()
-    {
-        var users = await _userRepository.GetAllAsync();
-        var userIds = users.Select(t => t.Id).ToArray();
-
-        foreach (var userId in userIds)
-        {
-            _jwtService.GenerateRefreshTokenAsync(userId);
-        }
-
-        await _tokenRepository.SaveChangesAsync();
     }
 }

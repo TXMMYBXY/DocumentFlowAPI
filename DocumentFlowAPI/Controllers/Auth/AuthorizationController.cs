@@ -1,8 +1,11 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Auth.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DocumentFlowAPI.Controllers.Auth;
 
@@ -31,14 +34,35 @@ public class AuthorizationController : ControllerBase
 
         return Ok(loginViewModel);
     }
-
+    /// <summary>
+    /// Метод для обновления рефреш токена
+    /// </summary>
+    /// <param name="tokenViewModel">Старый рефреш токен</param>
+    /// <returns></returns>
+    // [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss,
+    //     (int)Permissions.Purchaser, (int)Permissions.Staff)]
+    [Authorize]
     [HttpPost("refresh")]
     public async Task<ActionResult<RefreshTokenResponseViewModel>> RefreshToken([FromBody] RefreshTokenRequestViewModel tokenViewModel)
     {
+        tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
         var tokenDto = _mapper.Map<RefreshTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.RefreshAsync(tokenDto);
-        var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);//FIXME: wrong mapper
-        
+        var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);
+
         return Ok(tokenResponseViewModel);
+    }
+    [Authorize]
+    [HttpPost("access")]
+    public async Task<ActionResult<AccessTokenResponseViewModel>> GetAccessTokenAsync([FromBody] AccessTokenViewModel tokenViewModel)
+    {
+        tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+        var tokenDto = _mapper.Map<AccessTokenDto>(tokenViewModel);
+        var tokenResponseDto = await _accountService.CreateAccessTokenAsync(tokenDto);
+        var tokenResponse = _mapper.Map<AccessTokenResponseViewModel>(tokenResponseDto);
+
+        return Ok(tokenResponse);
     }
 }

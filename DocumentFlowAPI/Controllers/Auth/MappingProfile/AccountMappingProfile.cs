@@ -3,6 +3,7 @@ using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
 using DocumentFlowAPI.Services.User.Dto;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 
 namespace DocumentFlowAPI.Controllers.Auth.MappingProfile;
 
@@ -48,6 +49,14 @@ public class AccountMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<RefreshTokenResponseDto, RefreshToken>()
+            .ReverseMap();
+
+        //profiles for access
+
+        CreateMap<AccessTokenDto, AccessTokenViewModel>()
+            .ReverseMap();
+
+        CreateMap<AccessTokenResponseDto, AccessTokenResponseViewModel>()
             .ReverseMap();
     }
 }
