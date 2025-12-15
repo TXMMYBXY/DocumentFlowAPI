@@ -3,6 +3,7 @@ using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Middleware;
+using DocumentFlowAPI.Repositories;
 using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Repositories.User;
 using DocumentFlowAPI.Services.Auth;
@@ -33,6 +34,8 @@ public class Startup
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddHttpContextAccessor();
+        services.AddScoped<ITokenRepository, TokenRepository>();
+        
 
         //Добавляем авторизацию
         services.AddAuth(Configuration);

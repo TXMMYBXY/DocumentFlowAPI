@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DocumentFlowAPI.Services.User;
 
 namespace DocumentFlowAPI.Controllers.Auth.ViewModels;
 
 public class RefreshTokenRequestViewModel
 {
-    
+    public int UserId { get; } = UserIdentity.User.Id;
+    public string Token { get; set; }
 }

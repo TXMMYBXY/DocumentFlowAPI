@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Security.Claims;
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.User.ViewModels;
@@ -16,11 +18,13 @@ public class UserController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IUserService _userService;
+    private IAccountService _accountService;
 
-    public UserController(IMapper mapper, IUserService userService)
+    public UserController(IMapper mapper, IUserService userService, IAccountService accountService)
     {
         _mapper = mapper;
         _userService = userService;
+        _accountService = accountService;
     }
 
     /// <summary>
@@ -62,7 +66,7 @@ public class UserController : ControllerBase
 
         await _userService.CreateNewUserAsync(userDto);
 
-        return Ok();
+        return Created();
     }
 
     /// <summary>
@@ -100,6 +104,13 @@ public class UserController : ControllerBase
     {
         await _userService.DeleteUserAsync(userViewModel.UserId);
 
+        return Ok();
+    }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult> CreateRefreshTokenForUser()
+    {
+        await _accountService.RefreshAllAsync();
         return Ok();
     }
 }

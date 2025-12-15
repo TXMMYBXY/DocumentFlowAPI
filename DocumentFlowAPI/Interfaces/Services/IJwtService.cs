@@ -6,7 +6,7 @@ namespace DocumentFlowAPI.Interfaces.Services;
 public interface IJwtService
 {
     string GenerateAccessToken(Models.User user);
-    string GenerateRefreshToken(int userId);
-    Task<bool> ValidateRefreshToken(RefreshToken refreshToken);
-    void RefreshTokenValue(RefreshToken refreshToken); 
+    Task<RefreshToken> GenerateRefreshTokenAsync(int userId);
+    Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken);
+    void RefreshTokenValue(RefreshToken refreshToken);
 }

@@ -37,7 +37,7 @@ public class AuthorizationController : ControllerBase
     {
         var tokenDto = _mapper.Map<RefreshTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.RefreshAsync(tokenDto);
-        var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);
+        var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);//FIXME: wrong mapper
         
         return Ok(tokenResponseViewModel);
     }

@@ -1,6 +1,5 @@
 using AutoMapper;
 using DocumentFlowAPI.Configuration;
-using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models.AboutUserModels;
@@ -39,7 +38,7 @@ public class AccountService : GeneralService, IAccountService
     {
         var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Email);
         var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
-        var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresDays);
+        var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
         var checker = new Checker();
 
         Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("Incorrect login"),
@@ -55,27 +54,39 @@ public class AccountService : GeneralService, IAccountService
         {
             UserInfo = _mapper.Map<UserInfoForLoginDto>(user),
             AccessToken = _jwtService.GenerateAccessToken(user),
-            ExpiresAt = _jwtSettings.ExpiresDays.ToString(),
-            RefreshToken = _jwtService.GenerateRefreshToken(user.Id)
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes).ToString(),
+            RefreshToken = _jwtService.GenerateRefreshTokenAsync(user.Id).Result
         };
     }
 
     public async Task<RefreshTokenResponseDto> RefreshAsync(RefreshTokenDto refreshTokenDto)
     {
         var refreshTokenModel = _mapper.Map<RefreshToken>(refreshTokenDto);
-        var isValid = _jwtService.ValidateRefreshToken(refreshTokenModel);
+        var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshTokenModel);
+        var userId = UserIdentity.User.Id;
 
         Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
-            x => !isValid.Result == true, refreshTokenModel));
-        
-        var refreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(UserIdentity.User.Id);
+            x => !isValid == true, refreshTokenModel));
 
-        _jwtService.RefreshTokenValue(refreshToken);
+        var refreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(userId);
+        var token = await _jwtService.GenerateRefreshTokenAsync(userId);
+        var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(token);
 
         await _tokenRepository.SaveChangesAsync();
 
-        var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(refreshToken);
-
         return refreshTokenResponseDto;
+    }
+
+    public async Task RefreshAllAsync()
+    {
+        var users = await _userRepository.GetAllAsync();
+        var userIds = users.Select(t => t.Id).ToArray();
+
+        foreach (var userId in userIds)
+        {
+            _jwtService.GenerateRefreshTokenAsync(userId);
+        }
+
+        await _tokenRepository.SaveChangesAsync();
     }
 }

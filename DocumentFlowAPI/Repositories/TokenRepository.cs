@@ -26,7 +26,7 @@ public class TokenRepository : BaseRepository<RefreshToken>, ITokenRepository
 
     public async Task<RefreshToken?> GetRefreshTokenByUserIdAsync(int userId)
     {
-        return await _dbContext.RefreshTokens.FindAsync(userId);
+        return await _dbContext.RefreshTokens.FirstOrDefaultAsync(t => t.UserId == userId);
     }
 
     public RefreshToken UpdateRefreshToken(RefreshToken refreshToken)

@@ -18,7 +18,7 @@ public class AccountMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<LoginResponseDto, LoginResponseViewModel>()
-            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.AccessToken))
+            .ForMember(dest => dest.AccessToken, opt => opt.MapFrom(src => src.AccessToken))
             .ForMember(dest => dest.ExpiresAt, opt => opt.MapFrom(src => src.ExpiresAt))
             .ForMember(dest => dest.UserInfo, opt => opt.MapFrom(src => src.UserInfo))
             .ForMember(dest => dest.TokenType, opt => opt.MapFrom(src => src.TokenType))
@@ -41,6 +41,7 @@ public class AccountMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<RefreshTokenResponseViewModel, RefreshTokenResponseDto>()
+            .ForMember(dest => dest.UserId, opt => opt.Ignore())
             .ReverseMap();
 
         CreateMap<RefreshToken, RefreshTokenDto>()

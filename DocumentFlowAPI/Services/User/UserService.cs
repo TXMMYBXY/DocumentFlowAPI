@@ -33,10 +33,11 @@ public class UserService : GeneralService, IUserService
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, newUserDto.PasswordHash);
 
         await _userRepository.CreateNewUserAsync(userModel);
-
-        _jwtService.GenerateRefreshToken(userModel.Id);
-        
         await _userRepository.SaveChangesAsync();
+
+        var userId = await _userRepository.GetUserByLoginAsync(newUserDto.Email);
+
+        await _jwtService.GenerateRefreshTokenAsync(userId.Id);
     }
 
     public async Task DeleteUserAsync(int userId)
@@ -67,7 +68,7 @@ public class UserService : GeneralService, IUserService
     public async Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto)
     {
         var userModel = await _userRepository.GetUserByIdAsync(userId);
-        
+
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, resetPasswordDto.PasswordHash);
 
         _userRepository.UpdateFields(userModel, u => u.PasswordHash);

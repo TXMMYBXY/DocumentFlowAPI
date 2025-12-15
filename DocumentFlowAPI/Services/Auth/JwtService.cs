@@ -59,18 +59,40 @@ public class JwtService : IJwtService
         return tokenHandler.WriteToken(token);
     }
 
-    public string GenerateRefreshToken(int userId)
+    public async Task<RefreshToken> GenerateRefreshTokenAsync(int userId)
     {
+        var targetToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(userId);
+        if(targetToken != null)
+        {
+            _RevokeToken(targetToken);
+        }
+
         var refreshToken = new RefreshToken
         {
             Token = _GenerateSecret(),
             UserId = userId,
-            ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.ExpiresDays)
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes)
         };
 
-        _tokenRepository.CreateRefreshTokenAsync(refreshToken);
+        await _tokenRepository.CreateRefreshTokenAsync(refreshToken);
+        await _tokenRepository.SaveChangesAsync();
 
-        return refreshToken.Token;
+        return refreshToken;
+    }
+
+    public async Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken)
+    {
+        var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshToken.UserId);
+
+        return token.Token == refreshToken.Token;
+    }
+
+    public void RefreshTokenValue(RefreshToken refreshToken)
+    {
+        refreshToken.Token = _GenerateSecret();
+        refreshToken.ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
+
+        _tokenRepository.UpdateRefreshToken(refreshToken);
     }
     private static string _GenerateSecret()
     {
@@ -85,16 +107,8 @@ public class JwtService : IJwtService
         return new string(secret);
     }
 
-    public async Task<bool> ValidateRefreshToken(RefreshToken refreshToken)
+    private void _RevokeToken(RefreshToken refreshToken)
     {
-        return await _tokenRepository.ValidateRefreshTokenAsync(refreshToken);
-    }
-
-    public void RefreshTokenValue(RefreshToken refreshToken)
-    {
-        refreshToken.Token = _GenerateSecret();
-        refreshToken.ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.ExpiresDays);
-        
-        _tokenRepository.UpdateRefreshToken(refreshToken);
+        _tokenRepository.DeleteRefreshToken(refreshToken);
     }
 }
