@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Auth.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,7 @@ public class AuthorizationController : ControllerBase
         tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         var tokenDto = _mapper.Map<RefreshTokenDto>(tokenViewModel);
-        var tokenResponseDto = await _accountService.RefreshAsync(tokenDto);
+        var tokenResponseDto = await _accountService.CreateRefreshTokenAsync(tokenDto);
         var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);
 
         return Ok(tokenResponseViewModel);
@@ -57,14 +58,24 @@ public class AuthorizationController : ControllerBase
     /// <returns></returns>
     [Authorize]
     [HttpPost("access")]
-    public async Task<ActionResult<AccessTokenResponseViewModel>> GetAccessTokenAsync([FromBody] AccessTokenViewModel tokenViewModel)
+    public async Task<ActionResult<AccessTokenResponseViewModel>> AccessToken([FromBody] AccessTokenViewModel tokenViewModel)
     {
         tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         var tokenDto = _mapper.Map<AccessTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.CreateAccessTokenAsync(tokenDto);
-        var tokenResponse = _mapper.Map<AccessTokenResponseViewModel>(tokenResponseDto);
+        var tokenResponseViewModel = _mapper.Map<AccessTokenResponseViewModel>(tokenResponseDto);
 
-        return Ok(tokenResponse);
+        return Ok(tokenResponseViewModel);
+    }
+
+    [HttpPost("request-for-access")]
+    public async Task<ActionResult<RefreshTokenToLoginResponseViewModel>> LoginByRefreshToken([FromBody] RefreshTokenToLoginViewModel refreshToken)
+    {
+        var refreshTokenDto = _mapper.Map<RefreshTokenToLoginDto>(refreshToken);
+        var responseTokenDto = await _accountService.LoginByRefreshTokenAsync(refreshTokenDto);
+        var responseTokenViewModel = _mapper.Map<RefreshTokenToLoginResponseViewModel>(responseTokenDto);
+
+        return Ok(responseTokenViewModel);
     }
 }

@@ -34,7 +34,14 @@ public class AccountMappingProfile : Profile
             .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
             .ReverseMap();
 
-        CreateMap<Models.User, UserInfoForLoginDto>().ReverseMap();
+        CreateMap<Models.User, UserInfoForLoginDto>()
+            .ReverseMap();
+
+        CreateMap<RefreshTokenToLoginDto, RefreshTokenToLoginViewModel>()
+            .ReverseMap();
+
+        CreateMap<RefreshTokenToLoginResponseViewModel, RefreshTokenToLoginResponseDto>()
+            .ReverseMap();
 
         //profiles for refresh
 

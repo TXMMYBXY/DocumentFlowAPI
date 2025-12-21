@@ -5,7 +5,6 @@ using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
 using DocumentFlowAPI.Services.General;
-using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.User.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -37,18 +36,19 @@ public class AccountService : GeneralService, IAccountService
     public async Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto)
     {
         var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Email);
-        var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
-        var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
-        var checker = new Checker();
 
         Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("Incorrect login"),
             x => x[0] == null, user));
 
+        Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("User was deleted"),
+            x => !x[0].IsActive, user));
+
+        var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
+
         Checker.UniversalCheck(new CheckerParam<PasswordVerificationResult>(new ArgumentException("Incorrect password"),
             x => x[0] != PasswordVerificationResult.Success, result));
 
-        Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("User was deleted"),
-            x => !x[0].IsActive, user));
+        // var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
 
         return new LoginResponseDto
         {
@@ -77,7 +77,7 @@ public class AccountService : GeneralService, IAccountService
         };
     }
 
-    public async Task<RefreshTokenResponseDto> RefreshAsync(RefreshTokenDto refreshTokenDto)
+    public async Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenDto refreshTokenDto)
     {
         var refreshTokenModel = _mapper.Map<RefreshToken>(refreshTokenDto);
         var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshTokenModel);
@@ -92,5 +92,27 @@ public class AccountService : GeneralService, IAccountService
         await _tokenRepository.SaveChangesAsync();
 
         return refreshTokenResponseDto;
+    }
+
+    public async Task<RefreshTokenToLoginResponseDto> LoginByRefreshTokenAsync(RefreshTokenToLoginDto refreshToken)
+    {
+        var token = await _tokenRepository.GetRefreshTokenByValueAsync(refreshToken.RefreshToken);
+
+        Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
+            x => token == null));
+
+        var newToken = new RefreshTokenToLoginResponseDto
+        {
+            IsAllowed = true
+        };
+
+        if (token.ExpiresAt.Value.Day - DateTime.UtcNow.Day < 1)
+        {
+            var createdToken = CreateRefreshTokenAsync(_mapper.Map<RefreshTokenDto>(token));
+            
+            newToken.RefreshToken = _mapper.Map<RefreshToken>(createdToken);
+        }
+
+        return newToken;
     }
 }

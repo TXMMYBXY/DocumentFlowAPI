@@ -9,7 +9,7 @@ namespace DocumentFlowAPI.Repositories;
 
 public class TokenRepository : BaseRepository<RefreshToken>, ITokenRepository
 {
-    private readonly ApplicationDbContext _dbContext; 
+    private readonly ApplicationDbContext _dbContext;
     public TokenRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -27,5 +27,10 @@ public class TokenRepository : BaseRepository<RefreshToken>, ITokenRepository
     public async Task<RefreshToken?> GetRefreshTokenByUserIdAsync(int userId)
     {
         return await _dbContext.RefreshTokens.FirstOrDefaultAsync(t => t.UserId == userId);
+    }
+
+    public async Task<RefreshToken?> GetRefreshTokenByValueAsync(string tokenValue)
+    {
+        return await _dbContext.RefreshTokens.FirstOrDefaultAsync(t => t.Token.Equals(tokenValue));
     }
 }

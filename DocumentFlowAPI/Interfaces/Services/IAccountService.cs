@@ -12,10 +12,15 @@ public interface IAccountService
     /// <summary>
     /// Метод для создания нового токена доступа
     /// </summary>
-    Task<RefreshTokenResponseDto> RefreshAsync(RefreshTokenDto refreshTokenDto);
-    
+    Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenDto refreshTokenDto);
+
     /// <summary>
     /// Метод для создания нового токена обновления
     /// </summary>
     Task<AccessTokenResponseDto> CreateAccessTokenAsync(AccessTokenDto accessTokenDto);
+
+    /// <summary>
+    /// Метод для входа по токену
+    /// </summary>
+    Task<RefreshTokenToLoginResponseDto> LoginByRefreshTokenAsync(RefreshTokenToLoginDto refreshToken);
 }
