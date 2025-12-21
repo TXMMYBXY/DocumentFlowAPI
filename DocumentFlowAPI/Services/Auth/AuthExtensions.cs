@@ -5,6 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DocumentFlowAPI.Services.Auth;
 
+/// <summary>
+/// Класс расширений для авторизации и аутентификации
+/// </summary>
 public static class AuthExtensions
 {
     public static IServiceCollection AddAuth(this IServiceCollection serviceCollection, IConfiguration configuration)

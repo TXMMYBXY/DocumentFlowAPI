@@ -4,5 +4,23 @@ namespace DocumentFlowAPI.Interfaces.Services;
 
 public interface IAccountService
 {
+    /// <summary>
+    /// Метод для входа в аккаунт
+    /// </summary>
     Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto);
+
+    /// <summary>
+    /// Метод для создания нового токена доступа
+    /// </summary>
+    Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenDto refreshTokenDto);
+
+    /// <summary>
+    /// Метод для создания нового токена обновления
+    /// </summary>
+    Task<AccessTokenResponseDto> CreateAccessTokenAsync(AccessTokenDto accessTokenDto);
+
+    /// <summary>
+    /// Метод для входа по токену
+    /// </summary>
+    Task<RefreshTokenToLoginResponseDto> LoginByRefreshTokenAsync(RefreshTokenToLoginDto refreshToken);
 }

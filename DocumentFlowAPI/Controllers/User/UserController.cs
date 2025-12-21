@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Security.Claims;
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.User.ViewModels;
@@ -62,7 +64,7 @@ public class UserController : ControllerBase
 
         await _userService.CreateNewUserAsync(userDto);
 
-        return Ok();
+        return Created();
     }
 
     /// <summary>

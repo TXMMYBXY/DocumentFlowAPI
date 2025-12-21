@@ -38,7 +38,7 @@ public abstract class GeneralService
 
         public CheckerParam(
             Exception exception, //исключение
-            Predicate<T[]> predicate, //условие
+            Predicate<T[]> predicate, //условие/триггер
             params T[]  target) //объект проверки
         {
             Exception = exception;
