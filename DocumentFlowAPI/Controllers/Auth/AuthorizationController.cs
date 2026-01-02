@@ -56,12 +56,9 @@ public class AuthorizationController : ControllerBase
     /// </summary>
     /// <param name="tokenViewModel"></param>
     /// <returns></returns>
-    [Authorize]
     [HttpPost("access")]
     public async Task<ActionResult<AccessTokenResponseViewModel>> AccessToken([FromBody] AccessTokenViewModel tokenViewModel)
     {
-        tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
         var tokenDto = _mapper.Map<AccessTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.CreateAccessTokenAsync(tokenDto);
         var tokenResponseViewModel = _mapper.Map<AccessTokenResponseViewModel>(tokenResponseDto);
