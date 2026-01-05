@@ -61,7 +61,7 @@ public class JwtService : IJwtService
         {
             _RevokeToken(targetToken);
         }
-        //BUG: Здесь при установке времени в 1 минуту клиентское приложение падает
+
         var refreshToken = new RefreshToken
         {
             Token = _GenerateSecret(),
