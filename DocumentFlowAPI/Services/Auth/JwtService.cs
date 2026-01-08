@@ -70,16 +70,19 @@ public class JwtService : IJwtService
         {
             _RevokeToken(targetToken);
         }
-        //BUG: Здесь при установке времени в 1 минуту клиентское приложение падает
+
+        var secretKey = _GenerateSecretLine();
         var refreshToken = new RefreshToken
         {
-            Token = _refreshTokenHashser.Hash(_GenerateSecretLine()),
+            Token = _refreshTokenHashser.Hash(secretKey),
             UserId = userId,
             ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenSettings.ExpiresDays)//FIXME:AddMinutes -> AddDays
         };
 
         await _tokenRepository.CreateRefreshTokenAsync(refreshToken);
         await _tokenRepository.SaveChangesAsync();
+
+        refreshToken.Token = secretKey;
 
         return refreshToken;
     }
