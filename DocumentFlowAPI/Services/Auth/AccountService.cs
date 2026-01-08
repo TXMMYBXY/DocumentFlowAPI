@@ -18,19 +18,22 @@ public class AccountService : GeneralService, IAccountService
     private readonly ITokenRepository _tokenRepository;
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
+    private readonly IRefreshTokenHasher _refreshTokenHasher;
 
     public AccountService(
         IMapper mapper,
         IUserRepository userRepository,
         ITokenRepository tokenRepository,
         IJwtService jwtService,
-        IOptions<JwtSettings> jwtSettings)
+        IOptions<JwtSettings> jwtSettings,
+        IRefreshTokenHasher refreshTokenHasher)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _tokenRepository = tokenRepository;
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
+        _refreshTokenHasher = refreshTokenHasher;
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto)
@@ -48,7 +51,6 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheck(new CheckerParam<PasswordVerificationResult>(new ArgumentException("Incorrect password"),
             x => x[0] != PasswordVerificationResult.Success, result));
 
-        // var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
 
         return new LoginResponseDto
         {
@@ -96,7 +98,7 @@ public class AccountService : GeneralService, IAccountService
 
     public async Task<RefreshTokenToLoginResponseDto> LoginByRefreshTokenAsync(RefreshTokenToLoginDto refreshToken)
     {
-        var token = await _tokenRepository.GetRefreshTokenByValueAsync(refreshToken.RefreshToken);
+        var token = await _tokenRepository.GetRefreshTokenByValueAsync(_refreshTokenHasher.Hash(refreshToken.RefreshToken));
 
         Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
             x => token == null));
