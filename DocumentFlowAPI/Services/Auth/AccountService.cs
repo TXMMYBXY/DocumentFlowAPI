@@ -103,18 +103,11 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
             x => token == null));
 
-        var newToken = new RefreshTokenToLoginResponseDto
+        var response = new RefreshTokenToLoginResponseDto
         {
             IsAllowed = true
         };
 
-        if (token.ExpiresAt.Value.Day - DateTime.UtcNow.Day < 1)
-        {
-            var createdToken = CreateRefreshTokenAsync(_mapper.Map<RefreshTokenDto>(token));
-            
-            newToken.RefreshToken = _mapper.Map<RefreshToken>(createdToken);
-        }
-
-        return newToken;
+        return response;
     }
 }

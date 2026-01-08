@@ -39,11 +39,10 @@ public class AuthorizationController : ControllerBase
     /// </summary>
     /// <param name="tokenViewModel">Старый рефреш токен</param>
     /// <returns></returns>
-    [Authorize]
     [HttpPost("refresh")]
     public async Task<ActionResult<RefreshTokenResponseViewModel>> RefreshToken([FromBody] RefreshTokenRequestViewModel tokenViewModel)
     {
-        tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        // tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         var tokenDto = _mapper.Map<RefreshTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.CreateRefreshTokenAsync(tokenDto);
@@ -56,12 +55,9 @@ public class AuthorizationController : ControllerBase
     /// </summary>
     /// <param name="tokenViewModel"></param>
     /// <returns></returns>
-    [Authorize]
     [HttpPost("access")]
     public async Task<ActionResult<AccessTokenResponseViewModel>> AccessToken([FromBody] AccessTokenViewModel tokenViewModel)
     {
-        tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
         var tokenDto = _mapper.Map<AccessTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.CreateAccessTokenAsync(tokenDto);
         var tokenResponseViewModel = _mapper.Map<AccessTokenResponseViewModel>(tokenResponseDto);
