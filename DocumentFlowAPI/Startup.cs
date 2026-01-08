@@ -1,4 +1,5 @@
 using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
@@ -33,9 +34,11 @@ public class Startup
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IJwtService, JwtService>();
-        services.AddHttpContextAccessor();
         services.AddScoped<ITokenRepository, TokenRepository>();
-        
+        services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
+        services.AddHttpContextAccessor();
+
+        services.Configure<RefreshTokenSettings>(Configuration.GetSection(nameof(RefreshTokenSettings)));        
 
         //Добавляем авторизацию
         services.AddAuth(Configuration);

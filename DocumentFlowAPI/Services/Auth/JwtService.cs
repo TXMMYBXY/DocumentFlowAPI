@@ -8,18 +8,27 @@ using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace DocumentFlowAPI.Services.Auth;
 
 public class JwtService : IJwtService
 {
     private readonly JwtSettings _jwtSettings;
+    private readonly RefreshTokenSettings _refreshTokenSettings;
     private readonly ITokenRepository _tokenRepository;
+    private readonly IRefreshTokenHasher _refreshTokenHashser;
 
-    public JwtService(IOptions<JwtSettings> jwtSettings, ITokenRepository tokenRepository)
+    public JwtService(
+        IOptions<JwtSettings> jwtSettings,
+        IOptions<RefreshTokenSettings> refreshTokenSettings,
+        ITokenRepository tokenRepository,
+        IRefreshTokenHasher refreshTokenHasher)
     {
         _jwtSettings = jwtSettings.Value;
+        _refreshTokenSettings = refreshTokenSettings.Value;
         _tokenRepository = tokenRepository;
+        _refreshTokenHashser = refreshTokenHasher;
     }
 
     public string GenerateAccessToken(Models.User user)
@@ -64,9 +73,9 @@ public class JwtService : IJwtService
         //BUG: Здесь при установке времени в 1 минуту клиентское приложение падает
         var refreshToken = new RefreshToken
         {
-            Token = _GenerateSecret(),
+            Token = _refreshTokenHashser.Hash(_GenerateSecretLine()),
             UserId = userId,
-            ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.ExpiresDays)//FIXME:AddMinutes -> AddDays
+            ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenSettings.ExpiresDays)//FIXME:AddMinutes -> AddDays
         };
 
         await _tokenRepository.CreateRefreshTokenAsync(refreshToken);
@@ -79,23 +88,16 @@ public class JwtService : IJwtService
     {
         var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshToken.UserId);
 
-        return token.Token == refreshToken.Token;
+        return token.Token == _refreshTokenHashser.Hash(refreshToken.Token);
     }
 
     /// <summary>
     /// Метод для генерации посследовательности
     /// </summary>
-    private string _GenerateSecret()
+    private string _GenerateSecretLine()
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        var length = 31;
-        var secret = new char[length];
-        for (var i = 0; i < length; i++)
-        {
-            secret[i] = chars[random.Next(chars.Length)];
-        }
-        return new string(secret);
+        var bytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToBase64String(bytes);
     }
 
     /// <summary>
