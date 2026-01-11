@@ -44,7 +44,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
         UpdateFields(userModel,
             t => t.FullName,
             t => t.Email,
-            t => t.DepartmentId,
+            t => t.Department,
             t => t.RoleId);
         return userModel;
     }

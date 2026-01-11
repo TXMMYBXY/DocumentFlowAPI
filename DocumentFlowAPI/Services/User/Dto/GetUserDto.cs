@@ -9,6 +9,6 @@ public class GetUserDto
     public string? Email { get; set; }
     public string PasswordHash { get; set; }
     public bool IsActive { get; set; }
+    public string Department { get; set; }
     public virtual Role Role { get; set; }
-    public virtual Department Department { get; set; }
 }

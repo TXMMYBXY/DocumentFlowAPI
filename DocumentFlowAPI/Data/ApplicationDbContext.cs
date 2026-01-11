@@ -15,7 +15,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Statement> Statements { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<Department> Departments { get; set; }
     public DbSet<ContractTemplate> ContractTemplates { get; set; }
     public DbSet<StatementTemplate> StatementTemplates { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
