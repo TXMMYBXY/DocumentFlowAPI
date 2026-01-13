@@ -34,5 +34,10 @@ public interface IUserService
     /// </summary>
     Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto);
 
+    /// <summary>
+    /// Метод для смены статуса пользователя на противоположный
+    /// </summary>
+    Task<bool> ChangeUserStatusByIdAsync(int userId);
+
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных пользователей
 }

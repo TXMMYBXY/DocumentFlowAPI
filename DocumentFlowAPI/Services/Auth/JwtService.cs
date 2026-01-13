@@ -91,7 +91,7 @@ public class JwtService : IJwtService
     {
         var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshToken.UserId);
 
-        return token.Token == _refreshTokenHashser.Hash(refreshToken.Token);
+        return token.Token.Equals(_refreshTokenHashser.Hash(refreshToken.Token));
     }
 
     /// <summary>
@@ -116,6 +116,6 @@ public class JwtService : IJwtService
     {
         var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(accessTokenDto.UserId);
 
-        return token.Token == accessTokenDto.RefreshToken;
+        return token.Token.Equals(_refreshTokenHashser.Hash(accessTokenDto.RefreshToken));
     }
 }

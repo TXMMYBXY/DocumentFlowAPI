@@ -2,6 +2,7 @@ using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DocumentFlowAPI.Repositories.User;
 
@@ -17,6 +18,11 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
     public async Task CreateNewUserAsync(Models.User userModel)
     {
         await _dbContext.Users.AddAsync(userModel);
+    }
+
+    public void DeleteUser(Models.User user)
+    {
+        _dbContext.Users.Remove(user);
     }
 
     public async Task<Models.User> GetUserByIdAsync(int userId)

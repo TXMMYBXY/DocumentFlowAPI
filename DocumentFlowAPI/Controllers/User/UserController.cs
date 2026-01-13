@@ -102,4 +102,17 @@ public class UserController : ControllerBase
 
         return Ok();
     }
+
+    /// <summary>
+    /// Смена статуса пользователя
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpPatch("{userId}/change-status")]
+    public async Task<ActionResult<bool>> ChangeUserStatusByidAsync([FromRoute] int userId)
+    {
+        var status = await _userService.ChangeUserStatusByIdAsync(userId);
+
+        return Ok(status);
+    }
 }

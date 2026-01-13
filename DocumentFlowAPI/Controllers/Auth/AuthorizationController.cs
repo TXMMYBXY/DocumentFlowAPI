@@ -1,11 +1,8 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
-using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Auth.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace DocumentFlowAPI.Controllers.Auth;
 
@@ -34,22 +31,22 @@ public class AuthorizationController : ControllerBase
 
         return Ok(loginViewModel);
     }
+
     /// <summary>
     /// Метод для обновления рефреш токена(сам генерирую)
     /// </summary>
     /// <param name="tokenViewModel">Старый рефреш токен</param>
-    /// <returns></returns>
+    /// <returns>Статус 200 и новый токен</returns>
     [HttpPost("refresh")]
     public async Task<ActionResult<RefreshTokenResponseViewModel>> RefreshToken([FromBody] RefreshTokenRequestViewModel tokenViewModel)
     {
-        // tokenViewModel.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
         var tokenDto = _mapper.Map<RefreshTokenDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.CreateRefreshTokenAsync(tokenDto);
         var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);
 
         return Ok(tokenResponseViewModel);
     }
+
     /// <summary>
     /// Метод для обновления токена доступа(у меня JWT)
     /// </summary>
@@ -65,6 +62,11 @@ public class AuthorizationController : ControllerBase
         return Ok(tokenResponseViewModel);
     }
 
+    /// <summary>
+    /// Метод для логина по рефреш-токену
+    /// </summary>
+    /// <param name="refreshToken"></param>
+    /// <returns></returns>
     [HttpPost("request-for-access")]
     public async Task<ActionResult<RefreshTokenToLoginResponseViewModel>> LoginByRefreshToken([FromBody] RefreshTokenToLoginViewModel refreshToken)
     {
