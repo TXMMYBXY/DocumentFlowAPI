@@ -13,10 +13,9 @@ public class User : EntityBase
     [Required]
     public string PasswordHash { get; set; }
     public bool IsActive { get; set; } = true;
+    [MaxLength(31)]
+    public string Department { get; set; }
     public int RoleId { get; set; }
     [ForeignKey(nameof(RoleId))]
     public virtual Role Role { get; set; }
-    public int DepartmentId { get; set; }
-    [ForeignKey(nameof(DepartmentId))]
-    public virtual Department Department { get; set; }
 }

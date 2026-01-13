@@ -21,6 +21,20 @@ public class UserService : GeneralService, IUserService
         _mapper = mapper;
         _jwtService = jwtService;
     }
+
+    public async Task<bool> ChangeUserStatusByIdAsync(int userId)
+    {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+
+        user.IsActive = !user.IsActive;
+
+        _userRepository.UpdateUserStatus(user);
+
+        await _userRepository.SaveChangesAsync();
+
+        return user.IsActive;
+    }
+
     /// <summary>
     /// Создает нового пользователя
     /// </summary>
@@ -50,9 +64,8 @@ public class UserService : GeneralService, IUserService
     {
         var user = await _userRepository.GetUserByIdAsync(userId);
 
-        user.IsActive = false;
 
-        _userRepository.UpdateUserStatus(user);
+        _userRepository.DeleteUser(user);
 
         await _userRepository.SaveChangesAsync();
     }
@@ -110,7 +123,7 @@ public class UserService : GeneralService, IUserService
     {
         user.FullName = userDto.FullName;
         user.Email = userDto.Email;
-        user.DepartmentId = userDto.DepartmentId;
+        user.Department = userDto.Department;
         user.RoleId = userDto.RoleId;
 
         return user;

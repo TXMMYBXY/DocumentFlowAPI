@@ -87,11 +87,8 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
             x => !isValid == true, refreshTokenModel));
 
-        var refreshToken = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshTokenDto.UserId);
         var token = await _jwtService.GenerateRefreshTokenAsync(refreshTokenDto.UserId);
         var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(token);
-
-        await _tokenRepository.SaveChangesAsync();
 
         return refreshTokenResponseDto;
     }

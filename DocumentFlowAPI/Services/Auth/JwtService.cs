@@ -42,8 +42,8 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.RoleId.ToString()),
+            new Claim("Department", user.Department.ToString()),
             new Claim("RoleId", user.RoleId.ToString()),
-            new Claim("DepartmentId", user.DepartmentId.ToString()),
             new Claim("IsActive", user.IsActive.ToString())
         };
 
@@ -91,7 +91,7 @@ public class JwtService : IJwtService
     {
         var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshToken.UserId);
 
-        return token.Token == _refreshTokenHashser.Hash(refreshToken.Token);
+        return token.Token.Equals(_refreshTokenHashser.Hash(refreshToken.Token));
     }
 
     /// <summary>
@@ -116,6 +116,6 @@ public class JwtService : IJwtService
     {
         var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(accessTokenDto.UserId);
 
-        return token.Token == accessTokenDto.RefreshToken;
+        return token.Token.Equals(_refreshTokenHashser.Hash(accessTokenDto.RefreshToken));
     }
 }

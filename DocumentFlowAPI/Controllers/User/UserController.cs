@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Security.Claims;
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.User.ViewModels;
@@ -41,12 +39,12 @@ public class UserController : ControllerBase
     /// <summary>
     /// Получение информации о пользователе по его Id
     /// </summary>
-    /// <param name="targetUserId"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet("{userId}/get-user-info")]
-    public async Task<ActionResult<GetUserViewModel>> GetUserByIdAsync([FromRoute] int targetUserId)
+    public async Task<ActionResult<GetUserViewModel>> GetUserByIdAsync([FromRoute] int userId)
     {
-        var userDto = await _userService.GetUserByIdAsync(targetUserId);
+        var userDto = await _userService.GetUserByIdAsync(userId);
         var userViewModel = _mapper.Map<GetUserViewModel>(userDto);
 
         return Ok(userViewModel);
@@ -70,15 +68,15 @@ public class UserController : ControllerBase
     /// <summary>
     /// Обновление информации о пользователе
     /// </summary>
-    /// <param name="targetUserId"></param>
+    /// <param name="userId"></param>
     /// <param name="userViewModel"></param>
     /// <returns></returns>
     [HttpPatch("{userId}/update-user-info")]
-    public async Task<ActionResult> UpdateUserAsync([FromRoute] int targetUserId, [FromBody] UpdateUserViewModel userViewModel)
+    public async Task<ActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
     {
         var userDto = _mapper.Map<UpdateUserDto>(userViewModel);
 
-        await _userService.UpdateUserAsync(targetUserId, userDto);
+        await _userService.UpdateUserAsync(userId, userDto);
 
         return Ok();
     }
@@ -103,5 +101,18 @@ public class UserController : ControllerBase
         await _userService.DeleteUserAsync(userViewModel.UserId);
 
         return Ok();
+    }
+
+    /// <summary>
+    /// Смена статуса пользователя
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpPatch("{userId}/change-status")]
+    public async Task<ActionResult<bool>> ChangeUserStatusByidAsync([FromRoute] int userId)
+    {
+        var status = await _userService.ChangeUserStatusByIdAsync(userId);
+
+        return Ok(status);
     }
 }
