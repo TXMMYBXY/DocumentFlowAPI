@@ -12,6 +12,7 @@ public class UserService : GeneralService, IUserService
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
+    
     public UserService(
         IUserRepository userRepository,
         IMapper mapper,

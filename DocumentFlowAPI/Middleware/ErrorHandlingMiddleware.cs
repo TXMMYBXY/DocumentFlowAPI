@@ -41,10 +41,10 @@ public class ErrorHandlingMiddleware
             errorCode = HttpStatusCode.InternalServerError;
             message = ex.Message;
         }
-        await HandleExceptionAsync(context, message, errorCode);
+        await _HandleExceptionAsync(context, message, errorCode);
     }
     
-    private static async Task HandleExceptionAsync(HttpContext context, string message, HttpStatusCode statusCode)
+    private static async Task _HandleExceptionAsync(HttpContext context, string message, HttpStatusCode statusCode)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;

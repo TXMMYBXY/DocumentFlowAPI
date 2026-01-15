@@ -33,6 +33,7 @@ public interface IUserRepository : IBaseRepository<Models.User>
     /// Проверяет наличие пользователя в таблице по почте
     /// </summary>
     Task<bool> IsUserAlreadyExists(string email);
+    
     /// <summary>
     /// Удаляет запись о пользователе
     /// </summary>
