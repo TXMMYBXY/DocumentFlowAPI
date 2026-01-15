@@ -87,6 +87,13 @@ public class JwtService : IJwtService
         return refreshToken;
     }
 
+    public async Task<bool> ValidateAccessTokenAsync(AccessTokenDto accessTokenDto)
+    {
+        var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(accessTokenDto.UserId);
+
+        return token.Token.Equals(_refreshTokenHashser.Hash(accessTokenDto.RefreshToken));
+    }
+    
     public async Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken)
     {
         var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshToken.UserId);
@@ -112,10 +119,4 @@ public class JwtService : IJwtService
         _tokenRepository.DeleteRefreshToken(refreshToken);
     }
 
-    public async Task<bool> ValidateAccessTokenAsync(AccessTokenDto accessTokenDto)
-    {
-        var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(accessTokenDto.UserId);
-
-        return token.Token.Equals(_refreshTokenHashser.Hash(accessTokenDto.RefreshToken));
-    }
 }

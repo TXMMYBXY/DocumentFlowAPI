@@ -36,6 +36,10 @@ public abstract class GeneralService
         public bool Predicate { get; set; }
         public T[] Target { get; set; }
 
+        public CheckerParam()
+        {
+
+        }
         public CheckerParam(
             Exception exception, //исключение
             Predicate<T[]> predicate, //условие/триггер
@@ -44,10 +48,6 @@ public abstract class GeneralService
             Exception = exception;
             Predicate = predicate(target);
             Target = target;
-        }
-        public CheckerParam()
-        {
-
         }
     }
     // Пример реализации
