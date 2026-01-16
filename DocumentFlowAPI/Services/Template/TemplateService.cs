@@ -15,6 +15,17 @@ public class TemplateService : ITemplateService
         _templateRepository = templateRepository;
     }
 
+    public async Task ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
+    {
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+
+        template.IsActive = false;
+
+        _templateRepository.UpdateTemplateStatus(template);
+
+        await _templateRepository.SaveChangesAsync();
+    }
+
     public async Task CreateTemplateAsync<T>(CreateTemplateDto templateDto) where T : Models.Template, new()
     {
         T templateModel = new T
@@ -26,7 +37,7 @@ public class TemplateService : ITemplateService
             IsActive = templateDto.IsActive
         };
 
-        await _templateRepository.CreateTemplateAsync<T>(templateModel);
+        await _templateRepository.CreateTemplateAsync(templateModel);
         await _templateRepository.SaveChangesAsync();
     }
 
@@ -34,11 +45,7 @@ public class TemplateService : ITemplateService
     {
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
 
-        template.IsActive = false;
-
-        _templateRepository.UpdateTemplateStatus<T>(template);
-
-        await _templateRepository.SaveChangesAsync();
+        _templateRepository.DeleteTemplate<T>(template);
     }
 
     public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template
@@ -60,7 +67,7 @@ public class TemplateService : ITemplateService
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
         var templateModel = _UpdateTemplate(template, templateDto);
 
-        _templateRepository.UpdateTemplate<T>(templateModel);
+        _templateRepository.UpdateTemplate(templateModel);
 
         await _templateRepository.SaveChangesAsync();
     }

@@ -48,4 +48,9 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
             t => t.IsActive);
         return template;
     }
+
+    public void DeleteTemplate<T>(T template) where T : Models.Template
+    {
+        _dbContext.Set<T>().Remove(template);
+    }
 }
