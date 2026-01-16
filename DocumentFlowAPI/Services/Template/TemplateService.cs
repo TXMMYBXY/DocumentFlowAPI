@@ -15,15 +15,17 @@ public class TemplateService : ITemplateService
         _templateRepository = templateRepository;
     }
 
-    public async Task ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
+    public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
     {
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
 
-        template.IsActive = false;
+        template.IsActive = !template.IsActive;
 
         _templateRepository.UpdateTemplateStatus(template);
 
         await _templateRepository.SaveChangesAsync();
+
+        return template.IsActive;
     }
 
     public async Task CreateTemplateAsync<T>(CreateTemplateDto templateDto) where T : Models.Template, new()

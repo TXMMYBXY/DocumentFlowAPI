@@ -60,6 +60,7 @@ public class StatementTemplateController : ControllerBase
 
         return Ok();
     }
+    
     [AuthorizeByRoleId((int)Permissions.Boss)]
     [HttpPatch("{templateId}/change-template-status")]
     public async Task<ActionResult> ChangeTemplateStatus([FromRoute] int templateId)

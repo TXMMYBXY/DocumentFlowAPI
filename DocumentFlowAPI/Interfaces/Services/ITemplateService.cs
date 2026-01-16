@@ -30,7 +30,7 @@ public interface ITemplateService
     /// </summary>
     Task DeleteTemplateAsync<T>(int templateId) where T : Template;
 
-    Task ChangeTemplateStatusById<T>(int templateId) where T : Template;
+    Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Template;
 
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных шаблонов
 
