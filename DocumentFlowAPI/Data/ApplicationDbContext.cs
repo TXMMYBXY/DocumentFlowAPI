@@ -17,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<ContractTemplate> ContractTemplates { get; set; }
     public DbSet<StatementTemplate> StatementTemplates { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<TaskModel> Tasks { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
