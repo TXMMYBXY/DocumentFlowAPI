@@ -11,7 +11,6 @@ public class TemplateMappingProfile : Profile
         //Profiles for GET
 
         CreateMap<GetTemplateViewModel, GetTemplateDto>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ReverseMap();
 
         CreateMap<Models.Template, GetTemplateDto>().ReverseMap();

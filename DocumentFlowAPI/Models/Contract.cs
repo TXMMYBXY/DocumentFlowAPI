@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DocumentFlowAPI.Models;
 
-public abstract class Document : EntityBase
+public class Contract : EntityBase
 {
     [Required]
     public string Title { get; set; }
@@ -12,4 +12,14 @@ public abstract class Document : EntityBase
     public int CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DocumentStatus Status { get; set; } = DocumentStatus.Draft;
+    public int TemplateId { get; set; }
+    
+    [ForeignKey(nameof(ContractTemplate.Id))]
+    public virtual ContractTemplate Template { get; set; }
+}
+public enum DocumentStatus
+{
+    Draft,
+    Signed,
+    Archived
 }
