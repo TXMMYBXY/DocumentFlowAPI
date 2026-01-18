@@ -5,6 +5,6 @@ namespace DocumentFlowAPI.Interfaces.Repositories;
 
 public interface ITaskRepository : IBaseRepository<TaskModel>
 {
-    Task<TaskModel?> GetTaskByIdAsync(int taskId);
+    Task<TaskModel?> GetTaskByIdAsync(Guid taskId);
     Task<List<TaskModel>> GetAllTasks();
 }

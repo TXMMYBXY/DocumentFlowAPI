@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
@@ -19,16 +20,14 @@ public class TaskService : ITaskService
 
     public async Task<bool> CancelTaskAsync(Guid taskId, TaskCancelDto dto)
     {
-        var task = await _taskRepository.GetTaskByIdAsync(BitConverter.ToInt32(taskId.ToByteArray()));
+        var task = await _taskRepository.GetTaskByIdAsync(taskId);
 
         if (task == null)
             return false;
 
-        // Проверка пользователя (если используется)
         if (task.UserId != dto.UserId)
             return false;
 
-        // Можно отменять только Pending
         if (task.Status != Models.TaskStatus.Pending)
             return false;
 
@@ -44,14 +43,42 @@ public class TaskService : ITaskService
         return true;
     }
 
-    public Task<TaskResultDto> CreateTaskAsync(CreateTaskRequestDto dto)
+    public async Task<TaskResultDto> CreateTaskAsync(CreateTaskRequestDto dto)
     {
-        throw new NotImplementedException();
+        var templateDataJson = JsonSerializer.Serialize(dto.Data);
+
+        var task = new TaskModel
+        {
+            TaskId = Guid.NewGuid(),
+            TemplateId = dto.TemplateId,
+            TemplateType = dto.TemplateType,
+            TemplateData = templateDataJson,
+
+            Status = Models.TaskStatus.Pending,
+            Priority = dto.Priority,
+
+            UserId = dto.UserId,
+
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // 4. Сохранение
+        await _taskRepository.AddAsync(task);
+        await _taskRepository.SaveChangesAsync();
+
+        // 5. Результат
+        return new TaskResultDto
+        {
+            TaskId = task.TaskId,
+            Status = task.Status,
+            Message = "Задача успешно создана"
+        };
     }
 
     public async Task<TaskDetailsDto?> GetTaskByIdAsync(Guid taskId)
     {
-        var task = await _taskRepository.GetTaskByIdAsync(BitConverter.ToInt32(taskId.ToByteArray()));
+        var task = await _taskRepository.GetTaskByIdAsync(taskId);
         var taskDto = _mapper.Map<TaskDetailsDto>(task);
 
         return taskDto;
@@ -59,7 +86,7 @@ public class TaskService : ITaskService
 
     public async Task<bool> RetryTaskAsync(Guid taskId, int? userId)
     {
-        var task = await _taskRepository.GetTaskByIdAsync(BitConverter.ToInt32(taskId.ToByteArray()));
+        var task = await _taskRepository.GetTaskByIdAsync(taskId);
 
         if (task == null)
             return false;

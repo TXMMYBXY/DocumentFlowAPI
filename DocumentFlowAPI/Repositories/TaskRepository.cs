@@ -20,9 +20,9 @@ public class TaskRepository : BaseRepository<TaskModel>, ITaskRepository
         return await _dbContext.Tasks.ToListAsync();
     }
 
-    public async Task<TaskModel?> GetTaskByIdAsync(int taskId)
+    public async Task<TaskModel?> GetTaskByIdAsync(Guid taskId)
     {
-        return await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+        return await _dbContext.Tasks.FirstOrDefaultAsync(t => t.TaskId == taskId);
     }
 
 }
