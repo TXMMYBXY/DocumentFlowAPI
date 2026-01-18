@@ -8,8 +8,11 @@ using DocumentFlowAPI.Repositories;
 using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Repositories.User;
 using DocumentFlowAPI.Services.Auth;
+using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.User;
+using DocumentFlowAPI.Services.WorkerTask;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -36,6 +39,10 @@ public class Startup
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
+        services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<IWorkerTaskService, WorkerTaskService>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddHttpContextAccessor();
 
         services.Configure<RefreshTokenSettings>(Configuration.GetSection(nameof(RefreshTokenSettings)));        

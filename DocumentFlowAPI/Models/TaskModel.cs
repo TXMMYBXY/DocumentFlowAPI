@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DocumentFlowAPI.Models;
@@ -15,7 +14,7 @@ public class TaskModel : EntityBase
     [Required]
     public string TemplateData { get; set; } = "{}";
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public TaskStatus Status { get; set; } = TaskStatus.Pending; // Pending, Processing, Completed, Failed
+    public TaskStatus Status { get; set; } = TaskStatus.Pending;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? StartedAt { get; set; }
@@ -25,12 +24,12 @@ public class TaskModel : EntityBase
     public string? ErrorMessage { get; set; }
     public int? UserId { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public Priority Priority{ get; set; } = Priority.Low;
+    public TaskPriority Priority{ get; set; } = TaskPriority.Low;
     // Для повторных попыток
     public int RetryCount { get; set; } = 0;
     public DateTime? LastAttemptAt { get; set; }
 }
-public enum Priority
+public enum TaskPriority
 {
     Low,
     Normal,
@@ -50,4 +49,3 @@ public enum TemplateType
     Statement,
     Contract
 }
-
