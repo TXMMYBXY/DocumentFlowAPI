@@ -9,7 +9,7 @@ namespace DocumentFlowAPI.Repositories;
 public class TaskRepository : BaseRepository<TaskModel>, ITaskRepository
 {
     private readonly ApplicationDbContext _dbContext;
-    
+
     public TaskRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -25,4 +25,8 @@ public class TaskRepository : BaseRepository<TaskModel>, ITaskRepository
         return await _dbContext.Tasks.FirstOrDefaultAsync(t => t.TaskId == taskId);
     }
 
+    public async Task<TaskModel?> GetTaskByStatusPendingAsync()
+    {
+        return await _dbContext.Tasks.FirstOrDefaultAsync(t => t.Status == Models.TaskStatus.Pending);
+    }
 }

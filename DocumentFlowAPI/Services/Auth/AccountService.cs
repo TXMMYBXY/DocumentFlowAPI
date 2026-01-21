@@ -40,15 +40,15 @@ public class AccountService : GeneralService, IAccountService
     {
         var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Email);
 
-        Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("Incorrect login"),
+        Checker.UniversalCheckException(new CheckerParam<Models.User>(new ArgumentException("Incorrect login"),
             x => x[0] == null, user));
 
-        Checker.UniversalCheck(new CheckerParam<Models.User>(new ArgumentException("User was deleted"),
+        Checker.UniversalCheckException(new CheckerParam<Models.User>(new ArgumentException("User was deleted"),
             x => !x[0].IsActive, user));
 
         var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
 
-        Checker.UniversalCheck(new CheckerParam<PasswordVerificationResult>(new ArgumentException("Incorrect password"),
+        Checker.UniversalCheckException(new CheckerParam<PasswordVerificationResult>(new ArgumentException("Incorrect password"),
             x => x[0] != PasswordVerificationResult.Success, result));
 
 
@@ -65,7 +65,7 @@ public class AccountService : GeneralService, IAccountService
     {
         var isValid = await _jwtService.ValidateAccessTokenAsync(accessTokenDto);
 
-        Checker.UniversalCheck(new CheckerParam<AccessTokenDto>(new NullReferenceException("Incorrect token"),
+        Checker.UniversalCheckException(new CheckerParam<AccessTokenDto>(new NullReferenceException("Incorrect token"),
             x => !isValid == true, accessTokenDto));
 
         var user = await _userRepository.GetUserByIdAsync(accessTokenDto.UserId);
@@ -84,7 +84,7 @@ public class AccountService : GeneralService, IAccountService
         var refreshTokenModel = _mapper.Map<RefreshToken>(refreshTokenDto);
         var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshTokenModel);
 
-        Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
+        Checker.UniversalCheckException(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
             x => !isValid == true, refreshTokenModel));
 
         var token = await _jwtService.GenerateRefreshTokenAsync(refreshTokenDto.UserId);
@@ -97,7 +97,7 @@ public class AccountService : GeneralService, IAccountService
     {
         var token = await _tokenRepository.GetRefreshTokenByValueAsync(_refreshTokenHasher.Hash(refreshToken.RefreshToken));
 
-        Checker.UniversalCheck(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
+        Checker.UniversalCheckException(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
             x => token == null));
 
         var response = new RefreshTokenToLoginResponseDto

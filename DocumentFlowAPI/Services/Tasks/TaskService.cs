@@ -3,11 +3,12 @@ using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.Tasks.Dto;
 
 namespace DocumentFlowAPI.Services.Tasks;
 
-public class TaskService : ITaskService
+public class TaskService : GeneralService, ITaskService
 {
     private readonly IMapper _mapper;
     private readonly ITaskRepository _taskRepository;
@@ -22,13 +23,9 @@ public class TaskService : ITaskService
     {
         var task = await _taskRepository.GetTaskByIdAsync(taskId);
 
-        if (task == null)
-            return false;
-
-        if (task.UserId != dto.UserId)
-            return false;
-
-        if (task.Status != Models.TaskStatus.Pending)
+        if (task == null || 
+            task.UserId != dto.UserId ||
+            task.Status != Models.TaskStatus.Pending)
             return false;
 
         task.Status = Models.TaskStatus.Failed;
@@ -47,27 +44,13 @@ public class TaskService : ITaskService
     {
         var templateDataJson = JsonSerializer.Serialize(dto.Data);
 
-        var task = new TaskModel
-        {
-            TaskId = Guid.NewGuid(),
-            TemplateId = dto.TemplateId,
-            TemplateType = dto.TemplateType,
-            TemplateData = templateDataJson,
+        var task = _mapper.Map<TaskModel>(dto);
 
-            Status = Models.TaskStatus.Pending,
-            Priority = dto.Priority,
+        task.TemplateData = templateDataJson;
 
-            UserId = dto.UserId,
-
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        // 4. Сохранение
         await _taskRepository.AddAsync(task);
         await _taskRepository.SaveChangesAsync();
 
-        // 5. Результат
         return new TaskResultDto
         {
             TaskId = task.TaskId,
@@ -97,16 +80,7 @@ public class TaskService : ITaskService
         if (task.Status != Models.TaskStatus.Failed)
             return false;
 
-        // 3. Сброс состояния
-        task.Status = Models.TaskStatus.Pending;
-        task.ErrorMessage = null;
-        task.ResultFilePath = null;
-        task.StartedAt = null;
-        task.CompletedAt = null;
-        task.UpdatedAt = DateTime.UtcNow;
-
-        // 4. (опционально) повысить приоритет
-        task.Priority = TaskPriority.Normal;
+        _RetryTaskFillFields(task);
 
         await _taskRepository.SaveChangesAsync();
         return true;
@@ -118,5 +92,16 @@ public class TaskService : ITaskService
         var taskListDto = _mapper.Map<List<TaskDetailsDto>>(taskList);
 
         return taskListDto;
+    }
+
+    private void _RetryTaskFillFields(TaskModel task)
+    {
+        task.Status = Models.TaskStatus.Pending;
+        task.ErrorMessage = null;
+        task.ResultFilePath = null;
+        task.StartedAt = null;
+        task.CompletedAt = null;
+        task.UpdatedAt = DateTime.UtcNow;
+        task.Priority = TaskPriority.Normal;
     }
 }

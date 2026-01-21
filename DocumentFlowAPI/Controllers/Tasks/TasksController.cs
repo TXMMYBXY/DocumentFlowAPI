@@ -10,7 +10,6 @@ namespace DocumentFlowAPI.Controllers.Tasks;
 
 [ApiController]
 [Route("api/tasks")]
-[Authorize]
 public class TaskController : ControllerBase
 {
     private readonly IMapper _mapper;

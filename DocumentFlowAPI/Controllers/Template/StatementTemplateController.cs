@@ -11,7 +11,6 @@ namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
 [Route("api/statement-templates")]
-[Authorize]
 public class StatementTemplateController : ControllerBase
 {
     private readonly IMapper _mapper;

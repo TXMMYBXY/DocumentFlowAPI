@@ -1,5 +1,6 @@
 using DocumentFlowAPI;
 using DocumentFlowAPI.Services.User;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,10 @@ app.UseCors("AllowAll");
 // Конфигурируем pipeline
 startup.Configure(app, app.Environment);
 
-app.MapControllers(); // ✅ для API (вместо MapControllerRoute)
+app.MapSwagger("/openapi/{documentName}.json");
+app.MapScalarApiReference();
+
+app.MapControllers();
 
 UserIdentity.Initialize(app.Services);
 

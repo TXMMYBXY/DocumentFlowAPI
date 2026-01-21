@@ -61,7 +61,7 @@ public class Startup
 
         //Регистрация AutoMapper
         services.AddAutoMapper(typeof(Program));
-
+        
         //Регистрация Swagger
         services.AddEndpointsApiExplorer(); // важно: добавляет описание эндпоинтов для Swagger
         services.AddSwaggerGen(c =>
@@ -108,10 +108,11 @@ public class Startup
 
         if (env.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            
+
         }
 
+    
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

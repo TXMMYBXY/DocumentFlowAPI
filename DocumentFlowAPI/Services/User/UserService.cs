@@ -12,7 +12,7 @@ public class UserService : GeneralService, IUserService
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
-    
+
     public UserService(
         IUserRepository userRepository,
         IMapper mapper,
@@ -45,7 +45,7 @@ public class UserService : GeneralService, IUserService
         var userModel = _mapper.Map<Models.User>(newUserDto);
         var userExists = await _userRepository.IsUserAlreadyExists(newUserDto.Email);
 
-        Checker.UniversalCheck(new CheckerParam<bool>(new ArgumentException("Login already in use"),
+        Checker.UniversalCheckException(new CheckerParam<bool>(new ArgumentException("Login already in use"),
             x => x[0], userExists));
 
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, newUserDto.PasswordHash);
