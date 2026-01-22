@@ -1,6 +1,5 @@
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Services;
-using DocumentFlowAPI.Services.Tasks.Dto;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +7,7 @@ namespace DocumentFlowAPI.Controllers.Worker;
 
 [ApiController]
 [Route("api/internal/tasks/worker")]
+[WorkerAuthorize]
 public class WorkerController : ControllerBase
 {
     public readonly IMapper _mapper;

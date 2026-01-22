@@ -46,9 +46,11 @@ public class Startup
         services.AddHttpContextAccessor();
 
         services.Configure<RefreshTokenSettings>(Configuration.GetSection(nameof(RefreshTokenSettings)));        
+        services.Configure<WorkerSettings>(Configuration.GetSection(nameof(WorkerSettings)));
 
         //Добавляем авторизацию
         services.AddAuth(Configuration);
+        services.AddWorkerAuth(Configuration);
 
         //Регистрация EF Core
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -105,13 +107,6 @@ public class Startup
     {
         // Настройка pipeline для разработки
         app.UseErrorHandling();
-
-        if (env.IsDevelopment())
-        {
-            
-
-        }
-
     
         app.UseHttpsRedirection();
         app.UseAuthentication();
