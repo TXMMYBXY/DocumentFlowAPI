@@ -2,7 +2,7 @@
   "files.exclude": {
   "**/Data": true,
   "**/Base": true,
-  "**/Middleware": true,
+  "**/Middleware": false,
   "**/bin": true,
   "**/Migrations": true,
   "**/obj": true,

@@ -99,4 +99,13 @@ public class ContractTemplateController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("{templateId}/extract-fields")]
+    public async Task<ActionResult<TemplateFieldInfoViewModel>> ExctractFields([FromRoute] int templateId)
+    {
+        var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<ContractTemplate>(templateId);
+        var resultViewModel = _mapper.Map<TemplateFieldInfoViewModel>(resultDto);
+
+        return Ok();
+    }
 }

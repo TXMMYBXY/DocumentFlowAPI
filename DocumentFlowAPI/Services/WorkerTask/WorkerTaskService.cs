@@ -71,5 +71,7 @@ public class WorkerTaskService : IWorkerTaskService
         task.RetryCount = dto.Progress;
 
         _taskRepository.Update(task);
+        
+        await _taskRepository.SaveChangesAsync();
     }
 }

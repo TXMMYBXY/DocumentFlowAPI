@@ -4,7 +4,6 @@ using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;

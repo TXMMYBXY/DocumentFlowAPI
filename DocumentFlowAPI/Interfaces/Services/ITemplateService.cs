@@ -1,5 +1,6 @@
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template.Dto;
+using DocumentFlowAPI.Services.WorkerTask.Dto;
 
 namespace DocumentFlowAPI.Interfaces.Services;
 
@@ -26,11 +27,19 @@ public interface ITemplateService
     Task UpdateTemplateAsync<T>(int templateId, UpdateTemplateDto templateDto) where T : Template, new();
 
     /// <summary>
-    /// Метод для смены статуса шаблона
+    /// Метод для удаления шаблона
     /// </summary>
     Task DeleteTemplateAsync<T>(int templateId) where T : Template;
 
+    /// <summary>
+    /// Метод для смены статуса шаблона
+    /// </summary>
     Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Template;
+
+    /// <summary>
+    /// Метод для извелчения полей из шаблона
+    /// </summary>
+    Task<IReadOnlyList<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Template;
 
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных шаблонов
 

@@ -2,6 +2,7 @@ using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.Template.Dto;
+using DocumentFlowAPI.Services.WorkerTask.Dto;
 
 namespace DocumentFlowAPI.Services.Template;
 
@@ -9,10 +10,16 @@ public class TemplateService : ITemplateService
 {
     private readonly IMapper _mapper;
     private readonly ITemplateRepository _templateRepository;
-    public TemplateService(IMapper mapper, ITemplateRepository templateRepository)
+    private readonly IFieldExtractorService _fieldExtractorService;
+
+    public TemplateService(
+        IMapper mapper,
+        ITemplateRepository templateRepository,
+        IFieldExtractorService fieldExtractorService)
     {
         _mapper = mapper;
         _templateRepository = templateRepository;
+        _fieldExtractorService = fieldExtractorService;
     }
 
     public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
@@ -48,6 +55,17 @@ public class TemplateService : ITemplateService
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
 
         _templateRepository.DeleteTemplate<T>(template);
+    }
+
+    public async Task<IReadOnlyList<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
+    {
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+        var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
+
+
+
+        return fieldsDto;
+
     }
 
     public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template

@@ -1,5 +1,7 @@
 using AutoMapper;
+using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +14,16 @@ public class WorkerController : ControllerBase
 {
     public readonly IMapper _mapper;
     public readonly IWorkerTaskService _workerTaskService;
+    public readonly ITemplateService _templateService;
 
-    public WorkerController(IMapper mapper, IWorkerTaskService workerTaskService)
+    public WorkerController(
+        IMapper mapper,
+        IWorkerTaskService workerTaskService,
+        ITemplateService templateService)
     {
         _mapper = mapper;
         _workerTaskService = workerTaskService;
+        _templateService = templateService;
     }
 
     /// <summary>
@@ -74,6 +81,24 @@ public class WorkerController : ControllerBase
         await _workerTaskService.UpdateProgressAsync(taskId, workerTaskProgressDto);
 
         return Ok();
+    }
+
+    [HttpGet("{templateId}/get-statement-template")]
+    public async Task<ActionResult<GetTemplateViewModel>> GetStatementTemplateById([FromRoute] int templateId)
+    {
+        var templateDto = await _templateService.GetTemplateByIdAsync<StatementTemplate>(templateId);
+        var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
+
+        return Ok(templateViewModel);
+    }
+
+    [HttpGet("{templateId}/get-contract-template")]
+    public async Task<ActionResult<GetTemplateViewModel>> GetContractTemplateById([FromRoute] int templateId)
+    {
+        var templateDto = await _templateService.GetTemplateByIdAsync<ContractTemplate>(templateId);
+        var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
+
+        return Ok(templateViewModel);
     }
     
 }
