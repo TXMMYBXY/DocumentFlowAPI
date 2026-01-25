@@ -42,7 +42,7 @@ public class Startup
         services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IWorkerTaskService, WorkerTaskService>();
         services.AddScoped<ITaskRepository, TaskRepository>();
-        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<IFieldExtractorService, FieldExtractorService>();
         services.AddHttpContextAccessor();
 
         services.Configure<RefreshTokenSettings>(Configuration.GetSection(nameof(RefreshTokenSettings)));        

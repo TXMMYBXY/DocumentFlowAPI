@@ -62,10 +62,7 @@ public class TemplateService : ITemplateService
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
         var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
 
-
-
         return fieldsDto;
-
     }
 
     public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template

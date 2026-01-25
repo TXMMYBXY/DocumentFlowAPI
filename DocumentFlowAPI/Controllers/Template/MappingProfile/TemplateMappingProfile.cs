@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Services.Template.Dto;
+using DocumentFlowAPI.Services.WorkerTask.Dto;
 
 namespace DocumentFlowAPI.Controllers.Template.MappingProfile;
 
@@ -24,5 +25,9 @@ public class TemplateMappingProfile : Profile
         //Profiles for UPDATE
 
         CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>().ReverseMap();
+
+        //Profiles for Extract
+
+        CreateMap<TemplateFieldInfoDto, TemplateFieldInfoViewModel>().ReverseMap();
     }
 }

@@ -4,6 +4,7 @@ using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
@@ -92,5 +93,15 @@ public class StatementTemplateController : ControllerBase
         await _templateService.UpdateTemplateAsync<StatementTemplate>(templateId, templateDto);
 
         return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("{templateId}/extract-fields")]
+    public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
+    {
+        var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<StatementTemplate>(templateId);
+        var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
+
+        return Ok(resultViewModel);
     }
 }

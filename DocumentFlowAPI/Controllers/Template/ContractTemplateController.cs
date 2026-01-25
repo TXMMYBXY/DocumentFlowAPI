@@ -27,6 +27,7 @@ public class ContractTemplateController : ControllerBase
     /// Получение шаблона договора по id
     /// </summary>
     /// <returns>ViewModel шаблона</returns>
+    [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
     [HttpGet("{templateId}/get-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
@@ -41,6 +42,7 @@ public class ContractTemplateController : ControllerBase
     /// Получение списка шаблонов договоров
     /// </summary>
     /// <returns>Список шаблонов</returns>
+    [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
     [HttpGet("get-all")]
     public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplatesAsync()
     {
@@ -101,11 +103,11 @@ public class ContractTemplateController : ControllerBase
     }
 
     [HttpGet("{templateId}/extract-fields")]
-    public async Task<ActionResult<TemplateFieldInfoViewModel>> ExctractFields([FromRoute] int templateId)
+    public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
     {
         var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<ContractTemplate>(templateId);
-        var resultViewModel = _mapper.Map<TemplateFieldInfoViewModel>(resultDto);
+        var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
 
-        return Ok();
+        return Ok(resultViewModel);
     }
 }
