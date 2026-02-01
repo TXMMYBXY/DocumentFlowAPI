@@ -60,13 +60,18 @@ public class StatementTemplateController : ControllerBase
         return Ok();
     }
     
+    /// <summary>
+    /// Смена статуса шаблона
+    /// </summary>
+    /// <param name="templateId"></param>
+    /// <returns></returns>
     [AuthorizeByRoleId((int)Permissions.Boss)]
     [HttpPatch("{templateId}/change-template-status")]
-    public async Task<ActionResult> ChangeTemplateStatus([FromRoute] int templateId)
+    public async Task<ActionResult<bool>> ChangeTemplateStatus([FromRoute] int templateId)
     {
-        await _templateService.ChangeTemplateStatusById<StatementTemplate>(templateId);
+        var status = await _templateService.ChangeTemplateStatusById<StatementTemplate>(templateId);
 
-        return Ok();
+        return Ok(status);
     }
 
     /// <summary>

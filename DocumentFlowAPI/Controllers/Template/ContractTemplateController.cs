@@ -66,8 +66,14 @@ public class ContractTemplateController : ControllerBase
         return Ok();
     }
 
+
+    /// <summary>
+    /// Смена статуса шаблона
+    /// </summary>
+    /// <param name="templateId"></param>
+    /// <returns></returns>
     [HttpPatch("{templateId}/change-template-status")]
-    public async Task<ActionResult> ChangeTemplateStatus([FromRoute] int templateId)
+    public async Task<ActionResult<bool>> ChangeTemplateStatus([FromRoute] int templateId)
     {
         var status = await _templateService.ChangeTemplateStatusById<ContractTemplate>(templateId);
 
