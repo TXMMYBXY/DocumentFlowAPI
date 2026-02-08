@@ -42,7 +42,7 @@ public class FieldExtractorService : IFieldExtractorService
 
             var type =
                 sdt is SdtRun ? "string" :
-                sdt is SdtBlock ? "multiline" :
+                sdt is SdtBlock ? "string" :
                 "string";
 
             result.Add(new TemplateFieldInfoDto

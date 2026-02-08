@@ -55,6 +55,8 @@ public class TemplateService : ITemplateService
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
 
         _templateRepository.DeleteTemplate<T>(template);
+        
+        await _templateRepository.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
