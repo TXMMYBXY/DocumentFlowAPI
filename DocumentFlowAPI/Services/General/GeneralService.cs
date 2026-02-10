@@ -22,28 +22,50 @@ public abstract class GeneralService
     }
     public class Checker
     {
-        internal static void UniversalCheck<T>(CheckerParam<T> param)
+        internal static void UniversalCheckException<T>(CheckerParam<T> param)
         {
             if (param.Predicate)
             {
                 throw new Exception(param.Exception.Message, param.Exception).InnerException;
             }
         }
+
+        internal static bool UniversalCheckBool<T>(CheckerParam<T> param)
+        {
+            return param.Predicate;
+        }
     }
+    /// <summary>
+    /// public Exception Exception { get; set; }/
+    /// public bool Predicate { get; set; }/
+    /// public T[] Target { get; set; } 
+    /// </summary>
+    /// <typeparam name="T">Тип данных</typeparam>
     public class CheckerParam<T>
     {
         public Exception Exception { get; set; }
         public bool Predicate { get; set; }
         public T[] Target { get; set; }
 
+        /// <summary>
+        /// public Exception Exception { get; set; }/
+        /// public bool Predicate { get; set; }/
+        /// public T[] Target { get; set; } 
+        /// </summary>
         public CheckerParam()
         {
 
         }
+        /// <summary>
+        /// Параметры для универсальной проверки
+        /// </summary>
+        /// <param name="exception">исключение</param>
+        /// <param name="predicate">условие/триггер</param>
+        /// <param name="target">объект проверки</param>
         public CheckerParam(
-            Exception exception, //исключение
-            Predicate<T[]> predicate, //условие/триггер
-            params T[]  target) //объект проверки
+            Exception exception,
+            Predicate<T[]> predicate,
+            params T[] target)
         {
             Exception = exception;
             Predicate = predicate(target);

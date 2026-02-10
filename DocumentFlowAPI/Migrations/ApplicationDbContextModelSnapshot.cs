@@ -59,11 +59,6 @@ namespace DocumentFlowAPI.Migrations
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("varchar(13)");
-
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -81,10 +76,6 @@ namespace DocumentFlowAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contracts");
-
-                    b.HasDiscriminator().HasValue("Contract");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("DocumentFlowAPI.Models.ContractTemplate", b =>
@@ -167,6 +158,66 @@ namespace DocumentFlowAPI.Migrations
                     b.ToTable("StatementTemplates");
                 });
 
+            modelBuilder.Entity("DocumentFlowAPI.Models.TaskModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("LastAttemptAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultFilePath")
+                        .HasMaxLength(511)
+                        .HasColumnType("varchar(511)");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("TemplateData")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TemplateType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tasks");
+                });
+
             modelBuilder.Entity("DocumentFlowAPI.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -204,13 +255,6 @@ namespace DocumentFlowAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("DocumentFlowAPI.Models.Statement", b =>
-                {
-                    b.HasBaseType("DocumentFlowAPI.Models.Contract");
-
-                    b.HasDiscriminator().HasValue("Statement");
                 });
 
             modelBuilder.Entity("DocumentFlowAPI.Models.Contract", b =>

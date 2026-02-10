@@ -2,6 +2,7 @@ using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.Template.Dto;
+using DocumentFlowAPI.Services.WorkerTask.Dto;
 
 namespace DocumentFlowAPI.Services.Template;
 
@@ -9,10 +10,29 @@ public class TemplateService : ITemplateService
 {
     private readonly IMapper _mapper;
     private readonly ITemplateRepository _templateRepository;
-    public TemplateService(IMapper mapper, ITemplateRepository templateRepository)
+    private readonly IFieldExtractorService _fieldExtractorService;
+
+    public TemplateService(
+        IMapper mapper,
+        ITemplateRepository templateRepository,
+        IFieldExtractorService fieldExtractorService)
     {
         _mapper = mapper;
         _templateRepository = templateRepository;
+        _fieldExtractorService = fieldExtractorService;
+    }
+
+    public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
+    {
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+
+        template.IsActive = !template.IsActive;
+
+        _templateRepository.UpdateTemplateStatus(template);
+
+        await _templateRepository.SaveChangesAsync();
+
+        return template.IsActive;
     }
 
     public async Task CreateTemplateAsync<T>(CreateTemplateDto templateDto) where T : Models.Template, new()
@@ -26,7 +46,7 @@ public class TemplateService : ITemplateService
             IsActive = templateDto.IsActive
         };
 
-        await _templateRepository.CreateTemplateAsync<T>(templateModel);
+        await _templateRepository.CreateTemplateAsync(templateModel);
         await _templateRepository.SaveChangesAsync();
     }
 
@@ -34,11 +54,17 @@ public class TemplateService : ITemplateService
     {
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
 
-        template.IsActive = false;
-
-        _templateRepository.UpdateTemplateStatus<T>(template);
-
+        _templateRepository.DeleteTemplate<T>(template);
+        
         await _templateRepository.SaveChangesAsync();
+    }
+
+    public async Task<IReadOnlyList<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
+    {
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+        var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
+
+        return fieldsDto;
     }
 
     public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template
@@ -60,7 +86,7 @@ public class TemplateService : ITemplateService
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
         var templateModel = _UpdateTemplate(template, templateDto);
 
-        _templateRepository.UpdateTemplate<T>(templateModel);
+        _templateRepository.UpdateTemplate(templateModel);
 
         await _templateRepository.SaveChangesAsync();
     }

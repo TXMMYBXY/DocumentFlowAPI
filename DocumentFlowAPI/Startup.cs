@@ -8,8 +8,11 @@ using DocumentFlowAPI.Repositories;
 using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Repositories.User;
 using DocumentFlowAPI.Services.Auth;
+using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.User;
+using DocumentFlowAPI.Services.WorkerTask;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -36,12 +39,18 @@ public class Startup
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
+        services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<IWorkerTaskService, WorkerTaskService>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<IFieldExtractorService, FieldExtractorService>();
         services.AddHttpContextAccessor();
 
         services.Configure<RefreshTokenSettings>(Configuration.GetSection(nameof(RefreshTokenSettings)));        
+        services.Configure<WorkerSettings>(Configuration.GetSection(nameof(WorkerSettings)));
 
         //Добавляем авторизацию
         services.AddAuth(Configuration);
+        services.AddWorkerAuth(Configuration);
 
         //Регистрация EF Core
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -54,7 +63,7 @@ public class Startup
 
         //Регистрация AutoMapper
         services.AddAutoMapper(typeof(Program));
-
+        
         //Регистрация Swagger
         services.AddEndpointsApiExplorer(); // важно: добавляет описание эндпоинтов для Swagger
         services.AddSwaggerGen(c =>
@@ -98,13 +107,7 @@ public class Startup
     {
         // Настройка pipeline для разработки
         app.UseErrorHandling();
-
-        if (env.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
+    
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
