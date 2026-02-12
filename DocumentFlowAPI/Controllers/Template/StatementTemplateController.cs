@@ -25,6 +25,7 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Получение шаблона заявления
     /// </summary>
+    [Authorize]
     [HttpGet("{templateId}/get-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
@@ -49,7 +50,7 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Добавление нового шаблона заявлений
     /// </summary>
-    [AuthorizeByRoleId((int)Permissions.Boss)]
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPost("add-template")]
     public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
@@ -65,7 +66,7 @@ public class StatementTemplateController : ControllerBase
     /// </summary>
     /// <param name="templateId"></param>
     /// <returns></returns>
-    [AuthorizeByRoleId((int)Permissions.Boss)]
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPatch("{templateId}/change-template-status")]
     public async Task<ActionResult<bool>> ChangeTemplateStatus([FromRoute] int templateId)
     {
@@ -77,7 +78,7 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Удаление шаблона заявлений
     /// </summary>
-    [AuthorizeByRoleId((int)Permissions.Boss)]
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpDelete("delete-template")]
     public async Task<ActionResult> DeleteTemplateById([FromBody] DeleteTemplateViewModel deleteTemplateViewModel)
     {
@@ -89,7 +90,7 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Обновление шаблона заявления
     /// </summary>
-    [AuthorizeByRoleId((int)Permissions.Boss)]
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPatch("{templateId}/update-template")]
     public async Task<ActionResult> UpdateTemplateById([FromRoute] int templateId, [FromBody] UpdateTemplateViewModel templateViewModel)
     {

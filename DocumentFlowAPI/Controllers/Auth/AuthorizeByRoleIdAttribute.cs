@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -22,23 +23,26 @@ public class AuthorizeByRoleIdAttribute : AuthorizeAttribute, IAuthorizationFilt
             return;
         }
 
+        var claimIsActive = context.HttpContext.User.FindFirst("IsActive").Value;
         var claimRoleId = context.HttpContext.User.FindFirst("RoleId").Value;
 
-        if (string.IsNullOrEmpty(claimRoleId))
+        if (string.IsNullOrEmpty(claimIsActive) && string.IsNullOrEmpty(claimRoleId))
         {
             context.Result = new ForbidResult();
             return;
         }
 
-        if (!int.TryParse(claimRoleId, out int userRoleId))
+        if (!bool.TryParse(claimIsActive, out bool userIsActive) 
+            & !int.TryParse(claimRoleId, out int userRoleId))
         {
             context.Result = new ForbidResult();
             return;
         }
 
-        if (!_allowedRoles.Contains(userRoleId))
+        if (!userIsActive && !_allowedRoles.Contains(userRoleId))
         {
             context.Result = new ForbidResult();
         }
+
     }
 }
