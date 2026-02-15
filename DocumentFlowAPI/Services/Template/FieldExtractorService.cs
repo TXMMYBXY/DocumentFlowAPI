@@ -1,5 +1,7 @@
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
+using DocumentFormat.OpenXml.Office2010.Word;
+using DocumentFormat.OpenXml.Office2013.Word;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -40,24 +42,86 @@ public class FieldExtractorService : IFieldExtractorService
 
             var title = props.GetFirstChild<SdtAlias>()?.Val?.Value;
 
-            var type =
-                sdt is SdtRun ? "string" :
-                sdt is SdtBlock ? "string" :
-                "string";
+            string type = "string";
+            List<string>? options = null;
+
+            var dropDown = props.GetFirstChild<SdtContentDropDownList>();
+            if (dropDown != null)
+            {
+                type = "dropdown";
+
+                options = dropDown
+                    .Elements<ListItem>()
+                    .Select(i => i.DisplayText?.Value ?? i.Value?.Value)
+                    .Where(v => !string.IsNullOrWhiteSpace(v))
+                    .Distinct()
+                    .ToList();
+            }
+
+            var comboBox = props.GetFirstChild<SdtContentComboBox>();
+            if (comboBox != null)
+            {
+                type = "combobox";
+
+                options = comboBox
+                    .Elements<ListItem>()
+                    .Select(i => i.DisplayText?.Value ?? i.Value?.Value)
+                    .Where(v => !string.IsNullOrWhiteSpace(v))
+                    .Distinct()
+                    .ToList();
+            }
+
+            type = GetTypeOfProperty(props, type);
 
             result.Add(new TemplateFieldInfoDto
             {
                 Key = tag,
                 Title = title ?? tag,
                 Type = type,
-                Required = true
+                Required = true,
+                Options = options
             });
         }
 
-        return result
+            return result
             .GroupBy(x => x.Key)
             .Select(g => g.First())
             .ToList();
+    }
+
+    private static string GetTypeOfProperty(SdtProperties props, string type)
+    {
+        if (props.GetFirstChild<SdtContentDate>() != null)
+        {
+            type = "date";
+        }
+
+        if (props.GetFirstChild<SdtContentCheckBox>() != null)
+        {
+            type = "checkbox";
+        }
+
+        if (props.GetFirstChild<SdtContentRichText>() != null)
+        {
+            type = "richtext";
+        }
+
+        if (props.GetFirstChild<SdtContentText>() != null)
+        {
+            type = "text";
+        }
+
+        if (props.GetFirstChild<SdtContentPicture>() != null)
+        {
+            type = "picture";
+        }
+
+        if (props.GetFirstChild<SdtRepeatedSection>() != null)
+        {
+            type = "repeating-section";
+        }
+
+        return type;
     }
 
     private static string _NormalizePath(string path)
