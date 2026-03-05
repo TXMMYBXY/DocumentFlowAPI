@@ -71,20 +71,12 @@ public class TemplateService : ITemplateService
     {
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
         var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
-
-        Console.WriteLine("start read doc");
-
         var contractText = _ReadDocx(template.Path);
-        Console.WriteLine("start extract fields");
-
         var b = await _contractAiService.ExtractFieldsJsonAsync(contractText);
-
-        Console.WriteLine("start save logs");
 
         await _SaveResponseAsync(b);
         
         var response = _ConvertResponse<List<TemplateFieldInfoDto>>(b);
-
 
         return response;
     }
