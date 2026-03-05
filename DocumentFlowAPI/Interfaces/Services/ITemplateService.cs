@@ -39,7 +39,7 @@ public interface ITemplateService
     /// <summary>
     /// Метод для извелчения полей из шаблона
     /// </summary>
-    Task<IReadOnlyList<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Template;
+    Task<List<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Template;
 
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных шаблонов
 

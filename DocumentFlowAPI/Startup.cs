@@ -7,6 +7,7 @@ using DocumentFlowAPI.Middleware;
 using DocumentFlowAPI.Repositories;
 using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Repositories.User;
+using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
 using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
@@ -15,6 +16,7 @@ using DocumentFlowAPI.Services.WorkerTask;
 using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OllamaSharp;
 
 namespace DocumentFlowAPI;
 
@@ -44,6 +46,23 @@ public class Startup
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IFieldExtractorService, FieldExtractorService>();
         services.AddHttpContextAccessor();
+        services.AddScoped<IContractAiService, ContractAiService>();
+
+        services.AddSingleton(sp =>
+        {
+            // URL локального сервера Ollama
+            var uri = new Uri("http://localhost:11434");
+
+            // Создаём клиента
+            var ollama = new OllamaApiClient(uri)
+            {
+                SelectedModel = "deepseek-r1"
+                // SelectedModel = "gpt-oss"
+                // SelectedModel = "llama3.1:8b"
+            };
+
+            return ollama;
+        });
 
         services.Configure<RefreshTokenSettings>(Configuration.GetSection(nameof(RefreshTokenSettings)));        
         services.Configure<WorkerSettings>(Configuration.GetSection(nameof(WorkerSettings)));
