@@ -41,7 +41,7 @@ public class TaskController : ControllerBase
     /// </summary>
     /// <param name="taskId"></param>
     /// <returns></returns>
-    [HttpGet("{taskId}/get-task")]
+    [HttpGet("{taskId}")]
     public async Task<ActionResult<TaskDetailsViewModel>> GetTaskById([FromRoute] Guid taskId)
     {
         var taskDto = await _taskService.GetTaskByIdAsync(taskId);
@@ -54,8 +54,8 @@ public class TaskController : ControllerBase
     /// Метод для получения всех задач пользователя
     /// </summary>
     /// <returns></returns>
-    [HttpGet("get-all")]
-    public async Task<ActionResult<List<TaskDetailsViewModel>>> GetTaskById()
+    [HttpGet]
+    public async Task<ActionResult<List<TaskDetailsViewModel>>> GetTasks()
     {
         var taskList = await _taskService.GetAllTasksAsync(UserIdentity.User!.Id);
         var responseViewModel = _mapper.Map<List<TaskDetailsViewModel>>(taskList);

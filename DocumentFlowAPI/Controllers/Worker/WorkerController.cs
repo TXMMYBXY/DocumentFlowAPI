@@ -83,7 +83,7 @@ public class WorkerController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("{templateId}/get-statement-template")]
+    [HttpGet("{templateId}/statement-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetStatementTemplateById([FromRoute] int templateId)
     {
         var templateDto = await _templateService.GetTemplateByIdAsync<StatementTemplate>(templateId);
@@ -92,7 +92,7 @@ public class WorkerController : ControllerBase
         return Ok(templateViewModel);
     }
 
-    [HttpGet("{templateId}/get-contract-template")]
+    [HttpGet("{templateId}/contract-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetContractTemplateById([FromRoute] int templateId)
     {
         var templateDto = await _templateService.GetTemplateByIdAsync<ContractTemplate>(templateId);

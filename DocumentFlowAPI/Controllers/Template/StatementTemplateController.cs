@@ -38,8 +38,8 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Получение списка шаблонов заявлений
     /// </summary>
-    [HttpGet("get-all")]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplatesAsync()
+    [HttpGet]
+    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates()
     {
         var templatesDto = await _templateService.GetAllTemplatesAsync<StatementTemplate>();
         var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
@@ -51,7 +51,7 @@ public class StatementTemplateController : ControllerBase
     /// Добавление нового шаблона заявлений
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpPost("add-template")]
+    [HttpPost]
     public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);

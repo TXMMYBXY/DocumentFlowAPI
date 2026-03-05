@@ -44,8 +44,8 @@ public class ContractTemplateController : ControllerBase
     /// </summary>
     /// <returns>Список шаблонов</returns>
     [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
-    [HttpGet("get-all")]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplatesAsync()
+    [HttpGet]
+    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates()
     {
         var templatesDto = await _templateService.GetAllTemplatesAsync<ContractTemplate>();
         var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
@@ -58,7 +58,7 @@ public class ContractTemplateController : ControllerBase
     /// Добавляет новый шаблон договора из тела NewTemplateViewModel
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpPost("add-template")]
+    [HttpPost]
     public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
