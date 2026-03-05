@@ -102,7 +102,7 @@ public class JwtService : IJwtService
     }
 
     /// <summary>
-    /// Метод для генерации посследовательности
+    /// Метод для генерации последовательности
     /// </summary>
     private string _GenerateSecretLine()
     {

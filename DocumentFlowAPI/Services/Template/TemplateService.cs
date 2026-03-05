@@ -1,8 +1,13 @@
+using System.Text;
+using System.Text.Json;
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Template.Dto;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace DocumentFlowAPI.Services.Template;
 
@@ -11,15 +16,18 @@ public class TemplateService : ITemplateService
     private readonly IMapper _mapper;
     private readonly ITemplateRepository _templateRepository;
     private readonly IFieldExtractorService _fieldExtractorService;
+    private readonly IContractAiService _contractAiService;
 
     public TemplateService(
         IMapper mapper,
         ITemplateRepository templateRepository,
-        IFieldExtractorService fieldExtractorService)
+        IFieldExtractorService fieldExtractorService,
+        IContractAiService contractAiService)
     {
         _mapper = mapper;
         _templateRepository = templateRepository;
         _fieldExtractorService = fieldExtractorService;
+        _contractAiService = contractAiService;
     }
 
     public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
@@ -59,12 +67,66 @@ public class TemplateService : ITemplateService
         await _templateRepository.SaveChangesAsync();
     }
 
-    public async Task<IReadOnlyList<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
+    public async Task<List<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
     {
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
         var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
 
-        return fieldsDto;
+        Console.WriteLine("start read doc");
+
+        var contractText = _ReadDocx(template.Path);
+        Console.WriteLine("start extract fields");
+
+        var b = await _contractAiService.ExtractFieldsJsonAsync(contractText);
+
+        Console.WriteLine("start save logs");
+
+        await _SaveResponseAsync(b);
+        
+        var response = _ConvertResponse<List<TemplateFieldInfoDto>>(b);
+
+
+        return response;
+    }
+
+    private async Task _SaveResponseAsync(string response)
+    {
+        using (var fs = new FileStream("F:\\Уник\\диплом\\ans\\log.txt", FileMode.Append, FileAccess.Write))
+        {
+            using (var sw = new StreamWriter(fs))
+            {
+                await sw.WriteLineAsync("AI RESPONSE:\n" + response);
+            }
+        }
+    }
+
+    private static string _ReadDocx(string filePath)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
+        {
+            Body body = wordDoc.MainDocumentPart.Document.Body;
+            foreach (var para in body.Elements<Paragraph>())
+            {
+                sb.AppendLine(para.InnerText);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private static T? _ConvertResponse<T>(string response)
+    {
+        if (response.Equals(""))
+        {
+            return default;
+        }
+        response = response.Trim();
+        response = response.Remove(0, 7);
+        response = response.Remove(response.Length - 3, 3);
+        Console.WriteLine(response);
+        return JsonSerializer.Deserialize<T>(response);
     }
 
     public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template

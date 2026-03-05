@@ -10,5 +10,4 @@ public class LoginResponseViewModel
     public string ExpiresAt { get; set; }
     public string TokenType { get; set; } = "Bearer";
     public RefreshToken RefreshToken { get; set; }
-
 }
