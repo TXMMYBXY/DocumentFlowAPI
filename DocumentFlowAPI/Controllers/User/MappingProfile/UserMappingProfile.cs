@@ -11,8 +11,6 @@ public class UserMappingProfile : Profile
     {
         //Profiles for GET
 
-        CreateMap<Models.User, GetUserDto>().ReverseMap();
-        
         CreateMap<UserDto, GetUserDto>().ReverseMap();
 
         CreateMap<GetUserDto, GetUserViewModel>().ReverseMap();

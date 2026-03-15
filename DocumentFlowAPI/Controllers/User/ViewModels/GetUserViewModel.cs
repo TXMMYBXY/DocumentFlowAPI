@@ -3,7 +3,7 @@ using DocumentFlowAPI.Models;
 namespace DocumentFlowAPI.Controllers.User.ViewModels;
 
 /// <summary>
-/// ViewModel со всей инфомацией о пользователе кроме id
+/// ViewModel со всей информацией о пользователе
 /// </summary>
 public class GetUserViewModel
 {
