@@ -46,7 +46,7 @@ public class TaskController : ControllerBase
     {
         var taskDto = await _taskService.GetTaskByIdAsync(taskId);
         var responseViewModel = _mapper.Map<TaskDetailsViewModel>(taskDto);
-
+        
         return Ok(responseViewModel);
     }
 

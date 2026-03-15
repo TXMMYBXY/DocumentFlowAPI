@@ -68,7 +68,7 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheckException(new CheckerParam<AccessTokenDto>(new NullReferenceException("Incorrect token"),
             x => !isValid, accessTokenDto));
 
-        var user = await _userRepository.GetUserByIdAsync(accessTokenDto.UserId);
+        var user = await _userRepository.GetByIdAsync(accessTokenDto.UserId);
 
         return new AccessTokenResponseDto
         {

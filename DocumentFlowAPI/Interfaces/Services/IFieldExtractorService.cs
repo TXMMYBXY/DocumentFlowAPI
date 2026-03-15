@@ -4,5 +4,5 @@ namespace DocumentFlowAPI.Interfaces.Services;
 
 public interface IFieldExtractorService
 {
-    Task<IReadOnlyList<TemplateFieldInfoDto>> ExtractFieldsAsync(string templatePath);
+    Task<List<TemplateFieldInfoDto>> ExtractFieldsAsync(string templatePath);
 }

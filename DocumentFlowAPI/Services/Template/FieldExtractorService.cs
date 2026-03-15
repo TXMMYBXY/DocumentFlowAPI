@@ -9,7 +9,7 @@ namespace DocumentFlowAPI.Services.Template;
 
 public class FieldExtractorService : IFieldExtractorService
 {
-    public async Task<IReadOnlyList<TemplateFieldInfoDto>> ExtractFieldsAsync(string templatePath)
+    public async Task<List<TemplateFieldInfoDto>> ExtractFieldsAsync(string templatePath)
     {
         templatePath = _NormalizePath(templatePath);
 

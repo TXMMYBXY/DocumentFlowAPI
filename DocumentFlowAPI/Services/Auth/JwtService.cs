@@ -42,7 +42,6 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.RoleId.ToString()),
-            new Claim("Department", user.Department.ToString()),
             new Claim("RoleId", user.RoleId.ToString()),
             new Claim("IsActive", user.IsActive.ToString())
         };

@@ -2,6 +2,7 @@ using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Models.AboutUserModels;
+using DocumentFlowAPI.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace DocumentFlowAPI.Repositories;

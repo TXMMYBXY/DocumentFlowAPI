@@ -1,6 +1,7 @@
 using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace DocumentFlowAPI.Repositories.User;
@@ -12,21 +13,6 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
     public UserRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
-    }
-
-    public async Task CreateNewUserAsync(Models.User userModel)
-    {
-        await AddAsync(userModel);
-    }
-
-    public void DeleteUser(Models.User user)
-    {
-        Delete(user);
-    }
-
-    public async Task<Models.User> GetUserByIdAsync(int userId)
-    {
-        return await GetByIdAsync(userId);
     }
 
     public async Task<Models.User> GetUserByLoginAsync(string email)

@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
+using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace DocumentFlowAPI.Base;
+namespace DocumentFlowAPI.Repositories.Base;
 
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
@@ -34,12 +35,6 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return await _dbset.FindAsync(id);
     }
-
-    public async Task<T> GetEntityById(int id)
-    {
-        return await _dbset.FindAsync(id);
-    }
-
     /// <summary>
     /// Метод для сохранения изменений в БД
     /// </summary>

@@ -88,7 +88,7 @@ public class TaskService : GeneralService, ITaskService
 
     public async Task<List<TaskDetailsDto?>> GetAllTasksAsync(int userId)
     {
-        var taskList = await _taskRepository.GetAllTasks();
+        var taskList = await _taskRepository.GetAllAsync();
         var taskListDto = _mapper.Map<List<TaskDetailsDto>>(taskList);
 
         return taskListDto;

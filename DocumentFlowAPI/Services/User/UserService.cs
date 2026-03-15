@@ -25,7 +25,7 @@ public class UserService : GeneralService, IUserService
 
     public async Task<bool> ChangeUserStatusByIdAsync(int userId)
     {
-        var user = await _userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
 
         user.IsActive = !user.IsActive;
 
@@ -50,7 +50,7 @@ public class UserService : GeneralService, IUserService
 
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, newUserDto.PasswordHash);
 
-        await _userRepository.CreateNewUserAsync(userModel);
+        await _userRepository.AddAsync(userModel);
         await _userRepository.SaveChangesAsync();
 
         var userId = await _userRepository.GetUserByLoginAsync(newUserDto.Email);
@@ -63,10 +63,9 @@ public class UserService : GeneralService, IUserService
     /// </summary>
     public async Task DeleteUserAsync(int userId)
     {
-        var user = await _userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
 
-
-        _userRepository.DeleteUser(user);
+        _userRepository.Delete(user);
 
         await _userRepository.SaveChangesAsync();
     }
@@ -86,7 +85,7 @@ public class UserService : GeneralService, IUserService
     /// </summary>
     public async Task<GetUserDto> GetUserByIdAsync(int id)
     {
-        var userModel = await _userRepository.GetUserByIdAsync(id);
+        var userModel = await _userRepository.GetByIdAsync(id);
 
         return _mapper.Map<GetUserDto>(userModel);
     }
@@ -96,7 +95,7 @@ public class UserService : GeneralService, IUserService
     /// </summary>
     public async Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto)
     {
-        var userModel = await _userRepository.GetUserByIdAsync(userId);
+        var userModel = await _userRepository.GetByIdAsync(userId);
 
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, resetPasswordDto.PasswordHash);
 
@@ -112,7 +111,7 @@ public class UserService : GeneralService, IUserService
     /// <returns></returns>
     public async Task UpdateUserAsync(int userId, UpdateUserDto userDto)
     {
-        var userModel = await _userRepository.GetUserByIdAsync(userId);
+        var userModel = await _userRepository.GetByIdAsync(userId);
         var updateUser = _UpdateUser(userModel, userDto);
 
         _userRepository.UpdateUser(updateUser);

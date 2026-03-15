@@ -70,26 +70,28 @@ public class TemplateService : ITemplateService
     public async Task<List<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
     {
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
-        var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
-        var contractText = _ReadDocx(template.Path);
-        var b = await _contractAiService.ExtractFieldsJsonAsync(contractText);
+        if (typeof(T) == typeof(Models.ContractTemplate))
+        {
+            var contractText = _ReadDocx(template.Path);
 
-        await _SaveResponseAsync(b);
+            var response = _ConvertResponse<List<TemplateFieldInfoDto>>(contractText);
+
+            return response;
+        }
         
-        var response = _ConvertResponse<List<TemplateFieldInfoDto>>(b);
+        var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
 
-        return response;
+        return fieldsDto;
     }
 
-    private async Task _SaveResponseAsync(string response)
+    private async Task<List<TemplateFieldInfoDto>> _ExctractFieldsByAiAsync<T>(int templateId) where T : Models.ContractTemplate
     {
-        using (var fs = new FileStream("F:\\Уник\\диплом\\ans\\log.txt", FileMode.Append, FileAccess.Write))
-        {
-            using (var sw = new StreamWriter(fs))
-            {
-                await sw.WriteLineAsync("AI RESPONSE:\n" + response);
-            }
-        }
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+        var contractText = _ReadDocx(template.Path);
+        var jsonResponse = await _contractAiService.ExtractFieldsJsonAsync(contractText);
+        var response = _ConvertResponse<List<TemplateFieldInfoDto>>(jsonResponse);
+
+        return response;
     }
 
     private static string _ReadDocx(string filePath)
@@ -114,10 +116,7 @@ public class TemplateService : ITemplateService
         {
             return default;
         }
-        response = response.Trim();
-        response = response.Remove(0, 7);
-        response = response.Remove(response.Length - 3, 3);
-        Console.WriteLine(response);
+        
         return JsonSerializer.Deserialize<T>(response);
     }
 

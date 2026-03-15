@@ -1,6 +1,7 @@
 using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace DocumentFlowAPI.Repositories.Template;
