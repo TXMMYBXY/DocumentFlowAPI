@@ -1,5 +1,6 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.User.ViewModels;
+using DocumentFlowAPI.Interfaces.Repositories.Users.Dtos;
 using DocumentFlowAPI.Services.User.Dto;
 
 namespace DocumentFlowAPI.Controllers.User.MappingProfile;
@@ -11,6 +12,8 @@ public class UserMappingProfile : Profile
         //Profiles for GET
 
         CreateMap<Models.User, GetUserDto>().ReverseMap();
+        
+        CreateMap<UserDto, GetUserDto>().ReverseMap();
 
         CreateMap<GetUserDto, GetUserViewModel>().ReverseMap();
 

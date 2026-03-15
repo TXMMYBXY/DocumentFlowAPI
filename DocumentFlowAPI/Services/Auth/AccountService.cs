@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;

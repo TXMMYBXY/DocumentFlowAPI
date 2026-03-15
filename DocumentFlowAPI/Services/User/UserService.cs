@@ -1,5 +1,6 @@
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.User.Dto;
@@ -73,11 +74,11 @@ public class UserService : GeneralService, IUserService
     /// <summary>
     /// Возврат всех пользователей
     /// </summary>
-    public async Task<List<GetUserDto>> GetAllUsersAsync()
+    public async Task<List<GetUserDto>> GetAllUsersAsync(UserFilter userFilter)
     {
-        var userModelList = await _userRepository.GetAllAsync();
+        var userDtoList = await _userRepository.GetAllUsersAsync(userFilter);
 
-        return _mapper.Map<List<GetUserDto>>(userModelList);
+        return _mapper.Map<List<GetUserDto>>(userDtoList);
     }
 
     /// <summary>

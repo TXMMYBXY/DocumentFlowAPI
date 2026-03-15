@@ -1,4 +1,4 @@
-using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Interfaces.Base;
 using DocumentFlowAPI.Models;
 
 namespace DocumentFlowAPI.Interfaces.Repositories;

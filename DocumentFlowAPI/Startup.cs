@@ -1,13 +1,13 @@
-using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Data;
+using DocumentFlowAPI.Interfaces.Base;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Middleware;
 using DocumentFlowAPI.Repositories;
 using DocumentFlowAPI.Repositories.Base;
 using DocumentFlowAPI.Repositories.Template;
-using DocumentFlowAPI.Repositories.User;
 using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
 using DocumentFlowAPI.Services.Tasks;

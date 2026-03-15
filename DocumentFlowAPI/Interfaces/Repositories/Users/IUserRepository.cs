@@ -1,6 +1,8 @@
-using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Interfaces.Base;
+using DocumentFlowAPI.Interfaces.Repositories.Users.Dtos;
+using DocumentFlowAPI.Services.User;
 
-namespace DocumentFlowAPI.Interfaces.Repositories;
+namespace DocumentFlowAPI.Interfaces.Repositories.Users;
 
 public interface IUserRepository : IBaseRepository<Models.User>
 {
@@ -23,4 +25,6 @@ public interface IUserRepository : IBaseRepository<Models.User>
     /// Проверяет наличие пользователя в таблице по почте
     /// </summary>
     Task<bool> IsUserAlreadyExists(string email);
+
+    Task<List<UserDto>> GetAllUsersAsync(UserFilter filter);
 }

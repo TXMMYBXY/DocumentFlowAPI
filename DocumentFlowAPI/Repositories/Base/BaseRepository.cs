@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Data;
+using DocumentFlowAPI.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace DocumentFlowAPI.Repositories.Base;

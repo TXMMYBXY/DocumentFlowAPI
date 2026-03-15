@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace DocumentFlowAPI.Base;
+namespace DocumentFlowAPI.Interfaces.Base;
 
 public interface IBaseRepository<T> where T : class
 {
@@ -35,7 +35,7 @@ public interface IBaseRepository<T> where T : class
     Task SaveChangesAsync();
 
     /// <summary>
-    /// Обновление записией в таблице
+    /// Обновление записей в таблице
     /// </summary>
     /// <param name="entity">Сущность, у которой надо изменить свойства</param>
     /// <param name="fields">Свойства, которые меняются(в виде функции)</param>

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 
 namespace DocumentFlowAPI.Services.User;
 
