@@ -46,19 +46,16 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
             })
             .AsQueryable();
 
-        if (filter != null)
+        if(!string.IsNullOrWhiteSpace(filter.Email)) query = query.Where(u => u.Email.Contains(filter.Email));
+        if (!string.IsNullOrWhiteSpace(filter.FullName)) query = query.Where(u => u.FullName.Contains(filter.FullName));
+        if (!string.IsNullOrWhiteSpace(filter.Department)) query = query.Where(u => u.Department.Contains(filter.Department));
+        if (filter.RoleId.HasValue) query = query.Where(u => u.Role.Id == filter.RoleId);
+        
+        if (filter.PageSize.HasValue && filter.PageNumber.HasValue)
         {
-            if(!string.IsNullOrWhiteSpace(filter.Email)) query = query.Where(u => u.Email.Contains(filter.Email));
-            if (!string.IsNullOrWhiteSpace(filter.FullName)) query = query.Where(u => u.FullName.Contains(filter.FullName));
-            if (!string.IsNullOrWhiteSpace(filter.Department)) query = query.Where(u => u.Department.Contains(filter.Department));
-            if (filter.RoleId.HasValue) query = query.Where(u => u.Role.Id == filter.RoleId);
-            
-            if (filter.PageSize.HasValue && filter.PageNumber.HasValue)
-            {
-                if (filter.PageNumber.HasValue) query = query
-                    .Skip((filter.PageNumber.Value - 1) * filter.PageSize.Value)
-                    .Take(filter.PageSize.Value);
-            }
+            query = query
+                .Skip((filter.PageNumber.Value - 1) * filter.PageSize.Value)
+                .Take(filter.PageSize.Value);
         }
         
         return await query

@@ -120,9 +120,9 @@ public class TemplateService : ITemplateService
         return JsonSerializer.Deserialize<T>(response);
     }
 
-    public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Models.Template
+    public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Models.Template
     {
-        var templates = await _templateRepository.GetAllTemplatesAsync<T>();
+        var templates = await _templateRepository.GetAllTemplatesAsync<T>(templateFilter);
 
         return _mapper.Map<List<GetTemplateDto>>(templates);
     }

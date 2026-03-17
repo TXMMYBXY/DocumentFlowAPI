@@ -3,6 +3,7 @@ using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,9 +46,9 @@ public class ContractTemplateController : ControllerBase
     /// <returns>Список шаблонов</returns>
     [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
     [HttpGet]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates()
+    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
     {
-        var templatesDto = await _templateService.GetAllTemplatesAsync<ContractTemplate>();
+        var templatesDto = await _templateService.GetAllTemplatesAsync<ContractTemplate>(templateFilter);
         var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
 
         return Ok(templatesViewModel);
