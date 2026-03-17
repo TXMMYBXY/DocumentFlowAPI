@@ -130,7 +130,7 @@ namespace DocumentFlowAPI.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("DocumentFlowAPI.Models.StatementTemplate", b =>
+            modelBuilder.Entity("DocumentFlowAPI.Models.StatementTemplates", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -283,7 +283,7 @@ namespace DocumentFlowAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DocumentFlowAPI.Models.StatementTemplate", b =>
+            modelBuilder.Entity("DocumentFlowAPI.Models.StatementTemplates", b =>
                 {
                     b.HasOne("DocumentFlowAPI.Models.User", "User")
                         .WithMany()

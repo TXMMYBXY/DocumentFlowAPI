@@ -5,4 +5,5 @@ namespace DocumentFlowAPI.Interfaces.Services;
 public interface IPersonalAccountService
 {
     Task<GetPersonDto> GetPersonalInfoAsync(int personId);
+    Task ChangePasswordAsync(int personId, ChangePasswordDto changePasswordDto);
 }

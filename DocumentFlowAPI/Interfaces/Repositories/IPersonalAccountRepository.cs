@@ -5,5 +5,5 @@ namespace DocumentFlowAPI.Interfaces.Repositories;
 
 public interface IPersonalAccountRepository : IBaseRepository<Models.User>
 {
-    Task<PersonDto> GetPersonalInfoAsync(int personId);
+    Task<PersonDto> GetPersonalInfo(int personId);
 }

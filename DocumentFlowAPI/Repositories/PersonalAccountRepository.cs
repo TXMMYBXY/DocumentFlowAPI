@@ -15,20 +15,20 @@ public class PersonalAccountRepository : BaseRepository<Models.User>, IPersonalA
         _dbContext = dbContext;
     }
 
-    public async Task<PersonDto> GetPersonalInfoAsync(int personId)
+    public async Task<PersonDto> GetPersonalInfo(int personId)
     {
 
         return await _dbContext.Users
             .Include(u => u.Role)
+            .Where(u => u.Id == personId)
             .Select(u => new PersonDto
             {
                 FullName = u.FullName,
                 Email = u.Email,
                 Department = u.Department,
-                Role = u.Role
+                Role = u.Role,
             })
-            .AsQueryable()
             .AsNoTracking()
-            .SingleAsync();
+            .SingleOrDefaultAsync();
     }
 }

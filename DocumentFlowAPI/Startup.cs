@@ -10,6 +10,7 @@ using DocumentFlowAPI.Repositories.Base;
 using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
+using DocumentFlowAPI.Services.Personal;
 using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.User;
@@ -47,6 +48,8 @@ public class Startup
         services.AddScoped<IFieldExtractorService, FieldExtractorService>();
         services.AddHttpContextAccessor();
         services.AddScoped<IContractAiService, ContractAiService>();
+        services.AddScoped<IPersonalAccountService, PersonalAccountService>();
+        services.AddScoped<IPersonalAccountRepository, PersonalAccountRepository>();
 
         services.AddSingleton(sp =>
         {
