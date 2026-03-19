@@ -11,7 +11,7 @@ namespace DocumentFlowAPI.Controllers.User;
 
 [ApiController]
 [Route("api/users")]
-// [AuthorizeByRoleId((int)Permissions.Admin)]
+[AuthorizeByRoleId((int)Permissions.Admin)]
 ///Этим контроллером будет пользоваться администратор, поэтому информация которую он получает - полная
 public class UserController : ControllerBase
 {
