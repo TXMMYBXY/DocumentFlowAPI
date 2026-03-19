@@ -1,5 +1,6 @@
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.General;
@@ -11,17 +12,21 @@ namespace DocumentFlowAPI.Services.Personal;
 public class PersonalAccountService : IPersonalAccountService
 {
     private readonly IMapper _mapper;
-    private readonly IPersonalAccountRepository _personalAccountRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IAccountRepository _accountRepository;
 
-    public PersonalAccountService(IMapper mapper, IPersonalAccountRepository personalAccountRepository)
+    public PersonalAccountService(IMapper mapper, 
+        IUserRepository userRepository,
+        IAccountRepository accountRepository)
     {
         _mapper = mapper;
-        _personalAccountRepository = personalAccountRepository;
+        _userRepository = userRepository;
+        _accountRepository = accountRepository;
     }
     
     public async Task<GetPersonDto> GetPersonalInfoAsync(int personId)
     {
-        var person = await _personalAccountRepository.GetPersonalInfo(personId);
+        var person = await _userRepository.GetPersonalInfo(personId);
         var personDto = _mapper.Map<GetPersonDto>(person);
         
         return personDto;
@@ -29,7 +34,7 @@ public class PersonalAccountService : IPersonalAccountService
 
     public async Task ChangePasswordAsync(int personId, ChangePasswordDto changePasswordDto)
     {
-        var person = await _personalAccountRepository.GetByIdAsync(personId);
+        var person = await _userRepository.GetByIdAsync(personId);
         
         GeneralService.NullCheck(person, "User not found");
         
@@ -45,12 +50,12 @@ public class PersonalAccountService : IPersonalAccountService
         
         person.PasswordHash = new PasswordHasher<Models.User>().HashPassword(person, changePasswordDto.NewPassword);
 
-        await _personalAccountRepository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
     }
 
     public async Task<List<GetLoginTimesDto>> GetLoginTimesAsync(int userId)
     {
-        var loginTimes = await _personalAccountRepository.GetLoginTimesByUserIdAsync(userId);
+        var loginTimes = await _accountRepository.GetLoginTimesByUserIdAsync(userId);
         var loginTimesDto = _mapper.Map<List<GetLoginTimesDto>>(loginTimes);
         
         return loginTimesDto;
@@ -60,6 +65,16 @@ public class PersonalAccountService : IPersonalAccountService
     {
         var loginHistory = _mapper.Map<LoginHistory>(newAuthRecordDto);
         
-        await _personalAccountRepository.AddNewLoginHistoryAsync(loginHistory);
+        var count = await _accountRepository.GetCountOfRecordsByUserIdAsync(newAuthRecordDto.UserId);
+
+        if (count >= 10)
+        {
+            var lastLoginHistory = await _accountRepository.GetFirstLoginHistoryByUserIdAsync(newAuthRecordDto.UserId);
+            
+            _accountRepository.Delete(lastLoginHistory);
+        }
+        
+        await _accountRepository.AddNewLoginHistoryAsync(loginHistory);
+        await _accountRepository.SaveChangesAsync();
     }
 }

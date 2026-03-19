@@ -3,6 +3,7 @@ using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Repositories.Users.Dtos;
 using DocumentFlowAPI.Repositories.Base;
+using DocumentFlowAPI.Services.Personal.Dto;
 using DocumentFlowAPI.Services.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,16 +65,6 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
             .ToListAsync();
     }
 
-    public Models.User UpdateUser(Models.User userModel)
-    {
-        UpdateFields(userModel,
-            t => t.FullName,
-            t => t.Email,
-            t => t.Department,
-            t => t.RoleId);
-        return userModel;
-    }
-
     public Models.User UpdateUserStatus(Models.User userModel)
     {
         _dbContext.Attach(userModel);
@@ -81,5 +72,21 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
             .Property(t => t.IsActive)
             .IsModified = true;
         return userModel;
+    }
+    
+    public async Task<PersonDto> GetPersonalInfo(int personId)
+    {
+        return await _dbContext.Users
+            .Include(u => u.Role)
+            .Where(u => u.Id == personId)
+            .Select(u => new PersonDto
+            {
+                FullName = u.FullName,
+                Email = u.Email,
+                Department = u.Department.Title,
+                Role = u.Role,
+            })
+            .AsNoTracking()
+            .SingleOrDefaultAsync();
     }
 }

@@ -1,9 +1,10 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
+using DocumentFlowAPI.Services.Personal.Dto;
 using DocumentFlowAPI.Services.User.Dto;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 
 namespace DocumentFlowAPI.Controllers.Auth.MappingProfile;
 
@@ -38,6 +39,8 @@ public class AccountMappingProfile : Profile
 
         CreateMap<RefreshTokenToLoginResponseViewModel, RefreshTokenToLoginResponseDto>()
             .ReverseMap();
+
+        CreateMap<NewAuthRecordDto, LoginHistory>();
 
         //profiles for refresh
 

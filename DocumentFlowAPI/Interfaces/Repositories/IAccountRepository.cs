@@ -4,9 +4,10 @@ using DocumentFlowAPI.Services.Personal.Dto;
 
 namespace DocumentFlowAPI.Interfaces.Repositories;
 
-public interface IPersonalAccountRepository : IBaseRepository<Models.User>
+public interface IAccountRepository : IBaseRepository<LoginHistory>
 {
-    Task<PersonDto> GetPersonalInfo(int personId);
     Task<List<LoginTimeDto>> GetLoginTimesByUserIdAsync(int userId);
     Task AddNewLoginHistoryAsync(LoginHistory loginHistory);
+    Task<int> GetCountOfRecordsByUserIdAsync(int userId);
+    Task<LoginHistory> GetFirstLoginHistoryByUserIdAsync(int userId);
 }

@@ -50,7 +50,7 @@ public class Startup
         services.AddHttpContextAccessor();
         services.AddScoped<IContractAiService, ContractAiService>();
         services.AddScoped<IPersonalAccountService, PersonalAccountService>();
-        services.AddScoped<IPersonalAccountRepository, PersonalAccountRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
