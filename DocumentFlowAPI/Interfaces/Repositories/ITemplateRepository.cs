@@ -1,5 +1,6 @@
-using DocumentFlowAPI.Base;
+using DocumentFlowAPI.Interfaces.Base;
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Services.Template;
 
 namespace DocumentFlowAPI.Interfaces.Repositories;
 
@@ -13,7 +14,7 @@ public interface ITemplateRepository : IBaseRepository<Template>
     /// <summary>
     /// Возвращает список шаблонов по id
     /// </summary>
-    Task<List<T>> GetAllTemplatesAsync<T>() where T : Template;
+    Task<List<T>> GetAllTemplatesAsync<T>(TemplateFilter filter) where T : Template;
 
     /// <summary>
     /// Создает новый шаблон в бд

@@ -1,19 +1,21 @@
-using DocumentFlowAPI.Base;
 using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Data;
+using DocumentFlowAPI.Interfaces.Base;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Middleware;
 using DocumentFlowAPI.Repositories;
+using DocumentFlowAPI.Repositories.Base;
 using DocumentFlowAPI.Repositories.Template;
-using DocumentFlowAPI.Repositories.User;
 using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
+using DocumentFlowAPI.Services.Department;
+using DocumentFlowAPI.Services.Personal;
 using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.WorkerTask;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OllamaSharp;
@@ -47,6 +49,10 @@ public class Startup
         services.AddScoped<IFieldExtractorService, FieldExtractorService>();
         services.AddHttpContextAccessor();
         services.AddScoped<IContractAiService, ContractAiService>();
+        services.AddScoped<IPersonalAccountService, PersonalAccountService>();
+        services.AddScoped<IPersonalAccountRepository, PersonalAccountRepository>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
         services.AddSingleton(sp =>
         {

@@ -1,4 +1,5 @@
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
 
@@ -14,7 +15,7 @@ public interface ITemplateService
     /// <summary>
     /// Получение списка всех шаблонов
     /// </summary>
-    Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>() where T : Template;
+    Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Template;
 
     /// <summary>
     /// Создание нового шаблона

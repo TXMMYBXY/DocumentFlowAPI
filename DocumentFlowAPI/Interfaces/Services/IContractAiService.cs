@@ -1,4 +1,4 @@
-namespace DocumentFlowAPI.Services.AI;
+namespace DocumentFlowAPI.Interfaces.Services;
 
 public interface IContractAiService
 {

@@ -1,5 +1,6 @@
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.User.Dto;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DocumentFlowAPI.Services.User;
 
-public class UserService : GeneralService, IUserService
+public class UserService : IUserService
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
@@ -25,7 +26,7 @@ public class UserService : GeneralService, IUserService
 
     public async Task<bool> ChangeUserStatusByIdAsync(int userId)
     {
-        var user = await _userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
 
         user.IsActive = !user.IsActive;
 
@@ -45,12 +46,12 @@ public class UserService : GeneralService, IUserService
         var userModel = _mapper.Map<Models.User>(newUserDto);
         var userExists = await _userRepository.IsUserAlreadyExists(newUserDto.Email);
 
-        Checker.UniversalCheckException(new CheckerParam<bool>(new ArgumentException("Login already in use"),
+        GeneralService.Checker.UniversalCheckException(new GeneralService.CheckerParam<bool>(new ArgumentException("Login already in use"),
             x => x[0], userExists));
 
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, newUserDto.PasswordHash);
 
-        await _userRepository.CreateNewUserAsync(userModel);
+        await _userRepository.AddAsync(userModel);
         await _userRepository.SaveChangesAsync();
 
         var userId = await _userRepository.GetUserByLoginAsync(newUserDto.Email);
@@ -63,10 +64,9 @@ public class UserService : GeneralService, IUserService
     /// </summary>
     public async Task DeleteUserAsync(int userId)
     {
-        var user = await _userRepository.GetUserByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
 
-
-        _userRepository.DeleteUser(user);
+        _userRepository.Delete(user);
 
         await _userRepository.SaveChangesAsync();
     }
@@ -74,11 +74,11 @@ public class UserService : GeneralService, IUserService
     /// <summary>
     /// Возврат всех пользователей
     /// </summary>
-    public async Task<List<GetUserDto>> GetAllUsersAsync()
+    public async Task<List<GetUserDto>> GetAllUsersAsync(UserFilter userFilter)
     {
-        var userModelList = await _userRepository.GetAllAsync();
+        var userDtoList = await _userRepository.GetAllUsersAsync(userFilter);
 
-        return _mapper.Map<List<GetUserDto>>(userModelList);
+        return _mapper.Map<List<GetUserDto>>(userDtoList);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class UserService : GeneralService, IUserService
     /// </summary>
     public async Task<GetUserDto> GetUserByIdAsync(int id)
     {
-        var userModel = await _userRepository.GetUserByIdAsync(id);
+        var userModel = await _userRepository.GetByIdAsync(id);
 
         return _mapper.Map<GetUserDto>(userModel);
     }
@@ -96,7 +96,7 @@ public class UserService : GeneralService, IUserService
     /// </summary>
     public async Task ResetPasswordAsync(int userId, ResetPasswordDto resetPasswordDto)
     {
-        var userModel = await _userRepository.GetUserByIdAsync(userId);
+        var userModel = await _userRepository.GetByIdAsync(userId);
 
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, resetPasswordDto.PasswordHash);
 
@@ -112,21 +112,12 @@ public class UserService : GeneralService, IUserService
     /// <returns></returns>
     public async Task UpdateUserAsync(int userId, UpdateUserDto userDto)
     {
-        var userModel = await _userRepository.GetUserByIdAsync(userId);
-        var updateUser = _UpdateUser(userModel, userDto);
-
-        _userRepository.UpdateUser(updateUser);
-
+        var userModel = await _userRepository.GetByIdAsync(userId);
+        
+        GeneralService.NullCheck(userModel, "User does not exist");
+        
+        _mapper.Map(userDto, userModel);
+        
         await _userRepository.SaveChangesAsync();
-    }
-
-    private Models.User _UpdateUser(Models.User user, UpdateUserDto userDto)
-    {
-        user.FullName = userDto.FullName;
-        user.Email = userDto.Email;
-        user.Department = userDto.Department;
-        user.RoleId = userDto.RoleId;
-
-        return user;
     }
 }

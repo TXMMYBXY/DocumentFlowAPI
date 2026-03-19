@@ -13,13 +13,14 @@ public abstract class GeneralService
     /// <param name="target">объект который нужно проверить</param>
     /// <param name="message">сообщение, в случае null</param>
     /// <exception cref="NullReferenceException"></exception>
-    protected static void NullCheck<T>(T target, string message)
+    public static void NullCheck<T>(T target, string message)
     {
         if (target == null)
         {
             throw new NullReferenceException(message);
         }
     }
+    
     public class Checker
     {
         internal static void UniversalCheckException<T>(CheckerParam<T> param)

@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
@@ -43,7 +44,7 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheckException(new CheckerParam<Models.User>(new ArgumentException("Incorrect login"),
             x => x[0] == null, user));
 
-        Checker.UniversalCheckException(new CheckerParam<Models.User>(new ArgumentException("User was deleted"),
+        Checker.UniversalCheckException(new CheckerParam<Models.User>(new ArgumentException("User was blocked"),
             x => !x[0].IsActive, user));
 
         var result = new PasswordHasher<Models.User>().VerifyHashedPassword(user, user.PasswordHash, loginUserDto.PasswordHash);
@@ -66,9 +67,9 @@ public class AccountService : GeneralService, IAccountService
         var isValid = await _jwtService.ValidateAccessTokenAsync(accessTokenDto);
 
         Checker.UniversalCheckException(new CheckerParam<AccessTokenDto>(new NullReferenceException("Incorrect token"),
-            x => !isValid == true, accessTokenDto));
+            x => !isValid, accessTokenDto));
 
-        var user = await _userRepository.GetUserByIdAsync(accessTokenDto.UserId);
+        var user = await _userRepository.GetByIdAsync(accessTokenDto.UserId);
 
         return new AccessTokenResponseDto
         {
@@ -85,7 +86,7 @@ public class AccountService : GeneralService, IAccountService
         var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshTokenModel);
 
         Checker.UniversalCheckException(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
-            x => !isValid == true, refreshTokenModel));
+            x => !isValid, refreshTokenModel));
 
         var token = await _jwtService.GenerateRefreshTokenAsync(refreshTokenDto.UserId);
         var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(token);

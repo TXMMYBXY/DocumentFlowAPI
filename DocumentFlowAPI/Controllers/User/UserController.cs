@@ -3,6 +3,7 @@ using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.User.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.User.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,10 +28,10 @@ public class UserController : ControllerBase
     /// Получение списка всех пользователей
     /// </summary>
     /// <returns></returns>
-    [HttpGet("get-all")]
-    public async Task<ActionResult<List<GetUserViewModel>>> GetAllUser()
+    [HttpGet]
+    public async Task<ActionResult<List<GetUserViewModel>>> GetAllUser([FromQuery] UserFilter userFilter)
     {
-        var listUserDto = await _userService.GetAllUsersAsync();
+        var listUserDto = await _userService.GetAllUsersAsync(userFilter);
         var listUserViewModel = _mapper.Map<List<GetUserViewModel>>(listUserDto);
 
         return Ok(listUserViewModel);
@@ -55,7 +56,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    [HttpPost("add-user")]
+    [HttpPost]
     public async Task<ActionResult<CreateUserViewModel>> CreateNewUser([FromBody] CreateUserViewModel user)
     {
         var userDto = _mapper.Map<CreateUserDto>(user);
@@ -71,7 +72,7 @@ public class UserController : ControllerBase
     /// <param name="userId"></param>
     /// <param name="userViewModel"></param>
     /// <returns></returns>
-    [HttpPatch("{userId}/update-user-info")]
+    [HttpPatch("{userId}/user-info")]
     public async Task<ActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
     {
         var userDto = _mapper.Map<UpdateUserDto>(userViewModel);
@@ -95,7 +96,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpDelete("delete-user")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteUserAsync([FromBody] DeleteUserViewModel userViewModel)
     {
         await _userService.DeleteUserAsync(userViewModel.UserId);

@@ -12,4 +12,6 @@ public class TemplateFieldInfoViewModel
     public string Type { get; set; } = "string";
     [JsonPropertyName("required")]
     public bool Required { get; set; }
+    [JsonPropertyName("options")]
+    public List<string>? Options { get; set; }
 }

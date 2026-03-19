@@ -1,3 +1,4 @@
+using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.User.Dto;
 
 namespace DocumentFlowAPI.Interfaces.Services;
@@ -7,7 +8,7 @@ public interface IUserService
     /// <summary>
     /// Метод для получения списка всех пользователей в таблице
     /// </summary>
-    Task<List<GetUserDto>> GetAllUsersAsync();
+    Task<List<GetUserDto>> GetAllUsersAsync(UserFilter userFilter);
 
     /// <summary>
     /// Метод для получения пользователя по id

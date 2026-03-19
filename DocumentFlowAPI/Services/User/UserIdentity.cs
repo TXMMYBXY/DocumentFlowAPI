@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Interfaces.Repositories.Users;
 
 namespace DocumentFlowAPI.Services.User;
 
@@ -44,7 +45,7 @@ public static class UserIdentity
 
                 using var scope = _serviceProvider.CreateScope();
                 var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-                var userModel = userRepository.GetUserByIdAsync(int.Parse(userId)).Result;
+                var userModel = userRepository.GetByIdAsync(int.Parse(userId)).Result;
 
                 return userModel;
             }

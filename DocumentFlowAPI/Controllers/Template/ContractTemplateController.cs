@@ -3,7 +3,9 @@ using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
+using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
@@ -27,7 +29,7 @@ public class ContractTemplateController : ControllerBase
     /// Получение шаблона договора по id
     /// </summary>
     /// <returns>ViewModel шаблона</returns>
-    [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
+    [Authorize]
     [HttpGet("{templateId}/get-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
@@ -43,10 +45,10 @@ public class ContractTemplateController : ControllerBase
     /// </summary>
     /// <returns>Список шаблонов</returns>
     [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
-    [HttpGet("get-all")]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplatesAsync()
+    [HttpGet]
+    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
     {
-        var templatesDto = await _templateService.GetAllTemplatesAsync<ContractTemplate>();
+        var templatesDto = await _templateService.GetAllTemplatesAsync<ContractTemplate>(templateFilter);
         var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
 
         return Ok(templatesViewModel);
@@ -56,7 +58,8 @@ public class ContractTemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Добавляет новый шаблон договора из тела NewTemplateViewModel
     /// </summary>
-    [HttpPost("add-template")]
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
+    [HttpPost]
     public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
@@ -72,6 +75,7 @@ public class ContractTemplateController : ControllerBase
     /// </summary>
     /// <param name="templateId"></param>
     /// <returns></returns>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPatch("{templateId}/change-template-status")]
     public async Task<ActionResult<bool>> ChangeTemplateStatus([FromRoute] int templateId)
     {
@@ -86,6 +90,7 @@ public class ContractTemplateController : ControllerBase
     /// </summary>
     /// <param name="templateViewModel"></param>
     /// <returns></returns>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpDelete("delete-template")]
     public async Task<ActionResult> DeleteTemplateById([FromBody] DeleteTemplateViewModel templateViewModel)
     {
@@ -98,6 +103,7 @@ public class ContractTemplateController : ControllerBase
     /// Только для главы отдела закупок
     /// Изменяет шаблон договора
     /// </summary>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPatch("{templateId}/update-template")]
     public async Task<ActionResult> UpdateTemplateById([FromRoute] int templateId, [FromBody] UpdateTemplateViewModel templateViewModel)
     {
@@ -108,6 +114,7 @@ public class ContractTemplateController : ControllerBase
         return Ok();
     }
 
+    [Authorize]
     [HttpGet("{templateId}/extract-fields")]
     public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
     {
