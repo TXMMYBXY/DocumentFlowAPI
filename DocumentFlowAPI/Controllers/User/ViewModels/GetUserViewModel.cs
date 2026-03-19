@@ -12,5 +12,5 @@ public class GetUserViewModel
     public string Email { get; set; }
     public bool IsActive { get; set; }
     public string Department { get; set; }
-    public virtual Role Role { get; set; }
+    public virtual Models.Role Role { get; set; }
 }

@@ -15,5 +15,5 @@ public class GetPersonViewModel
     public string Department { get; set; }
     
     [JsonPropertyName("role")]
-    public Role Role { get; set; }
+    public Models.Role Role { get; set; }
 }
