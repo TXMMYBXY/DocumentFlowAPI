@@ -12,5 +12,5 @@ public class LoginHistory : EntityBase
     public virtual User User { get; set; }
     
     [Column(TypeName = "datetime")]
-    public DateTime? LoginDate { get; set; }
+    public DateTime? LoginDate { get; set; } = DateTime.UtcNow;
 }

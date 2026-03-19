@@ -7,6 +7,7 @@ using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
 using DocumentFlowAPI.Services.General;
+using DocumentFlowAPI.Services.Personal.Dto;
 using DocumentFlowAPI.Services.User.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -21,7 +22,7 @@ public class AccountService : GeneralService, IAccountService
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
     private readonly IRefreshTokenHasher _refreshTokenHasher;
-    private readonly IPersonalAccountRepository _personalAccountRepository;
+    private readonly IPersonalAccountService _personalAccountService;
 
     public AccountService(
         IMapper mapper,
@@ -30,7 +31,7 @@ public class AccountService : GeneralService, IAccountService
         IJwtService jwtService,
         IOptions<JwtSettings> jwtSettings,
         IRefreshTokenHasher refreshTokenHasher,
-        IPersonalAccountRepository personalAccountRepository)
+        IPersonalAccountService personalAccountService)
     {
         _mapper = mapper;
         _userRepository = userRepository;
@@ -38,7 +39,7 @@ public class AccountService : GeneralService, IAccountService
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
         _refreshTokenHasher = refreshTokenHasher;
-        _personalAccountRepository = personalAccountRepository;
+        _personalAccountService = personalAccountService;
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto)
@@ -56,7 +57,7 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheckException(new CheckerParam<PasswordVerificationResult>(new ArgumentException("Incorrect password"),
             x => x[0] != PasswordVerificationResult.Success, result));
 
-        await _personalAccountRepository.AddNewLoginHistoryAsync(new LoginHistory { LoginDate = DateTime.Now, UserId = user.Id });
+        await _personalAccountService.AddNewLoginHistoryAsync(new NewAuthRecordDto { UserId = user.Id });
 
         return new LoginResponseDto
         {
@@ -111,7 +112,7 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheckException(new CheckerParam<RefreshToken>(new InvalidOperationException("Incorrect token"),
             x => token == null));
         
-        await _personalAccountRepository.AddNewLoginHistoryAsync(new LoginHistory { LoginDate = DateTime.Now, UserId = token.UserId });
+        await _personalAccountService.AddNewLoginHistoryAsync(new NewAuthRecordDto { UserId = token.UserId });
         
         var response = new RefreshTokenToLoginResponseDto
         {

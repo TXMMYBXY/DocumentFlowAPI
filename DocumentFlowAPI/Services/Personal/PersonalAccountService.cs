@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.Personal.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -53,5 +54,12 @@ public class PersonalAccountService : IPersonalAccountService
         var loginTimesDto = _mapper.Map<List<GetLoginTimesDto>>(loginTimes);
         
         return loginTimesDto;
+    }
+
+    public async Task AddNewLoginHistoryAsync(NewAuthRecordDto newAuthRecordDto)
+    {
+        var loginHistory = _mapper.Map<LoginHistory>(newAuthRecordDto);
+        
+        await _personalAccountRepository.AddNewLoginHistoryAsync(loginHistory);
     }
 }
