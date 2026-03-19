@@ -17,7 +17,7 @@ public class UserMappingProfile : Profile
 
         CreateMap<GetUserDto, GetUserViewModel>().ReverseMap();
 
-        //Profiles for CREATE
+        //Profiles for POST
 
         CreateMap<CreateUserViewModel, CreateUserDto>()
             .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
@@ -30,17 +30,34 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
-        //Profiles for UPDATE
+        //Profiles for PATCH
 
         CreateMap<UpdateUserViewModel, UpdateUserDto>().ReverseMap();
 
         CreateMap<UpdateUserDto, Models.User>()
-            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
-
+            .ForMember(dest => dest.FullName, opt =>
+            {
+                opt.PreCondition(src => src.FullName != null);
+                opt.MapFrom(src => src.FullName);
+            })
+            .ForMember(dest => dest.Email, opt =>
+            {
+                opt.PreCondition(src => src.Email != null);
+                opt.MapFrom(src => src.Email);
+            })
+            .ForMember(dest => dest.DepartmentId, opt =>
+            {
+                opt.PreCondition(src => src.DepartmentId.HasValue);
+                opt.MapFrom(src => src.DepartmentId!.Value);
+            })
+            .ForMember(dest => dest.RoleId, opt =>
+            {
+                opt.PreCondition(src => src.RoleId.HasValue);
+                opt.MapFrom(src => src.RoleId!.Value);
+            })
+            .ForMember(dest => dest.Department, opt => opt.Ignore())
+            .ForMember(dest => dest.Role, opt => opt.Ignore());
+            
         CreateMap<ResetPasswordViewModel, ResetPasswordDto>()
             .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
     }

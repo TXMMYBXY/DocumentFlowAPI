@@ -75,6 +75,11 @@ public class DepartmentService : IDepartmentService
         var department = await _departmentRepository.GetByIdAsync(id);
         
         GeneralService.NullCheck(department, "Department is not exists");
+
+        if (department.Employees.Count != 0)
+        {
+            throw new InvalidOperationException("Department has employees");
+        }
         
         _departmentRepository.Delete(department);
         

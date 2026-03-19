@@ -12,11 +12,6 @@ public interface IUserRepository : IBaseRepository<Models.User>
     Models.User UpdateUserStatus(Models.User userModel);
 
     /// <summary>
-    /// Обновляет информацию о пользователе в таблице
-    /// </summary>
-    Models.User UpdateUser(Models.User userModel);
-
-    /// <summary>
     /// Возвращает пользователя из таблицы по почте
     /// </summary>
     Task<Models.User> GetUserByLoginAsync(string login);

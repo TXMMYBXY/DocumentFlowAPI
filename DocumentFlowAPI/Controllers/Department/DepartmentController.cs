@@ -11,7 +11,7 @@ namespace DocumentFlowAPI.Controllers.Department;
 
 [ApiController]
 [Route("api/department")]
-[AuthorizeByRoleId((int)Permissions.Admin)]
+// [AuthorizeByRoleId((int)Permissions.Admin)]
 public class DepartmentController : ControllerBase
 {
     private readonly IMapper _mapper;

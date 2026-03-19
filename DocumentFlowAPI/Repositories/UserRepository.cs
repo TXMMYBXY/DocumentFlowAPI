@@ -42,6 +42,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
                 Email = u.Email,
                 FullName = u.FullName,
                 Department = u.Department,
+                IsActive = u.IsActive,
                 Role =  u.Role
             })
             .AsQueryable();

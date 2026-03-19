@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DocumentFlowAPI.Services.User;
 
-public class UserService : GeneralService, IUserService
+public class UserService : IUserService
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
@@ -46,7 +46,7 @@ public class UserService : GeneralService, IUserService
         var userModel = _mapper.Map<Models.User>(newUserDto);
         var userExists = await _userRepository.IsUserAlreadyExists(newUserDto.Email);
 
-        Checker.UniversalCheckException(new CheckerParam<bool>(new ArgumentException("Login already in use"),
+        GeneralService.Checker.UniversalCheckException(new GeneralService.CheckerParam<bool>(new ArgumentException("Login already in use"),
             x => x[0], userExists));
 
         userModel.PasswordHash = new PasswordHasher<Models.User>().HashPassword(userModel, newUserDto.PasswordHash);
@@ -113,20 +113,11 @@ public class UserService : GeneralService, IUserService
     public async Task UpdateUserAsync(int userId, UpdateUserDto userDto)
     {
         var userModel = await _userRepository.GetByIdAsync(userId);
-        var updateUser = _UpdateUser(userModel, userDto);
-
-        _userRepository.UpdateUser(updateUser);
-
+        
+        GeneralService.NullCheck(userModel, "User does not exist");
+        
+        _mapper.Map(userDto, userModel);
+        
         await _userRepository.SaveChangesAsync();
-    }
-
-    private Models.User _UpdateUser(Models.User user, UpdateUserDto userDto)
-    {
-        user.FullName = userDto.FullName;
-        user.Email = userDto.Email;
-        user.DepartmentId = userDto.DepartmentId;
-        user.RoleId = userDto.RoleId;
-
-        return user;
     }
 }
