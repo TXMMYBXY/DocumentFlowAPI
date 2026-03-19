@@ -124,7 +124,7 @@ public class UserService : GeneralService, IUserService
     {
         user.FullName = userDto.FullName;
         user.Email = userDto.Email;
-        user.Department = userDto.Department;
+        user.DepartmentId = userDto.DepartmentId;
         user.RoleId = userDto.RoleId;
 
         return user;

@@ -48,7 +48,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
 
         if(!string.IsNullOrWhiteSpace(filter.Email)) query = query.Where(u => u.Email.Contains(filter.Email));
         if (!string.IsNullOrWhiteSpace(filter.FullName)) query = query.Where(u => u.FullName.Contains(filter.FullName));
-        if (!string.IsNullOrWhiteSpace(filter.Department)) query = query.Where(u => u.Department.Contains(filter.Department));
+        if (filter.DepartmentId.HasValue) query = query.Where(u => u.Department.Id == filter.DepartmentId);
         if (filter.RoleId.HasValue) query = query.Where(u => u.Role.Id == filter.RoleId);
         
         if (filter.PageSize.HasValue && filter.PageNumber.HasValue)

@@ -10,6 +10,7 @@ using DocumentFlowAPI.Repositories.Base;
 using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
+using DocumentFlowAPI.Services.Department;
 using DocumentFlowAPI.Services.Personal;
 using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
@@ -50,6 +51,8 @@ public class Startup
         services.AddScoped<IContractAiService, ContractAiService>();
         services.AddScoped<IPersonalAccountService, PersonalAccountService>();
         services.AddScoped<IPersonalAccountRepository, PersonalAccountRepository>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 
         services.AddSingleton(sp =>
         {

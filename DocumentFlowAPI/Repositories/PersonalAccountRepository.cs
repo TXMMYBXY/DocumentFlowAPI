@@ -17,7 +17,6 @@ public class PersonalAccountRepository : BaseRepository<Models.User>, IPersonalA
 
     public async Task<PersonDto> GetPersonalInfo(int personId)
     {
-
         return await _dbContext.Users
             .Include(u => u.Role)
             .Where(u => u.Id == personId)
@@ -25,7 +24,7 @@ public class PersonalAccountRepository : BaseRepository<Models.User>, IPersonalA
             {
                 FullName = u.FullName,
                 Email = u.Email,
-                Department = u.Department,
+                Department = u.Department.Title,
                 Role = u.Role,
             })
             .AsNoTracking()
