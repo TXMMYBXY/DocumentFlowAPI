@@ -1,5 +1,6 @@
 using DocumentFlowAPI.Data;
 using DocumentFlowAPI.Interfaces.Repositories;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Repositories.Base;
 using DocumentFlowAPI.Services.Personal.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -29,5 +30,23 @@ public class PersonalAccountRepository : BaseRepository<Models.User>, IPersonalA
             })
             .AsNoTracking()
             .SingleOrDefaultAsync();
+    }
+
+    public async Task<List<LoginTimeDto>> GetLoginTimesByUserIdAsync(int userId)
+    {
+        return await _dbContext.LoginHistories
+            .Where(l => l.UserId == userId)
+            .Select(l => new LoginTimeDto()
+            {
+                LoginTime = l.LoginDate
+            })
+            .OrderByDescending(l => l.LoginTime)
+            .Take(10)
+            .ToListAsync();
+    }
+
+    public async Task AddNewLoginHistoryAsync(LoginHistory loginHistory)
+    {
+        await _dbContext.LoginHistories.AddAsync(loginHistory);
     }
 }

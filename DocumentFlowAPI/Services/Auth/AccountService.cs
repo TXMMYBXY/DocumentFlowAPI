@@ -3,6 +3,7 @@ using DocumentFlowAPI.Configuration;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
 using DocumentFlowAPI.Services.General;
@@ -20,6 +21,7 @@ public class AccountService : GeneralService, IAccountService
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
     private readonly IRefreshTokenHasher _refreshTokenHasher;
+    private readonly IPersonalAccountRepository _personalAccountRepository;
 
     public AccountService(
         IMapper mapper,
@@ -27,7 +29,8 @@ public class AccountService : GeneralService, IAccountService
         ITokenRepository tokenRepository,
         IJwtService jwtService,
         IOptions<JwtSettings> jwtSettings,
-        IRefreshTokenHasher refreshTokenHasher)
+        IRefreshTokenHasher refreshTokenHasher,
+        IPersonalAccountRepository personalAccountRepository)
     {
         _mapper = mapper;
         _userRepository = userRepository;
@@ -35,12 +38,13 @@ public class AccountService : GeneralService, IAccountService
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
         _refreshTokenHasher = refreshTokenHasher;
+        _personalAccountRepository = personalAccountRepository;
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto)
     {
         var user = await _userRepository.GetUserByLoginAsync(loginUserDto.Email);
-
+        
         Checker.UniversalCheckException(new CheckerParam<Models.User>(new ArgumentException("Incorrect login"),
             x => x[0] == null, user));
 
@@ -52,6 +56,7 @@ public class AccountService : GeneralService, IAccountService
         Checker.UniversalCheckException(new CheckerParam<PasswordVerificationResult>(new ArgumentException("Incorrect password"),
             x => x[0] != PasswordVerificationResult.Success, result));
 
+        await _personalAccountRepository.AddNewLoginHistoryAsync(new LoginHistory { LoginDate = DateTime.Now, UserId = user.Id });
 
         return new LoginResponseDto
         {
@@ -98,9 +103,16 @@ public class AccountService : GeneralService, IAccountService
     {
         var token = await _tokenRepository.GetRefreshTokenByValueAsync(_refreshTokenHasher.Hash(refreshToken.RefreshToken));
 
-        Checker.UniversalCheckException(new CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
-            x => token == null));
+        if (token.ExpiresAt < DateTime.UtcNow)
+        {
+            throw new InvalidOperationException("Refresh token has expired at " + token.ExpiresAt);
+        }
 
+        Checker.UniversalCheckException(new CheckerParam<RefreshToken>(new InvalidOperationException("Incorrect token"),
+            x => token == null));
+        
+        await _personalAccountRepository.AddNewLoginHistoryAsync(new LoginHistory { LoginDate = DateTime.Now, UserId = token.UserId });
+        
         var response = new RefreshTokenToLoginResponseDto
         {
             IsAllowed = true

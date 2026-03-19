@@ -12,7 +12,11 @@ public class PersonalAccountMappingProfile : Profile
         CreateMap<GetPersonDto, GetPersonViewModel>();
         
         CreateMap<PersonDto, GetPersonDto>();
+
+        CreateMap<GetLoginTimesDto, GetLoginTimesViewModel>();
         
+        CreateMap<LoginTimeDto, GetLoginTimesDto>();
+            
         //Profiles for PATCH
         CreateMap<ChangePasswordViewModel, ChangePasswordDto>();
     }

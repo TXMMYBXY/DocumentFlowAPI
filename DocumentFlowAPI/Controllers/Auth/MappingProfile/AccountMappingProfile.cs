@@ -25,16 +25,13 @@ public class AccountMappingProfile : Profile
             .ForMember(dest => dest.TokenType, opt => opt.MapFrom(src => src.TokenType))
             .ReverseMap();
 
-        CreateMap<UserInfoForLoginDto, Models.User>()
+        CreateMap<Models.User, UserInfoForLoginDto>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
-            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
-            .ReverseMap();
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department.Title));
 
-        CreateMap<Models.User, UserInfoForLoginDto>()
-            .ReverseMap();
 
         CreateMap<RefreshTokenToLoginDto, RefreshTokenToLoginViewModel>()
             .ReverseMap();

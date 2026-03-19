@@ -46,4 +46,12 @@ public class PersonalAccountService : IPersonalAccountService
 
         await _personalAccountRepository.SaveChangesAsync();
     }
+
+    public async Task<List<GetLoginTimesDto>> GetLoginTimesAsync(int userId)
+    {
+        var loginTimes = await _personalAccountRepository.GetLoginTimesByUserIdAsync(userId);
+        var loginTimesDto = _mapper.Map<List<GetLoginTimesDto>>(loginTimes);
+        
+        return loginTimesDto;
+    }
 }

@@ -18,9 +18,7 @@ public sealed class RefreshTokenHasher : IRefreshTokenHasher
     public string Hash(string refreshToken)
     {
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_refreshTokenSettings.SecretKey));
-        var hashBytes = hmac.ComputeHash(
-            Encoding.UTF8.GetBytes(refreshToken)
-        );
+        var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(refreshToken));
 
         return Convert.ToBase64String(hashBytes);
     }
