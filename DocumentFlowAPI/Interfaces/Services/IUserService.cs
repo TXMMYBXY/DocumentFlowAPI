@@ -8,7 +8,7 @@ public interface IUserService
     /// <summary>
     /// Метод для получения списка всех пользователей в таблице
     /// </summary>
-    Task<List<GetUserDto>> GetAllUsersAsync(UserFilter userFilter);
+    Task<PagedUserDto> GetAllUsersAsync(UserFilter userFilter);
 
     /// <summary>
     /// Метод для получения пользователя по id

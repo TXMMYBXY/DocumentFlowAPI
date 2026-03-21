@@ -29,12 +29,12 @@ public class UserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ActionResult<List<GetUserViewModel>>> GetAllUser([FromQuery] UserFilter userFilter)
+    public async Task<ActionResult<PagedUserViewModel>> GetAllUser([FromQuery] UserFilter userFilter)
     {
         var listUserDto = await _userService.GetAllUsersAsync(userFilter);
-        var listUserViewModel = _mapper.Map<List<GetUserViewModel>>(listUserDto);
+        var pagedUserViewModel = _mapper.Map<PagedUserViewModel>(listUserDto);
 
-        return Ok(listUserViewModel);
+        return Ok(pagedUserViewModel);
     }
 
     /// <summary>

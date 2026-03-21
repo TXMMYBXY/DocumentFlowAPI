@@ -23,6 +23,8 @@ public interface IUserRepository : IBaseRepository<Models.User>
     Task<bool> IsUserAlreadyExists(string email);
 
     Task<List<UserDto>> GetAllUsersAsync(UserFilter filter);
-    
+
     Task<PersonDto> GetPersonalInfo(int personId);
+    
+    Task<int> GetTotalCountAsync(UserFilter filter);
 }

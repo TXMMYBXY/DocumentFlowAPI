@@ -55,7 +55,7 @@ public class Startup
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IRoleRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
 
         services.AddSingleton(sp =>
         {

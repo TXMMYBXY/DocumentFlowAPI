@@ -1,5 +1,4 @@
 using DocumentFlowAPI.Data;
-using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Repositories.Users.Dtos;
 using DocumentFlowAPI.Repositories.Base;
@@ -88,5 +87,10 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
             })
             .AsNoTracking()
             .SingleOrDefaultAsync();
+    }
+
+    public async Task<int> GetTotalCountAsync(UserFilter filter)
+    {
+        return await _dbContext.Users.CountAsync();
     }
 }

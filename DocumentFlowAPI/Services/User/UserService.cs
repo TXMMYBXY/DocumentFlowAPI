@@ -74,11 +74,18 @@ public class UserService : IUserService
     /// <summary>
     /// Возврат всех пользователей
     /// </summary>
-    public async Task<List<GetUserDto>> GetAllUsersAsync(UserFilter userFilter)
+    public async Task<PagedUserDto> GetAllUsersAsync(UserFilter userFilter)
     {
-        var userDtoList = await _userRepository.GetAllUsersAsync(userFilter);
+        var listUser = await _userRepository.GetAllUsersAsync(userFilter);
+        var listUserDto = _mapper.Map<List<GetUserDto>>(listUser);
 
-        return _mapper.Map<List<GetUserDto>>(userDtoList);
+        return new PagedUserDto
+        {
+            Users = listUserDto,
+            TotalCount = await _userRepository.GetTotalCountAsync(userFilter),
+            PageSize = userFilter.PageSize ?? listUserDto.Count,
+            CurrentPage = userFilter.PageNumber ?? 1
+        };
     }
 
     /// <summary>
