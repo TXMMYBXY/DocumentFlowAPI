@@ -71,4 +71,9 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
     {
         _dbContext.Set<T>().Remove(template);
     }
+
+    public async Task<int> GetTotalCountAsync<T>() where T : Models.Template
+    {
+        return await _dbContext.Set<T>().CountAsync();
+    }
 }

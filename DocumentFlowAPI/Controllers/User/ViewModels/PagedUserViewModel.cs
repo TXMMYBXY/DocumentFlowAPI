@@ -1,21 +1,10 @@
 using System.Text.Json.Serialization;
+using DocumentFlowAPI.Services.General;
 
 namespace DocumentFlowAPI.Controllers.User.ViewModels;
 
-public class PagedUserViewModel
+public class PagedUserViewModel : PagedData
 {
     [JsonPropertyName("users")]
     public List<GetUserViewModel> Users { get; set; }
-
-    [JsonPropertyName("totalCount")]
-    public int TotalCount { get; set; }
-
-    [JsonPropertyName("pageSize")]
-    public int PageSize { get; set; }
-
-    [JsonPropertyName("currentPage")]
-    public int CurrentPage { get; set; }
-
-    [JsonPropertyName("totalPages")]
-    public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
 }

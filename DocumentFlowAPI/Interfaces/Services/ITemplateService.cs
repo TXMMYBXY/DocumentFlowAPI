@@ -15,7 +15,7 @@ public interface ITemplateService
     /// <summary>
     /// Получение списка всех шаблонов
     /// </summary>
-    Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Template;
+    Task<PagedTemplateDto> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Template;
 
     /// <summary>
     /// Создание нового шаблона

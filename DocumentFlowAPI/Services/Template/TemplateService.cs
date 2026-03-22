@@ -120,11 +120,19 @@ public class TemplateService : ITemplateService
         return JsonSerializer.Deserialize<T>(response);
     }
 
-    public async Task<List<GetTemplateDto>> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Models.Template
+    public async Task<PagedTemplateDto> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Models.Template
     {
         var templates = await _templateRepository.GetAllTemplatesAsync<T>(templateFilter);
+        var listTemplateDto = _mapper.Map<List<GetTemplateDto>>(templates);
+        var totalCount = await _templateRepository.GetTotalCountAsync<T>();
 
-        return _mapper.Map<List<GetTemplateDto>>(templates);
+        return new PagedTemplateDto
+        {
+            Templates = listTemplateDto,
+            TotalCount = totalCount,
+            PageSize = templateFilter.PageSize ?? totalCount,
+            CurrentPage = templateFilter.PageNumber ?? 1
+        };
     }
 
     public async Task<GetTemplateDto> GetTemplateByIdAsync<T>(int templateId) where T : Models.Template

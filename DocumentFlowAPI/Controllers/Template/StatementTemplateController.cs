@@ -40,10 +40,10 @@ public class StatementTemplateController : ControllerBase
     /// Получение списка шаблонов заявлений
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
+    public async Task<ActionResult<PagedTemplateViewModel>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
     {
         var templatesDto = await _templateService.GetAllTemplatesAsync<StatementTemplate>(templateFilter);
-        var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
+        var templatesViewModel = _mapper.Map<PagedTemplateViewModel>(templatesDto);
 
         return Ok(templatesViewModel);
     }

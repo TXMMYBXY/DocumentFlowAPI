@@ -11,10 +11,11 @@ public class TemplateMappingProfile : Profile
     {
         //Profiles for GET
 
-        CreateMap<GetTemplateViewModel, GetTemplateDto>()
-            .ReverseMap();
+        CreateMap<GetTemplateViewModel, GetTemplateDto>().ReverseMap();
 
         CreateMap<Models.Template, GetTemplateDto>().ReverseMap();
+
+        CreateMap<PagedTemplateViewModel, PagedTemplateDto>().ReverseMap();
 
         //Profiles for CREATE
 

@@ -34,7 +34,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
 
     public async Task<List<UserDto>> GetAllUsersAsync(UserFilter filter)
     {
-        var  query = _dbContext.Users
+        var query = _dbContext.Users
             .Include(u => u.Role)
             .Select(u => new UserDto
             {
@@ -43,22 +43,22 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
                 FullName = u.FullName,
                 Department = u.Department,
                 IsActive = u.IsActive,
-                Role =  u.Role
+                Role = u.Role
             })
             .AsQueryable();
 
-        if(!string.IsNullOrWhiteSpace(filter.Email)) query = query.Where(u => u.Email.Contains(filter.Email));
+        if (!string.IsNullOrWhiteSpace(filter.Email)) query = query.Where(u => u.Email.Contains(filter.Email));
         if (!string.IsNullOrWhiteSpace(filter.FullName)) query = query.Where(u => u.FullName.Contains(filter.FullName));
         if (filter.DepartmentId.HasValue) query = query.Where(u => u.Department.Id == filter.DepartmentId);
         if (filter.RoleId.HasValue) query = query.Where(u => u.Role.Id == filter.RoleId);
-        
+
         if (filter.PageSize.HasValue && filter.PageNumber.HasValue)
         {
             query = query
                 .Skip((filter.PageNumber.Value - 1) * filter.PageSize.Value)
                 .Take(filter.PageSize.Value);
         }
-        
+
         return await query
             .AsNoTracking()
             .ToListAsync();
@@ -72,7 +72,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
             .IsModified = true;
         return userModel;
     }
-    
+
     public async Task<PersonDto> GetPersonalInfo(int personId)
     {
         return await _dbContext.Users
