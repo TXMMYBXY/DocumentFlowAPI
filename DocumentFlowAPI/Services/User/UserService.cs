@@ -82,7 +82,7 @@ public class UserService : IUserService
         return new PagedUserDto
         {
             Users = listUserDto,
-            TotalCount = await _userRepository.GetTotalCountAsync(userFilter),
+            TotalCount = await _userRepository.GetTotalCountAsync(),
             PageSize = userFilter.PageSize ?? listUserDto.Count,
             CurrentPage = userFilter.PageNumber ?? 1
         };

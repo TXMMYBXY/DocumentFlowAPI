@@ -89,7 +89,7 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
             .SingleOrDefaultAsync();
     }
 
-    public async Task<int> GetTotalCountAsync(UserFilter filter)
+    public async Task<int> GetTotalCountAsync()
     {
         return await _dbContext.Users.CountAsync();
     }

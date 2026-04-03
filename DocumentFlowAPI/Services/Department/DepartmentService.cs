@@ -23,12 +23,18 @@ public class DepartmentService : IDepartmentService
         _userRepository = userRepository;
     }
     
-    public async Task<List<GetDepartmentDto>> GetAllDepartmentsAsync(DepartmentFilter filter)
+    public async Task<PagedDepartmentDto> GetAllDepartmentsAsync(DepartmentFilter filter)
     {
         var departments = await _departmentRepository.GetAllDepartmentsAsync(filter);
         var listDepartmentDto = _mapper.Map<List<GetDepartmentDto>>(departments);
         
-        return listDepartmentDto;
+        return new PagedDepartmentDto
+        {
+            Departments = listDepartmentDto,
+            TotalCount = await _departmentRepository.GetTotalCountAsync(),
+            PageSize = filter.PageSize ?? listDepartmentDto.Count,
+            CurrentPage = filter.PageNumber ?? 1
+        };
     }
 
     public async Task<GetDepartmentDto> GetDepartmentByIdAsync(int id)

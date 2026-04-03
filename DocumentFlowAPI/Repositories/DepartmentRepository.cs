@@ -34,4 +34,9 @@ public class DepartmentRepository : BaseRepository<Department>, IDepartmentRepos
             .AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<int> GetTotalCountAsync()
+    {
+        return await _dbContext.Departments.CountAsync();
+    }
 }

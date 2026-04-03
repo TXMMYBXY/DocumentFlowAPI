@@ -11,6 +11,8 @@ public class DepartmentMappingProfile : Profile
         //Profiles for GET        
         CreateMap<GetDepartmentDto, GetDepartmentViewModel>().ReverseMap();
 
+        CreateMap<PagedDepartmentDto, PagedDepartmentViewModel>().ReverseMap();
+
         CreateMap<Models.Department, GetDepartmentDto>()
             .ForMember(dest => dest.Employees, opt => opt.MapFrom(src => src.Employees))
             .ReverseMap();
