@@ -11,9 +11,6 @@ public class GetTemplateViewModel
     [JsonPropertyName("title")]
     public string Title { get; set; }
 
-    [JsonPropertyName("path")]
-    public string Path { get; set; }
-
     [JsonPropertyName("createdBy")]
     public int CreatedBy { get; set; }
 

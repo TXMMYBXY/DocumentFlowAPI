@@ -47,6 +47,8 @@ public interface ITemplateService
     /// </summary>
     Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Template;
 
+    Task<DownloadTemplateDto> DownloadTemplateAsync<T>(int templateId) where T : Template, new();
+
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных шаблонов
 
 }

@@ -17,9 +17,9 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Models.User> GetUserByLoginAsync(string email)
+    public async Task<Models.User> GetUserByLoginAsync(string login)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));
+        return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email.Equals(login));
     }
 
     /// <summary>
@@ -94,10 +94,27 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
         return await _dbContext.Users.CountAsync();
     }
 
-    public async Task DeleteManyAsync(List<int> userIds)
+    public async Task DeleteManyAsync(List<int> ids)
     {
-        var users = await _dbContext.Users.Where(u => userIds.Contains(u.Id)).ToListAsync();
+        var users = await _dbContext.Users.Where(u => ids.Contains(u.Id)).ToListAsync();
 
         _dbContext.Users.RemoveRange(users);
+    }
+
+    public async Task<UserInfoDto> GetUserInfoByIdAsync(int userId)
+    {
+        return await _dbContext.Users
+            .Include(u => u.Role)
+            .Where(u => u.Id == userId)
+            .Select(u => new UserInfoDto
+            {
+                Id = u.Id,
+                Email = u.Email,
+                FullName = u.FullName,
+                Department = u.Department.Title,
+                Role = u.Role.Title,
+            })
+            .AsNoTracking()
+            .SingleOrDefaultAsync();
     }
 }

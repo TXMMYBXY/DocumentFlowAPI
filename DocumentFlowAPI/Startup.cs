@@ -11,6 +11,7 @@ using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
 using DocumentFlowAPI.Services.Department;
+using DocumentFlowAPI.Services.FileStorage;
 using DocumentFlowAPI.Services.Personal;
 using DocumentFlowAPI.Services.Role;
 using DocumentFlowAPI.Services.Tasks;
@@ -56,6 +57,8 @@ public class Startup
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
+
 
         services.AddSingleton(sp =>
         {

@@ -25,6 +25,8 @@ public interface IUserRepository : IBaseRepository<Models.User>
     Task<List<UserDto>> GetAllUsersAsync(UserFilter filter);
 
     Task<PersonDto> GetPersonalInfo(int personId);
-    
+
     Task<int> GetTotalCountAsync();
+    
+    Task<UserInfoDto> GetUserInfoByIdAsync(int userId);
 }

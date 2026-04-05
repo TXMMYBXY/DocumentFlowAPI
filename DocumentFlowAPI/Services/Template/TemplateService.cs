@@ -4,7 +4,9 @@ using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.AI;
+using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.Template.Dto;
+using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -17,17 +19,20 @@ public class TemplateService : ITemplateService
     private readonly ITemplateRepository _templateRepository;
     private readonly IFieldExtractorService _fieldExtractorService;
     private readonly IContractAiService _contractAiService;
+    private readonly IFileStorageService _fileStorageService;
 
     public TemplateService(
         IMapper mapper,
         ITemplateRepository templateRepository,
         IFieldExtractorService fieldExtractorService,
-        IContractAiService contractAiService)
+        IContractAiService contractAiService,
+        IFileStorageService fileStorageService)
     {
         _mapper = mapper;
         _templateRepository = templateRepository;
         _fieldExtractorService = fieldExtractorService;
         _contractAiService = contractAiService;
+        _fileStorageService = fileStorageService;
     }
 
     public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
@@ -45,10 +50,25 @@ public class TemplateService : ITemplateService
 
     public async Task CreateTemplateAsync<T>(CreateTemplateDto templateDto) where T : Models.Template, new()
     {
+        GeneralService.NullCheck(templateDto, "File is not exists");
+
+        if (templateDto.FileLength == 0)
+        {
+            throw new ArgumentException("File is empty");
+        }
+
+        var uniqueFileName = $"{Guid.NewGuid()}_{templateDto.FileName}";
+        var projectFolder = $"{typeof(T)}_{_ClearName(UserIdentity.User.Department)}";
+
+        var filePath = await _fileStorageService.SaveFileAsync(
+            templateDto.FileStream,
+            uniqueFileName,
+            projectFolder);
+        
         T templateModel = new T
         {
             Title = templateDto.Title,
-            Path = templateDto.Path,
+            Path = filePath,
             CreatedBy = templateDto.CreatedBy,
             CreatedAt = templateDto.CreatedAt,
             IsActive = templateDto.IsActive
@@ -79,42 +99,6 @@ public class TemplateService : ITemplateService
         var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
 
         return fieldsDto;
-    }
-
-    private async Task<List<TemplateFieldInfoDto>> _ExctractFieldsByAiAsync<T>(int templateId) where T : Models.ContractTemplate
-    {
-        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
-        var contractText = _ReadDocx(template.Path);
-        var jsonResponse = await _contractAiService.ExtractFieldsJsonAsync(contractText);
-        var response = _ConvertResponse<List<TemplateFieldInfoDto>>(jsonResponse);
-
-        return response;
-    }
-
-    private static string _ReadDocx(string filePath)
-    {
-        StringBuilder sb = new StringBuilder();
-
-        using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
-        {
-            Body body = wordDoc.MainDocumentPart.Document.Body;
-            foreach (var para in body.Elements<Paragraph>())
-            {
-                sb.AppendLine(para.InnerText);
-            }
-        }
-
-        return sb.ToString();
-    }
-
-    private static T? _ConvertResponse<T>(string response)
-    {
-        if (response.Equals(""))
-        {
-            return default;
-        }
-
-        return JsonSerializer.Deserialize<T>(response);
     }
 
     public async Task<PagedTemplateDto> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Models.Template
@@ -161,5 +145,64 @@ public class TemplateService : ITemplateService
     {
         await _templateRepository.DeleteManyTemplatesAsync<T>(templateIds);
         await _templateRepository.SaveChangesAsync();
+    }
+
+
+    public async Task<DownloadTemplateDto> DownloadTemplateAsync<T>(int templateId) where T : Models.Template, new()
+    {
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+
+        GeneralService.NullCheck(template, "Document not found");
+
+        return new DownloadTemplateDto
+        {
+            FilePath = template.Path,
+            FileName = template.Title
+        };
+    }
+
+    private async Task<List<TemplateFieldInfoDto>> _ExctractFieldsByAiAsync<T>(int templateId) where T : Models.ContractTemplate
+    {
+        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+        var contractText = _ReadDocx(template.Path);
+        var jsonResponse = await _contractAiService.ExtractFieldsJsonAsync(contractText);
+        var response = _ConvertResponse<List<TemplateFieldInfoDto>>(jsonResponse);
+
+        return response;
+    }
+
+    private static string _ReadDocx(string filePath)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filePath, false))
+        {
+            Body body = wordDoc.MainDocumentPart.Document.Body;
+            foreach (var para in body.Elements<Paragraph>())
+            {
+                sb.AppendLine(para.InnerText);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+
+    private static T? _ConvertResponse<T>(string response)
+    {
+        if (response.Equals(""))
+        {
+            return default;
+        }
+
+        return JsonSerializer.Deserialize<T>(response);
+    }
+
+    private string _ClearName(string input)
+    {
+        foreach (var c in Path.GetInvalidFileNameChars())
+            input = input.Replace(c, '_');
+
+        return input.Replace(" ", "_");
     }
 }

@@ -53,9 +53,11 @@ public class StatementTemplateController : ControllerBase
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPost]
-    public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateViewModel templateViewModel)
+    public async Task<ActionResult> CreateTemplate([FromForm] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
+
+        templateDto.FileStream = templateViewModel.File.OpenReadStream();
 
         await _templateService.CreateTemplateAsync<StatementTemplate>(templateDto);
 
@@ -122,5 +124,18 @@ public class StatementTemplateController : ControllerBase
         var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
 
         return Ok(resultViewModel);
+    }
+
+    [AuthorizeByRoleId]
+    [HttpGet("{templateId:int}/download")]
+    public async Task<IActionResult> GetDocument([FromRoute] int templateId)
+    {
+        var templateDto = await _templateService.DownloadTemplateAsync<StatementTemplate>(templateId);
+
+        var templateViewModel = _mapper.Map<DownloadTemplateViewModel>(templateDto);
+
+        var stream = new FileStream(templateViewModel.FilePath, FileMode.Open, FileAccess.Read);
+
+        return File(stream, "application/octet-stream", templateViewModel.FileName);
     }
 }

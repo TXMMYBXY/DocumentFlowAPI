@@ -17,11 +17,13 @@ public class TemplateMappingProfile : Profile
 
         CreateMap<PagedTemplateViewModel, PagedTemplateDto>().ReverseMap();
 
+        CreateMap<DownloadTemplateDto, DownloadTemplateViewModel>().ReverseMap();
+
         //Profiles for CREATE
 
         CreateMap<CreateTemplateViewModel, CreateTemplateDto>()
-            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
-            .ReverseMap();
+            .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.File.FileName))
+            .ForMember(dest => dest.FileLength, opt => opt.MapFrom(src => src.File.Length));
 
         //Profiles for UPDATE
 
