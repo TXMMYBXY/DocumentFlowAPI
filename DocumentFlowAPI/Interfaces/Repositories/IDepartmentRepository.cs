@@ -7,5 +7,6 @@ namespace DocumentFlowAPI.Interfaces.Repositories;
 public interface IDepartmentRepository : IBaseRepository<Department>
 {
     Task<List<Department>> GetAllDepartmentsAsync(DepartmentFilter filter);
+    Task<bool> IsDepartmentHasEmployeesAsync(int departmentId);
     Task<int> GetTotalCountAsync();
 }

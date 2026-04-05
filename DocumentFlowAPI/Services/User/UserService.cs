@@ -1,5 +1,4 @@
 using AutoMapper;
-using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;
@@ -59,15 +58,18 @@ public class UserService : IUserService
         await _jwtService.GenerateRefreshTokenAsync(userId.Id);
     }
 
+    public async Task DeleteManyUserAsync(List<int> userIds)
+    {
+        await _userRepository.DeleteManyAsync(userIds);
+        await _userRepository.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Меняет статус пользователя на заблокированного
     /// </summary>
     public async Task DeleteUserAsync(int userId)
     {
-        var user = await _userRepository.GetByIdAsync(userId);
-
-        _userRepository.Delete(user);
-
+        await _userRepository.Delete(userId);
         await _userRepository.SaveChangesAsync();
     }
 

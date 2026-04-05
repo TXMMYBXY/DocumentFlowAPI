@@ -62,10 +62,10 @@ public class DepartmentController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> DeleteDepartment([FromBody] DeleteDepartmentViewModel deleteDepartmentViewModel)
+    [HttpDelete("{departmentId:int}")]
+    public async Task<ActionResult> DeleteDepartment([FromRoute] int departmentId)
     {
-        await _departmentService.DeleteDepartmentAsync(deleteDepartmentViewModel.DepartmentId);
+        await _departmentService.DeleteDepartmentAsync(departmentId);
         
         return Ok();
     }

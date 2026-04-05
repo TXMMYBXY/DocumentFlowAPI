@@ -26,8 +26,8 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Получение шаблона заявления
     /// </summary>
-    [Authorize]
-    [HttpGet("{templateId}/get-template")]
+    [AuthorizeByRoleId]
+    [HttpGet("{templateId}")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
         var templateDto = await _templateService.GetTemplateByIdAsync<StatementTemplate>(templateId);
@@ -39,6 +39,7 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Получение списка шаблонов заявлений
     /// </summary>
+    [AuthorizeByRoleId]
     [HttpGet]
     public async Task<ActionResult<PagedTemplateViewModel>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
     {
@@ -80,10 +81,22 @@ public class StatementTemplateController : ControllerBase
     /// Удаление шаблона заявлений
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpDelete("delete-template")]
-    public async Task<ActionResult> DeleteTemplateById([FromBody] DeleteTemplateViewModel deleteTemplateViewModel)
+    [HttpDelete("{templateId}")]
+    public async Task<ActionResult> DeleteTemplate([FromRoute] int templateId)
     {
-        await _templateService.DeleteTemplateAsync<StatementTemplate>(deleteTemplateViewModel.TemplateId);
+        await _templateService.DeleteTemplateAsync<StatementTemplate>(templateId);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Удаление нескольких шаблонов заявлений
+    /// </summary>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
+    [HttpDelete("delete-many")]
+    public async Task<ActionResult> DeleteManyTemplates([FromBody] DeleteManyTemplatesViewModel deleteTemplateViewModel)
+    {
+        await _templateService.DeleteManyTemplatesAsync<StatementTemplate>(deleteTemplateViewModel.TemplateIds);
 
         return Ok();
     }
@@ -102,7 +115,7 @@ public class StatementTemplateController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
+    [AuthorizeByRoleId]
     [HttpGet("{templateId}/extract-fields")]
     public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
     {

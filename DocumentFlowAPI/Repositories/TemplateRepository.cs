@@ -37,7 +37,8 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
 
         if(filter.Title != null) query  = query.Where(t => t.Title.Contains(filter.Title));
         if(filter.CreatedBy.HasValue) query  = query.Where(t => t.CreatedBy == filter.CreatedBy.Value);
-        if(filter.CreatedAt != null) query  = query.Where(t => t.CreatedAt == filter.CreatedAt);
+        if (filter.CreatedAtEarlier != null) query = query.Where(t => t.CreatedAt >= filter.CreatedAtEarlier.Value);
+        if (filter.CreatedAtLater != null) query = query.Where(t => t.CreatedAt <= filter.CreatedAtLater.Value);
 
         if (filter.PageSize.HasValue && filter.PageNumber.HasValue)
         {

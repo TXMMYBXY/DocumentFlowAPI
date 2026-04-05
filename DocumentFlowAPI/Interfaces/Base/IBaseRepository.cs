@@ -27,7 +27,14 @@ public interface IBaseRepository<T> where T : class
     /// <summary>
     /// Удаление записи
     /// </summary>
-    void Delete(T entity);
+    Task Delete(int id);
+
+    /// <summary>
+    /// Множественное удаление записей
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    Task DeleteManyAsync(List<int> ids);
 
     /// <summary>
     /// Сохранение изменений в таблицах

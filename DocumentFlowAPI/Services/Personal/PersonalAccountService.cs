@@ -71,7 +71,7 @@ public class PersonalAccountService : IPersonalAccountService
         {
             var lastLoginHistory = await _accountRepository.GetFirstLoginHistoryByUserIdAsync(newAuthRecordDto.UserId);
             
-            _accountRepository.Delete(lastLoginHistory);
+            await _accountRepository.Delete(lastLoginHistory);
         }
         
         await _accountRepository.AddNewLoginHistoryAsync(loginHistory);

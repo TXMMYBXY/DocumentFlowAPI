@@ -78,17 +78,16 @@ public class DepartmentService : IDepartmentService
 
     public async Task DeleteDepartmentAsync(int id)
     {
-        var department = await _departmentRepository.GetByIdAsync(id);
+        var isDepartmentHasEmployees = await _departmentRepository.IsDepartmentHasEmployeesAsync(id);
         
-        GeneralService.NullCheck(department, "Department is not exists");
+        GeneralService.NullCheck(isDepartmentHasEmployees, "Department is not exists");
 
-        if (department.Employees.Count != 0)
+        if (isDepartmentHasEmployees)
         {
             throw new InvalidOperationException("Department has employees");
         }
         
-        _departmentRepository.Delete(department);
-        
+        await _departmentRepository.Delete(id);
         await _departmentRepository.SaveChangesAsync();
     }
 }

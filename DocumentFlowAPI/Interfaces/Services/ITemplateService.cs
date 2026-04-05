@@ -42,6 +42,11 @@ public interface ITemplateService
     /// </summary>
     Task<List<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Template;
 
+    /// <summary>
+    /// Метод для удаления нескольких шаблонов
+    /// </summary>
+    Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Template;
+
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных шаблонов
 
 }

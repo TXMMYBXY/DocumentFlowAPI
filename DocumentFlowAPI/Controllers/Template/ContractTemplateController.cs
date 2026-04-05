@@ -29,7 +29,7 @@ public class ContractTemplateController : ControllerBase
     /// Получение шаблона договора по id
     /// </summary>
     /// <returns>ViewModel шаблона</returns>
-    [Authorize]
+    [AuthorizeByRoleId]
     [HttpGet("{templateId}/get-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
@@ -85,16 +85,28 @@ public class ContractTemplateController : ControllerBase
     }
 
     /// <summary>
-    /// Только для главы отдел закупок
-    /// Удаляет шаблон договора из тела
+    /// Удаляет шаблон договора 
     /// </summary>
     /// <param name="templateViewModel"></param>
     /// <returns></returns>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpDelete("delete-template")]
-    public async Task<ActionResult> DeleteTemplateById([FromBody] DeleteTemplateViewModel templateViewModel)
+    [HttpDelete("{templateId}")]
+    public async Task<ActionResult> DeleteTemplate([FromRoute] int templateId)
     {
-        await _templateService.DeleteTemplateAsync<ContractTemplate>(templateViewModel.TemplateId);
+        await _templateService.DeleteTemplateAsync<StatementTemplate>(templateId);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Удаление нескольких шаблонов договоров
+    /// </summary>
+    /// <param name="deleteTemplateViewModel">Ids</param>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
+    [HttpDelete("delete-many")]
+    public async Task<ActionResult> DeleteManyTemplates([FromBody] DeleteManyTemplatesViewModel deleteTemplateViewModel)
+    {
+        await _templateService.DeleteManyTemplatesAsync<StatementTemplate>(deleteTemplateViewModel.TemplateIds);
 
         return Ok();
     }
@@ -114,7 +126,7 @@ public class ContractTemplateController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
+    [AuthorizeByRoleId]
     [HttpGet("{templateId}/extract-fields")]
     public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
     {

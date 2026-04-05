@@ -39,8 +39,11 @@ public class AccountRepository : BaseRepository<LoginHistory>, IAccountRepositor
         return await _dbContext.LoginHistories.CountAsync(l => l.UserId == userId);
     }
 
-    public async Task<LoginHistory> GetFirstLoginHistoryByUserIdAsync(int userId)
+    public async Task<int> GetFirstLoginHistoryByUserIdAsync(int userId)
     {
-        return await _dbContext.LoginHistories.FirstOrDefaultAsync(l => l.UserId == userId);
+        return await _dbContext.LoginHistories
+            .Where(l => l.UserId == userId)
+            .Select(l => l.Id)
+            .FirstOrDefaultAsync();
     }
 }

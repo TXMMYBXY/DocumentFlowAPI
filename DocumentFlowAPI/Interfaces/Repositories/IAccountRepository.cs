@@ -9,5 +9,5 @@ public interface IAccountRepository : IBaseRepository<LoginHistory>
     Task<List<LoginTimeDto>> GetLoginTimesByUserIdAsync(int userId);
     Task AddNewLoginHistoryAsync(LoginHistory loginHistory);
     Task<int> GetCountOfRecordsByUserIdAsync(int userId);
-    Task<LoginHistory> GetFirstLoginHistoryByUserIdAsync(int userId);
+    Task<int> GetFirstLoginHistoryByUserIdAsync(int userId);
 }

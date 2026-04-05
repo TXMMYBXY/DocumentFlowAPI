@@ -93,4 +93,11 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
     {
         return await _dbContext.Users.CountAsync();
     }
+
+    public async Task DeleteManyAsync(List<int> userIds)
+    {
+        var users = await _dbContext.Users.Where(u => userIds.Contains(u.Id)).ToListAsync();
+
+        _dbContext.Users.RemoveRange(users);
+    }
 }

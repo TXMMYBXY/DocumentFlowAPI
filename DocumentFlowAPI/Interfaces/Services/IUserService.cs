@@ -40,5 +40,10 @@ public interface IUserService
     /// </summary>
     Task<bool> ChangeUserStatusByIdAsync(int userId);
 
+    /// <summary>
+    /// Метод для удаления нескольких пользователей по их id
+    /// </summary>
+    Task DeleteManyUserAsync(List<int> userIds);
+
     //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных пользователей
 }

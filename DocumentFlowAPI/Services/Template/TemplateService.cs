@@ -60,10 +60,7 @@ public class TemplateService : ITemplateService
 
     public async Task DeleteTemplateAsync<T>(int templateId) where T : Models.Template
     {
-        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
-
-        _templateRepository.DeleteTemplate<T>(template);
-        
+        await _templateRepository.Delete(templateId);
         await _templateRepository.SaveChangesAsync();
     }
 
@@ -152,11 +149,17 @@ public class TemplateService : ITemplateService
         await _templateRepository.SaveChangesAsync();
     }
 
-    private T _UpdateTemplate<T>(T template, UpdateTemplateDto templateDto) where T : Models.Template
+    private static T _UpdateTemplate<T>(T template, UpdateTemplateDto templateDto) where T : Models.Template
     {
         template.Title = templateDto.Title;
         template.Path = templateDto.Path;
 
         return template;
+    }
+
+    public async Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Models.Template
+    {
+        await _templateRepository.DeleteManyAsync(templateIds);
+        await _templateRepository.SaveChangesAsync();
     }
 }

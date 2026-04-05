@@ -96,10 +96,23 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpDelete]
-    public async Task<ActionResult> DeleteUserAsync([FromBody] DeleteUserViewModel userViewModel)
+    [HttpDelete("{userId:int}")]
+    public async Task<ActionResult> DeleteUserAsync([FromRoute] int userId)
     {
-        await _userService.DeleteUserAsync(userViewModel.UserId);
+        await _userService.DeleteUserAsync(userId);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Удаление нескольких пользователей
+    /// </summary>
+    /// <param name="deleteManyUserViewModel">Объект со списком Id</param>
+    /// <returns></returns>
+    [HttpDelete("delete-many")]
+    public async Task<ActionResult> DeleteManyUserAsync([FromBody] DeleteManyUsersViewModel deleteManyUserViewModel)
+    {
+        await _userService.DeleteManyUserAsync(deleteManyUserViewModel.UserIds);
 
         return Ok();
     }
