@@ -34,7 +34,15 @@ public interface ITemplateRepository : IBaseRepository<Template>
     /// <summary>
     /// Удаляет шаблон из таблицы
     /// </summary>
-    void DeleteTemplate<T>(T template) where T : Template;
+    Task DeleteTemplateAsync<T>(int templateId) where T : Template;
 
+    /// <summary>
+    /// Удалять несколько шаблонов из таблицы
+    /// </summary>
+    Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Template;
+
+    /// <summary>
+    /// Возвращает количество шаблонов в таблице
+    /// </summary>
     Task<int> GetTotalCountAsync<T>() where T : Template;
 }

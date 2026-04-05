@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Department.ViewModels;
 using DocumentFlowAPI.Services.Department.Dto;
+using DocumentFlowAPI.Services.Role.Dto;
 
 namespace DocumentFlowAPI.Controllers.Department.MappingProfile;
 
@@ -26,16 +27,16 @@ public class DepartmentMappingProfile : Profile
         CreateMap<Models.Role, RoleDto>()
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
-            
-        
+
+
         //Profiles for POST
         CreateMap<CreateDepartmentViewModel, CreateDepartmentDto>();
 
         CreateMap<CreateDepartmentDto, Models.Department>();
-        
+
         //Profiles for PUT
         CreateMap<UpdateDepartmentViewModel, UpdateDepartmentDto>();
-        
+
         CreateMap<UpdateDepartmentDto, Models.Department>();
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using DocumentFlowAPI.Services.User.Dto;
 
 namespace DocumentFlowAPI.Services.Template.Dto;
 
@@ -9,7 +10,7 @@ public class GetTemplateDto
     public string Path { get; set; }
     public int CreatedBy { get; set; }
     [ForeignKey(nameof(CreatedBy))]
-    public virtual Models.User User { get; set; }
+    public virtual GetUserDto User { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; }
 }

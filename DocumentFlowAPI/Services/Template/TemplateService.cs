@@ -60,7 +60,7 @@ public class TemplateService : ITemplateService
 
     public async Task DeleteTemplateAsync<T>(int templateId) where T : Models.Template
     {
-        await _templateRepository.Delete(templateId);
+        await _templateRepository.DeleteTemplateAsync<T>(templateId);
         await _templateRepository.SaveChangesAsync();
     }
 
@@ -75,7 +75,7 @@ public class TemplateService : ITemplateService
 
             return response;
         }
-        
+
         var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
 
         return fieldsDto;
@@ -113,7 +113,7 @@ public class TemplateService : ITemplateService
         {
             return default;
         }
-        
+
         return JsonSerializer.Deserialize<T>(response);
     }
 
@@ -159,7 +159,7 @@ public class TemplateService : ITemplateService
 
     public async Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Models.Template
     {
-        await _templateRepository.DeleteManyAsync(templateIds);
+        await _templateRepository.DeleteManyTemplatesAsync<T>(templateIds);
         await _templateRepository.SaveChangesAsync();
     }
 }

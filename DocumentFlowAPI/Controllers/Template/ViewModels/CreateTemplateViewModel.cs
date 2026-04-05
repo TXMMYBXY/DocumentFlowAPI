@@ -10,9 +10,6 @@ public class CreateTemplateViewModel
     [JsonPropertyName("path")]
     public string Path { get; set; }
 
-    [JsonPropertyName("createdAt")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
     [JsonPropertyName("isActive")]
     public bool IsActive { get; set; }
 }

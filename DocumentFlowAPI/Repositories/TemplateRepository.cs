@@ -68,13 +68,22 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
         return template;
     }
 
-    public void DeleteTemplate<T>(T template) where T : Models.Template
-    {
-        _dbContext.Set<T>().Remove(template);
-    }
-
     public async Task<int> GetTotalCountAsync<T>() where T : Models.Template
     {
         return await _dbContext.Set<T>().CountAsync();
+    }
+
+    public async Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Models.Template
+    {
+        await _dbContext.Set<T>()
+            .Where(t => templateIds.Contains(t.Id))
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task DeleteTemplateAsync<T>(int templateId) where T : Models.Template
+    {
+        await _dbContext.Set<T>()
+            .Where(t => t.Id == templateId)
+            .ExecuteDeleteAsync();
     }
 }

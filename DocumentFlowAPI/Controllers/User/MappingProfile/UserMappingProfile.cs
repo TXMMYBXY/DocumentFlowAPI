@@ -21,6 +21,10 @@ public class UserMappingProfile : Profile
             .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.Users))
             .ReverseMap();
 
+        CreateMap<Models.User, GetUserDto>()
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department.Title))
+            .ReverseMap();
+
         //Profiles for POST
 
         CreateMap<CreateUserViewModel, CreateUserDto>()

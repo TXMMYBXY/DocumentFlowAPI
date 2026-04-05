@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using DocumentFlowAPI.Controllers.User.ViewModels;
 
 namespace DocumentFlowAPI.Controllers.Template.ViewModels;
 
@@ -17,7 +18,7 @@ public class GetTemplateViewModel
     public int CreatedBy { get; set; }
 
     [JsonPropertyName("user")]
-    public virtual Models.User User { get; set; }
+    public virtual GetUserViewModel User { get; set; }
     
     [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; }
