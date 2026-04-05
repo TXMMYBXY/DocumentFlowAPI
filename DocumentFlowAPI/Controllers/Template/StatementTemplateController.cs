@@ -5,13 +5,12 @@ using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
-[Route("api/statement-templates")]
+[Route("api/statement-template")]
 public class StatementTemplateController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -93,7 +92,7 @@ public class StatementTemplateController : ControllerBase
     /// Удаление нескольких шаблонов заявлений
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpDelete("delete-many")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteManyTemplates([FromBody] DeleteManyTemplatesViewModel deleteTemplateViewModel)
     {
         await _templateService.DeleteManyTemplatesAsync<StatementTemplate>(deleteTemplateViewModel.TemplateIds);

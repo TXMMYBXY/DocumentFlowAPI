@@ -5,13 +5,12 @@ using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
-[Route("api/contract-templates")]
+[Route("api/contract-template")]
 [AuthorizeByRoleId((int)Permissions.Boss)]
 public class ContractTemplateController : ControllerBase
 {
@@ -103,7 +102,7 @@ public class ContractTemplateController : ControllerBase
     /// </summary>
     /// <param name="deleteTemplateViewModel">Ids</param>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpDelete("delete-many")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteManyTemplates([FromBody] DeleteManyTemplatesViewModel deleteTemplateViewModel)
     {
         await _templateService.DeleteManyTemplatesAsync<StatementTemplate>(deleteTemplateViewModel.TemplateIds);

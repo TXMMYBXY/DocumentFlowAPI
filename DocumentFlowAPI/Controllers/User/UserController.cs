@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocumentFlowAPI.Controllers.User;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/user")]
 [AuthorizeByRoleId((int)Permissions.Admin)]
 ///Этим контроллером будет пользоваться администратор, поэтому информация которую он получает - полная
 public class UserController : ControllerBase
@@ -109,7 +109,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="deleteManyUserViewModel">Объект со списком Id</param>
     /// <returns></returns>
-    [HttpDelete("delete-many")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteManyUserAsync([FromBody] DeleteManyUsersViewModel deleteManyUserViewModel)
     {
         await _userService.DeleteManyUserAsync(deleteManyUserViewModel.UserIds);
