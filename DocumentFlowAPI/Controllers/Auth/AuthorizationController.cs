@@ -40,7 +40,7 @@ public class AuthorizationController : ControllerBase
     [HttpPost("refresh")]
     public async Task<ActionResult<RefreshTokenResponseViewModel>> RefreshToken([FromBody] RefreshTokenRequestViewModel tokenViewModel)
     {
-        var tokenDto = _mapper.Map<RefreshTokenDto>(tokenViewModel);
+        var tokenDto = _mapper.Map<RefreshTokenRequestDto>(tokenViewModel);
         var tokenResponseDto = await _accountService.CreateRefreshTokenAsync(tokenDto);
         var tokenResponseViewModel = _mapper.Map<RefreshTokenResponseViewModel>(tokenResponseDto);
 

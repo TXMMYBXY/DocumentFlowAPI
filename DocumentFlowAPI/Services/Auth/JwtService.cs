@@ -75,7 +75,7 @@ public class JwtService : IJwtService
         {
             Token = _refreshTokenHashser.Hash(secretKey),
             UserId = userId,
-            ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenSettings.ExpiresDays)//FIXME:AddMinutes -> AddDays
+            ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenSettings.ExpiresDays)
         };
 
         await _tokenRepository.CreateRefreshTokenAsync(refreshToken);

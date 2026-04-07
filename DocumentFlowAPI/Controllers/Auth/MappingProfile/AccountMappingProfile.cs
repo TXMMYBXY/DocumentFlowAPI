@@ -44,17 +44,20 @@ public class AccountMappingProfile : Profile
 
         //profiles for refresh
 
-        CreateMap<RefreshTokenDto, RefreshTokenRequestViewModel>()
+        CreateMap<RefreshTokenRequestDto, RefreshTokenRequestViewModel>()
             .ReverseMap();
 
         CreateMap<RefreshTokenResponseViewModel, RefreshTokenResponseDto>()
             .ForMember(dest => dest.UserId, opt => opt.Ignore())
             .ReverseMap();
 
-        CreateMap<RefreshToken, RefreshTokenDto>()
+        CreateMap<RefreshToken, RefreshTokenRequestDto>()
             .ReverseMap();
 
         CreateMap<RefreshTokenResponseDto, RefreshToken>()
+            .ReverseMap();
+
+        CreateMap<RefreshToken, RefreshTokenDto>()
             .ReverseMap();
 
         //profiles for access

@@ -12,7 +12,7 @@ public interface IAccountService
     /// <summary>
     /// Метод для создания нового токена доступа
     /// </summary>
-    Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenDto refreshTokenDto);
+    Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenRequestDto refreshTokenDto);
 
     /// <summary>
     /// Метод для создания нового токена обновления
