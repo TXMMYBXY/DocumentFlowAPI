@@ -84,21 +84,24 @@ public class WorkerController : ControllerBase
     }
 
     [HttpGet("{templateId}/statement-template")]
-    public async Task<ActionResult<GetTemplateViewModel>> GetStatementTemplateById([FromRoute] int templateId)
+    public async Task<IActionResult> GetStatementTemplateById([FromRoute] int templateId)
     {
-        var templateDto = await _templateService.GetTemplateByIdAsync<StatementTemplate>(templateId);
-        var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
+        var templateDto = await _templateService.GetTemplateForWorkerByIdAsync<StatementTemplate>(templateId);
 
-        return Ok(templateViewModel);
+        var templateViewModel = _mapper.Map<GetTemplateForWorkerViewModel>(templateDto);
+
+        var stream = new FileStream(templateViewModel.FilePath, FileMode.Open, FileAccess.Read);
+
+        return File(stream, "application/octet-stream", templateViewModel.Name);
     }
 
     [HttpGet("{templateId}/contract-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetContractTemplateById([FromRoute] int templateId)
     {
-        var templateDto = await _templateService.GetTemplateByIdAsync<ContractTemplate>(templateId);
+        var templateDto = await _templateService.GetTemplateForWorkerByIdAsync<ContractTemplate>(templateId);
         var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
 
         return Ok(templateViewModel);
     }
-    
+
 }

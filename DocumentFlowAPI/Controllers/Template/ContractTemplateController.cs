@@ -32,7 +32,7 @@ public class ContractTemplateController : ControllerBase
     [HttpGet("{templateId}/get-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
-        var templateDto = await _templateService.GetTemplateByIdAsync<ContractTemplate>(templateId);
+        var templateDto = await _templateService.GetTemplateForWorkerByIdAsync<ContractTemplate>(templateId);
         var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
 
         return Ok(templateViewModel);

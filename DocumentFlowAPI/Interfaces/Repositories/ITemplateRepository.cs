@@ -1,6 +1,7 @@
 using DocumentFlowAPI.Interfaces.Base;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template;
+using DocumentFlowAPI.Services.Template.Dto;
 
 namespace DocumentFlowAPI.Interfaces.Repositories;
 
@@ -45,4 +46,6 @@ public interface ITemplateRepository : IBaseRepository<Template>
     /// Возвращает количество шаблонов в таблице
     /// </summary>
     Task<int> GetTotalCountAsync<T>() where T : Template;
+
+    Task<WorkerTemplateDto> GetWorkerTemplateByIdAsync<T>(int templateId) where T : Template;
 }

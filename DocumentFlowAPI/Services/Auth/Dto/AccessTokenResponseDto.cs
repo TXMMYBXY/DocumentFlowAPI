@@ -9,5 +9,4 @@ public class AccessTokenResponseDto
     public string AccessToken { get; set; }
     public string ExpiresAt { get; set; }
     public string TokenType { get; set; } = "Bearer";
-    public RefreshToken RefreshToken { get; set; }
 }

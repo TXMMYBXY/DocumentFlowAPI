@@ -10,7 +10,7 @@ public interface ITemplateService
     /// <summary>
     /// Получения шаблона по id
     /// </summary>
-    Task<GetTemplateDto> GetTemplateByIdAsync<T>(int templateId) where T : Template;
+    Task<GetTemplateForWorkerDto> GetTemplateForWorkerByIdAsync<T>(int templateId) where T : Template;
 
     /// <summary>
     /// Получение списка всех шаблонов

@@ -29,7 +29,7 @@ public class StatementTemplateController : ControllerBase
     [HttpGet("{templateId}")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
-        var templateDto = await _templateService.GetTemplateByIdAsync<StatementTemplate>(templateId);
+        var templateDto = await _templateService.GetTemplateForWorkerByIdAsync<StatementTemplate>(templateId);
         var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
 
         return Ok(templateViewModel);
@@ -63,7 +63,7 @@ public class StatementTemplateController : ControllerBase
 
         return Ok();
     }
-    
+
     /// <summary>
     /// Смена статуса шаблона
     /// </summary>

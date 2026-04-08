@@ -17,11 +17,6 @@ public interface ITokenRepository : IBaseRepository<RefreshToken>
     Task<RefreshToken?> GetRefreshTokenByUserIdAsync(int userId);
 
     /// <summary>
-    /// Удаляет токен обновления из таблицы
-    /// </summary>
-    void DeleteRefreshToken(RefreshToken refreshToken);
-
-    /// <summary>
     /// Возвращает токен обновления из таблицы по значению
     /// </summary>
     /// <param name="tokenValue"></param>

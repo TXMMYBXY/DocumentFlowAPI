@@ -131,14 +131,16 @@ public class Startup
             });
         });
 
-
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = Configuration.GetSection("Redis:Configuration").Value;
+            options.InstanceName = Configuration.GetSection("Redis:InstanceName").Value;
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // Настройка pipeline для разработки
         app.UseErrorHandling();
-    
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

@@ -60,6 +60,9 @@ public class AccountMappingProfile : Profile
         CreateMap<RefreshToken, RefreshTokenDto>()
             .ReverseMap();
 
+        CreateMap<RefreshTokenDto, RefreshTokenResponseDto>()
+            .ReverseMap();
+
         //profiles for access
 
         CreateMap<AccessTokenDto, AccessTokenViewModel>()

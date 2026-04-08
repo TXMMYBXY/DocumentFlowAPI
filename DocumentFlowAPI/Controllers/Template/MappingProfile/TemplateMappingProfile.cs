@@ -19,6 +19,10 @@ public class TemplateMappingProfile : Profile
 
         CreateMap<DownloadTemplateDto, DownloadTemplateViewModel>().ReverseMap();
 
+        CreateMap<GetTemplateForWorkerDto, GetTemplateForWorkerViewModel>();
+
+        CreateMap<WorkerTemplateDto, GetTemplateForWorkerDto>();
+
         //Profiles for CREATE
 
         CreateMap<CreateTemplateViewModel, CreateTemplateDto>()
