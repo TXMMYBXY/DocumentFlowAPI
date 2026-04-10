@@ -98,23 +98,21 @@ public class JwtService : IJwtService
 
         return refreshToken;
     }
-
-    public async Task<bool> ValidateAccessTokenAsync(AccessTokenDto accessTokenDto)
+    
+    public async Task<bool> ValidateRefreshTokenAsync(string refreshToken)
     {
-        var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(accessTokenDto.UserId);
-
-        GeneralService.NullCheck(token, "Refresh token not found for user with id " + accessTokenDto.UserId);
-
-        return token.Token.Equals(_refreshTokenHashser.Hash(accessTokenDto.RefreshToken));
+        _logger.LogDebug("Starting validation of refresh token: {TokenHash}", refreshToken);
+        
+        var token = await _tokenRepository.GetRefreshTokenByValueAsync(_refreshTokenHashser.Hash(refreshToken));
+        
+        return token != null && token.ExpiresAt > DateTime.UtcNow;
     }
 
-    public async Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken)
+    public async Task<int> GetRefreshTokenOwnerAsync(string refreshToken)
     {
-        var token = await _tokenRepository.GetRefreshTokenByUserIdAsync(refreshToken.UserId);
+        var token = await _tokenRepository.GetRefreshTokenByValueAsync(_refreshTokenHashser.Hash(refreshToken));
 
-        GeneralService.NullCheck(token, "Refresh token not found for user with id " + refreshToken.UserId);
-
-        return token.Token.Equals(_refreshTokenHashser.Hash(refreshToken.Token));
+        return token!.UserId;
     }
 
     /// <summary>

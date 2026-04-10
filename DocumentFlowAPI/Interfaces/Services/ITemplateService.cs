@@ -25,7 +25,7 @@ public interface ITemplateService
     /// <summary>
     /// Изменения данных о шаблоне
     /// </summary>
-    Task UpdateTemplateAsync<T>(int templateId, UpdateTemplateDto templateDto) where T : Template, new();
+    Task UpdateTemplatePartialAsync<T>(int templateId, UpdateTemplateDto templateDto) where T : Template, new();
 
     /// <summary>
     /// Метод для удаления шаблона
@@ -40,7 +40,7 @@ public interface ITemplateService
     /// <summary>
     /// Метод для извелчения полей из шаблона
     /// </summary>
-    Task<List<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Template;
+    Task<List<TemplateFieldInfoDto>> ExtractFieldsFromTemplateAsync<T>(int templateId) where T : Template;
 
     /// <summary>
     /// Метод для удаления нескольких шаблонов
@@ -48,7 +48,4 @@ public interface ITemplateService
     Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Template;
 
     Task<DownloadTemplateDto> DownloadTemplateAsync<T>(int templateId) where T : Template, new();
-
-    //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных шаблонов
-
 }

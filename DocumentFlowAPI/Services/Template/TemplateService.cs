@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using AutoMapper;
+using DocumentFlowAPI.Hubs;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;
@@ -9,13 +10,15 @@ using DocumentFlowAPI.Services.User;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace DocumentFlowAPI.Services.Template;
 
 public class TemplateService : ITemplateService
 {
-    private static bool _isOldVersion = true;
+    private const string TemplatesVersionKey = "templates_version";
+    private const string FieldsVersionKey = "fields_version";
     private readonly IMapper _mapper;
     private readonly ITemplateRepository _templateRepository;
     private readonly IFieldExtractorService _fieldExtractorService;
@@ -23,6 +26,7 @@ public class TemplateService : ITemplateService
     private readonly IFileStorageService _fileStorageService;
     private readonly IDistributedCache _cache;
     private readonly ILogger<TemplateService> _logger;
+    private readonly IHubContext<NotificationHub> _notificationHub;
 
     public TemplateService(
         IMapper mapper,
@@ -31,8 +35,8 @@ public class TemplateService : ITemplateService
         IContractAiService contractAiService,
         IFileStorageService fileStorageService,
         IDistributedCache cache,
-        ILogger<TemplateService> logger
-        )
+        ILogger<TemplateService> logger,
+        IHubContext<NotificationHub> notificationhub)
     {
         _mapper = mapper;
         _templateRepository = templateRepository;
@@ -41,26 +45,23 @@ public class TemplateService : ITemplateService
         _fileStorageService = fileStorageService;
         _cache = cache;
         _logger = logger;
+        _notificationHub = notificationhub;
     }
 
     public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
     {
         _logger.LogInformation("Changing template status for template with id {TemplateId}", templateId);
 
-        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
-
-        template.IsActive = !template.IsActive;
-
-        _templateRepository.UpdateTemplateStatus(template);
+        var isActive = await _templateRepository.UpdateTemplateStatusAsync<T>(templateId);
 
         await _templateRepository.SaveChangesAsync();
 
-        _isOldVersion = true;
-
         _logger.LogInformation("Template status changed successfully for template with id {TemplateId}. New status: {IsActive}",
-            templateId, template.IsActive);
+            templateId, isActive);
 
-        return template.IsActive;
+        await _InvalidateTemplatesCacheAsync();
+
+        return isActive;
     }
 
     public async Task CreateTemplateAsync<T>(CreateTemplateDto templateDto) where T : Models.Template, new()
@@ -94,7 +95,7 @@ public class TemplateService : ITemplateService
         await _templateRepository.CreateTemplateAsync(templateModel);
         await _templateRepository.SaveChangesAsync();
 
-        _isOldVersion = true;
+        await _InvalidateTemplatesCacheAsync();
 
         _logger.LogInformation("Template created successfully with title {Title}", templateDto.Title);
     }
@@ -106,16 +107,28 @@ public class TemplateService : ITemplateService
         await _templateRepository.DeleteTemplateAsync<T>(templateId);
         await _templateRepository.SaveChangesAsync();
 
-        _isOldVersion = true;
+        await _InvalidateTemplatesCacheAsync();
 
         _logger.LogInformation("Template deleted successfully with id {TemplateId}", templateId);
     }
 
-    public async Task<List<TemplateFieldInfoDto>> ExctractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
+    public async Task<List<TemplateFieldInfoDto>> ExtractFieldsFromTemplateAsync<T>(int templateId) where T : Models.Template
     {
         _logger.LogInformation("Extracting fields from template with id {TemplateId}", templateId);
 
+        var version = await _GetFieldsVersionAsync();
+        var targetTemplate = JsonSerializer.Serialize(templateId);
+        var cacheKey = $"users_{version}_{targetTemplate}";
+
+        var cached = await _cache.GetStringAsync(cacheKey);
+
+        if (cached != null)
+        {
+            return JsonSerializer.Deserialize<List<TemplateFieldInfoDto>>(cached);
+        }
+
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
+
         if (typeof(T) == typeof(Models.ContractTemplate))
         {
             var contractText = _ReadDocx(template.Path);
@@ -128,26 +141,25 @@ public class TemplateService : ITemplateService
         var fieldsDto = await _fieldExtractorService.ExtractFieldsAsync(template.Path);
 
         _logger.LogInformation("Fields extracted successfully from template with id {TemplateId}. Extracted fields count: {FieldsCount}",
-            templateId, fieldsDto.Count);
+            targetTemplate, (object)fieldsDto.Count);
+
+        var serializedResult = JsonSerializer.Serialize(fieldsDto);
+
+        await _cache.SetStringAsync(cacheKey, serializedResult, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+        });
 
         return fieldsDto;
     }
 
     public async Task<PagedTemplateDto> GetAllTemplatesAsync<T>(TemplateFilter templateFilter) where T : Models.Template
     {
+        var version = await _GetTemplatesVersionAsync();
         var serializedFilter = JsonSerializer.Serialize(templateFilter);
+        var cacheKey = $"users_{version}_{serializedFilter}";
 
-        lock (serializedFilter)
-        {
-            if (_isOldVersion)
-            {
-                _cache.RemoveAsync(serializedFilter).GetAwaiter().GetResult();
-
-                _isOldVersion = false;
-            }
-        }
-
-        var cached = await _cache.GetStringAsync(serializedFilter);
+        var cached = await _cache.GetStringAsync(cacheKey);
 
         if (cached != null)
         {
@@ -168,7 +180,7 @@ public class TemplateService : ITemplateService
 
         var serializedResult = JsonSerializer.Serialize(pagedTemplateDto);
 
-        await _cache.SetStringAsync(serializedFilter, serializedResult, new DistributedCacheEntryOptions
+        await _cache.SetStringAsync(cacheKey, serializedResult, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
         });
@@ -178,35 +190,40 @@ public class TemplateService : ITemplateService
 
     public async Task<GetTemplateForWorkerDto> GetTemplateForWorkerByIdAsync<T>(int templateId) where T : Models.Template
     {
-        var temaplate = await _templateRepository.GetWorkerTemplateByIdAsync<T>(templateId);
+        var template = await _templateRepository.GetWorkerTemplateByIdAsync<T>(templateId);
 
-        return _mapper.Map<GetTemplateForWorkerDto>(temaplate);
+        return _mapper.Map<GetTemplateForWorkerDto>(template);
     }
 
-    public async Task UpdateTemplateAsync<T>(int templateId, UpdateTemplateDto templateDto) where T : Models.Template, new()
+    public async Task UpdateTemplatePartialAsync<T>(int templateId, UpdateTemplateDto templateDto) where T : Models.Template, new()
     {
         _logger.LogInformation("Updating template with id {TemplateId}", templateId);
-
-        var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
-        var templateModel = _UpdateTemplate(template, templateDto);
-
-        _templateRepository.UpdateTemplate(templateModel);
-
+        
+        string filePath = null;
+        
+        if (templateDto.FileLength != 0)
+        {
+            var uniqueFileName = $"{Guid.NewGuid()}_{templateDto.FileName}";
+            var projectFolder = $"{typeof(T)}_{_ClearName(UserIdentity.User.Department)}";
+        
+            var oldFilePath = await _templateRepository.GetFilePathAsync<T>(templateId);
+        
+            await _fileStorageService.DeleteFileAsync(oldFilePath);
+        
+            filePath = await _fileStorageService.SaveFileAsync(
+                templateDto.FileStream,
+                uniqueFileName,
+                projectFolder);
+        }
+        
+        await _templateRepository.UpdateTemplatePartialAsync<T>(templateId, templateDto.Title, filePath);
         await _templateRepository.SaveChangesAsync();
 
-        _isOldVersion = true;
+        await _InvalidateTemplatesCacheAsync();
 
         _logger.LogInformation("Template updated successfully with id {TemplateId}", templateId);
     }
-
-    private static T _UpdateTemplate<T>(T template, UpdateTemplateDto templateDto) where T : Models.Template
-    {
-        template.Title = templateDto.Title;
-        template.Path = templateDto.Path;
-
-        return template;
-    }
-
+    
     public async Task DeleteManyTemplatesAsync<T>(List<int> templateIds) where T : Models.Template
     {
         _logger.LogInformation("Deleting multiple templates with ids {TemplateIds}", string.Join(", ", templateIds));
@@ -214,11 +231,10 @@ public class TemplateService : ITemplateService
         await _templateRepository.DeleteManyTemplatesAsync<T>(templateIds);
         await _templateRepository.SaveChangesAsync();
 
-        _isOldVersion = true;
+        await _InvalidateTemplatesCacheAsync();
 
         _logger.LogInformation("Templates deleted successfully with ids {TemplateIds}", string.Join(", ", templateIds));
     }
-
 
     public async Task<DownloadTemplateDto> DownloadTemplateAsync<T>(int templateId) where T : Models.Template, new()
     {
@@ -235,9 +251,26 @@ public class TemplateService : ITemplateService
 
     private async Task<List<TemplateFieldInfoDto>> _ExctractFieldsByAiAsync<T>(int templateId) where T : Models.ContractTemplate
     {
+        var version = await _GetFieldsVersionAsync();
+        var targetTemplate = JsonSerializer.Serialize(templateId);
+        var cacheKey = $"users_{version}_{targetTemplate}";
+
+        var cached = await _cache.GetStringAsync(cacheKey);
+
+        if (cached != null)
+        {
+            return JsonSerializer.Deserialize<List<TemplateFieldInfoDto>>(cached);
+        }
+        
         var template = await _templateRepository.GetTemplateByIdAsync<T>(templateId);
         var contractText = _ReadDocx(template.Path);
         var jsonResponse = await _contractAiService.ExtractFieldsJsonAsync(contractText);
+
+        await _cache.SetStringAsync(cacheKey, jsonResponse, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+        });
+
         var response = _ConvertResponse<List<TemplateFieldInfoDto>>(jsonResponse);
 
         return response;
@@ -259,7 +292,6 @@ public class TemplateService : ITemplateService
         return sb.ToString();
     }
 
-
     private static T? _ConvertResponse<T>(string response)
     {
         if (response.Equals(""))
@@ -276,5 +308,39 @@ public class TemplateService : ITemplateService
             input = input.Replace(c, '_');
 
         return input.Replace(" ", "_");
+    }
+
+    private async Task<string> _GetTemplatesVersionAsync()
+    {
+        var version = await _cache.GetStringAsync(TemplatesVersionKey);
+
+        if (version == null)
+        {
+            version = Guid.NewGuid().ToString();
+
+            await _cache.SetStringAsync(TemplatesVersionKey, version);
+        }
+
+        return version;
+    }
+
+    private async Task<string> _GetFieldsVersionAsync()
+    {
+        var version = await _cache.GetStringAsync(FieldsVersionKey);
+
+        if (version == null)
+        {
+            version = Guid.NewGuid().ToString();
+
+            await _cache.SetStringAsync(FieldsVersionKey, version);
+        }
+
+        return version;
+    }
+
+    private async Task _InvalidateTemplatesCacheAsync()
+    {
+        await _cache.SetStringAsync(TemplatesVersionKey, Guid.NewGuid().ToString());
+        await _cache.SetStringAsync(FieldsVersionKey, Guid.NewGuid().ToString());
     }
 }

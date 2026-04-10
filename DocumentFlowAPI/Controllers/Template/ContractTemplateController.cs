@@ -120,7 +120,7 @@ public class ContractTemplateController : ControllerBase
     {
         var templateDto = _mapper.Map<UpdateTemplateDto>(templateViewModel);
 
-        await _templateService.UpdateTemplateAsync<ContractTemplate>(templateId, templateDto);
+        await _templateService.UpdateTemplatePartialAsync<ContractTemplate>(templateId, templateDto);
 
         return Ok();
     }
@@ -129,7 +129,7 @@ public class ContractTemplateController : ControllerBase
     [HttpGet("{templateId}/extract-fields")]
     public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
     {
-        var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<ContractTemplate>(templateId);
+        var resultDto = await _templateService.ExtractFieldsFromTemplateAsync<ContractTemplate>(templateId);
         var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
 
         return Ok(resultViewModel);

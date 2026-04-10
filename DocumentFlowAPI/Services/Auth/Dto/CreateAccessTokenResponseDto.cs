@@ -3,7 +3,7 @@ using DocumentFlowAPI.Services.User.Dto;
 
 namespace DocumentFlowAPI.Services.Auth.Dto;
 
-public class AccessTokenResponseDto
+public class CreateAccessTokenResponseDto
 {
     public UserInfoForLoginDto UserInfo { get; set; }
     public string AccessToken { get; set; }

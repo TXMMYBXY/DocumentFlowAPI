@@ -38,20 +38,16 @@ public class UserService : IUserService
     {
         _logger.LogInformation("Changing user status for user with id {UserId}", userId);
 
-        var user = await _userRepository.GetByIdAsync(userId);
-
-        user.IsActive = !user.IsActive;
-
-        _userRepository.UpdateUserStatus(user);
+        var isActive = await _userRepository.UpdateUserStatusAsync(userId);
 
         await _userRepository.SaveChangesAsync();
 
         _logger.LogInformation("User status changed successfully for user with id {UserId}. New status: {IsActive}",
-            userId, user.IsActive);
+            userId, isActive);
 
         await _InvalidateUsersCacheAsync();
 
-        return user.IsActive;
+        return isActive;
     }
 
     /// <summary>
@@ -115,7 +111,6 @@ public class UserService : IUserService
     public async Task<PagedUserDto> GetAllUsersAsync(UserFilter userFilter)
     {
         var version = await _GetUsersVersionAsync();
-
         var serializedFilter = JsonSerializer.Serialize(userFilter);
         var cacheKey = $"users_{version}_{serializedFilter}";
 
@@ -182,7 +177,7 @@ public class UserService : IUserService
     /// <param name="userId"></param>
     /// <param name="userDto"></param>
     /// <returns></returns>
-    public async Task UpdateUserAsync(int userId, UpdateUserDto userDto)
+    public async Task UpdateUserPartialAsync(int userId, UpdateUserDto userDto)
     {
         _logger.LogInformation("Updating user with id {UserId}", userId);
 

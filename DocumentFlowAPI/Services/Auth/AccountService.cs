@@ -80,45 +80,46 @@ public class AccountService : IAccountService
         return loginResponseDto;
     }
 
-    public async Task<AccessTokenResponseDto> CreateAccessTokenAsync(AccessTokenDto accessTokenDto)
+    public async Task<CreateAccessTokenResponseDto> CreateAccessTokenAsync(string refreshToken)
     {
-        _logger.LogInformation("Attempting to create access token for user ID: {UserId}", accessTokenDto.UserId);
+        _logger.LogInformation("Attempting to create access token");
         
-        var isValid = await _jwtService.ValidateAccessTokenAsync(accessTokenDto);
+        var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshToken);
 
         GeneralService.Checker.UniversalCheckException(
-            new GeneralService.CheckerParam<AccessTokenDto>(new NullReferenceException("Incorrect token"),
-            x => !isValid, accessTokenDto));
+            new GeneralService.CheckerParam<string>(new NullReferenceException("Incorrect token"),
+            x => !isValid, refreshToken));
 
-        var user = await _userRepository.GetByIdAsync(accessTokenDto.UserId);
+        var user = await _userRepository.GetByIdAsync(await _jwtService.GetRefreshTokenOwnerAsync(refreshToken));
 
-        var accessTokenResponseDto = new AccessTokenResponseDto
+        var accessTokenResponseDto = new CreateAccessTokenResponseDto
         {
             UserInfo = _mapper.Map<UserInfoForLoginDto>(user),
             AccessToken = _jwtService.GenerateAccessToken(user),
             ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes).ToString()
         };
         
-        _logger.LogInformation("Access token created successfully for user ID: {UserId}", accessTokenDto.UserId);
+        _logger.LogInformation("Access token created successfully for user ID: {UserId}", user.Id);
         
         return accessTokenResponseDto;
     }
 
-    public async Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenRequestDto refreshTokenDto)
+    public async Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(string refreshToken)
     {
-        _logger.LogInformation("Attempting to create refresh token for user ID: {UserId}", refreshTokenDto.UserId);
+        _logger.LogInformation("Attempting to create refresh token");
         
-        var refreshTokenModel = _mapper.Map<RefreshToken>(refreshTokenDto);
-        var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshTokenModel);
+        var isValid = await _jwtService.ValidateRefreshTokenAsync(refreshToken);
 
         GeneralService.Checker.UniversalCheckException(
-            new GeneralService.CheckerParam<RefreshToken>(new NullReferenceException("Incorrect token"),
-            x => !isValid, refreshTokenModel));
+            new GeneralService.CheckerParam<string>(new NullReferenceException("Incorrect token"),
+            x => !isValid, refreshToken));
 
-        var token = _mapper.Map<RefreshTokenDto>(await _jwtService.GenerateRefreshTokenAsync(refreshTokenDto.UserId));
+        var userId = await _jwtService.GetRefreshTokenOwnerAsync(refreshToken);
+        
+        var token = _mapper.Map<RefreshTokenDto>(await _jwtService.GenerateRefreshTokenAsync(userId));
         var refreshTokenResponseDto = _mapper.Map<RefreshTokenResponseDto>(token);
 
-        _logger.LogInformation("Refresh token created successfully for user ID: {UserId}", refreshTokenDto.UserId);
+        _logger.LogInformation("Refresh token created successfully for user ID: {UserId}", userId);
         
         return refreshTokenResponseDto;
     }

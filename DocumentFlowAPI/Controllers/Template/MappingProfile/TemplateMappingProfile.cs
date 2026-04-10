@@ -27,11 +27,16 @@ public class TemplateMappingProfile : Profile
 
         CreateMap<CreateTemplateViewModel, CreateTemplateDto>()
             .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.File.FileName))
-            .ForMember(dest => dest.FileLength, opt => opt.MapFrom(src => src.File.Length));
+            .ForMember(dest => dest.FileLength, opt => opt.MapFrom(src => src.File.Length))
+            .ForMember(dest => dest.FileStream, opt => opt.MapFrom(src => src.File.OpenReadStream()));
 
         //Profiles for UPDATE
 
-        CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>().ReverseMap();
+        CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>()
+            .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.File.FileName))
+            .ForMember(dest => dest.FileLength, opt => opt.MapFrom(src => src.File.Length))
+            .ForMember(dest => dest.FileStream, opt => opt.MapFrom(src => src.File.OpenReadStream()))
+            .ReverseMap();
 
         //Profiles for Extract
 

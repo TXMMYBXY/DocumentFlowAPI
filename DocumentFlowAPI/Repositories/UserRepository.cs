@@ -3,6 +3,7 @@ using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Repositories.Users.Dtos;
 using DocumentFlowAPI.Repositories.Base;
 using DocumentFlowAPI.Services.Personal.Dto;
+using DocumentFlowAPI.Services.Role.Dto;
 using DocumentFlowAPI.Services.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +36,22 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
     public async Task<List<UserDto>> GetAllUsersAsync(UserFilter filter)
     {
         var query = _dbContext.Users
-            .Include(u => u.Role)
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filter.Email))
+            query = query.Where(u => u.Email.Contains(filter.Email));
+
+        if (!string.IsNullOrWhiteSpace(filter.FullName))
+            query = query.Where(u => u.FullName.Contains(filter.FullName));
+
+        if (filter.DepartmentId.HasValue)
+            query = query.Where(u => u.DepartmentId == filter.DepartmentId);
+
+        if (filter.RoleId.HasValue)
+            query = query.Where(u => u.RoleId == filter.RoleId);
+
+        var reusltQuery = query
             .Select(u => new UserDto
             {
                 Id = u.Id,
@@ -44,33 +60,30 @@ public class UserRepository : BaseRepository<Models.User>, IUserRepository
                 Department = u.Department,
                 IsActive = u.IsActive,
                 Role = u.Role
-            })
-            .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(filter.Email)) query = query.Where(u => u.Email.Contains(filter.Email));
-        if (!string.IsNullOrWhiteSpace(filter.FullName)) query = query.Where(u => u.FullName.Contains(filter.FullName));
-        if (filter.DepartmentId.HasValue) query = query.Where(u => u.Department.Id == filter.DepartmentId);
-        if (filter.RoleId.HasValue) query = query.Where(u => u.Role.Id == filter.RoleId);
+            });
 
         if (filter.PageSize.HasValue && filter.PageNumber.HasValue)
         {
-            query = query
+            reusltQuery = reusltQuery
                 .Skip((filter.PageNumber.Value - 1) * filter.PageSize.Value)
                 .Take(filter.PageSize.Value);
         }
 
-        return await query
-            .AsNoTracking()
-            .ToListAsync();
+        return await reusltQuery.ToListAsync();
     }
 
-    public Models.User UpdateUserStatus(Models.User userModel)
+    public async Task<bool> UpdateUserStatusAsync(int userId)
     {
-        _dbContext.Attach(userModel);
-        _dbContext.Entry(userModel)
-            .Property(t => t.IsActive)
-            .IsModified = true;
-        return userModel;
+        await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(
+                setter => setter.SetProperty(x => x.IsActive, x => !x.IsActive)
+            );
+
+        return await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.IsActive)
+            .FirstAsync();
     }
 
     public async Task<PersonDto> GetPersonalInfo(int personId)

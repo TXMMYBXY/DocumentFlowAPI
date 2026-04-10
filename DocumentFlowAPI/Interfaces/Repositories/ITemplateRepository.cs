@@ -25,12 +25,12 @@ public interface ITemplateRepository : IBaseRepository<Template>
     /// <summary>
     /// Обновляет информацию о шаблоне в таблице
     /// </summary>
-    T UpdateTemplate<T>(T template) where T : Template;
+    Task UpdateTemplatePartialAsync<T>(int templateId, string? title, string? path) where T : Template;
 
     /// <summary>
     /// Обновляет статус шаблона в таблице
     /// </summary>
-    T UpdateTemplateStatus<T>(T template) where T : Template;
+    Task<bool> UpdateTemplateStatusAsync<T>(int templateId) where T : Template;
 
     /// <summary>
     /// Удаляет шаблон из таблицы
@@ -48,4 +48,6 @@ public interface ITemplateRepository : IBaseRepository<Template>
     Task<int> GetTotalCountAsync<T>() where T : Template;
 
     Task<WorkerTemplateDto> GetWorkerTemplateByIdAsync<T>(int templateId) where T : Template;
+
+    Task<string> GetFilePathAsync<T>(int templateId)where T : Template;
 }

@@ -73,11 +73,11 @@ public class UserController : ControllerBase
     /// <param name="userViewModel"></param>
     /// <returns></returns>
     [HttpPatch("{userId}/user-info")]
-    public async Task<ActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
+    public async Task<ActionResult> UpdateUserPartialAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
     {
         var userDto = _mapper.Map<UpdateUserDto>(userViewModel);
 
-        await _userService.UpdateUserAsync(userId, userDto);
+        await _userService.UpdateUserPartialAsync(userId, userDto);
 
         return Ok();
     }

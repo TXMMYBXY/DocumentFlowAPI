@@ -57,8 +57,6 @@ public class StatementTemplateController : ControllerBase
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
 
-        templateDto.FileStream = templateViewModel.File.OpenReadStream();
-
         await _templateService.CreateTemplateAsync<StatementTemplate>(templateDto);
 
         return Ok();
@@ -107,20 +105,21 @@ public class StatementTemplateController : ControllerBase
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPatch("{templateId}/update-template")]
-    public async Task<ActionResult> UpdateTemplateById([FromRoute] int templateId, [FromBody] UpdateTemplateViewModel templateViewModel)
+    public async Task<ActionResult> UpdateTemplateByIdPartial([FromRoute] int templateId, 
+        [FromForm] UpdateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<UpdateTemplateDto>(templateViewModel);
-
-        await _templateService.UpdateTemplateAsync<StatementTemplate>(templateId, templateDto);
+        
+        await _templateService.UpdateTemplatePartialAsync<StatementTemplate>(templateId, templateDto);
 
         return Ok();
     }
 
     [AuthorizeByRoleId]
     [HttpGet("{templateId}/extract-fields")]
-    public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
+    public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExtractFields([FromRoute] int templateId)
     {
-        var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<StatementTemplate>(templateId);
+        var resultDto = await _templateService.ExtractFieldsFromTemplateAsync<StatementTemplate>(templateId);
         var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
 
         return Ok(resultViewModel);

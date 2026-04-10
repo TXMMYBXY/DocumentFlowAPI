@@ -65,10 +65,10 @@ public class AccountMappingProfile : Profile
 
         //profiles for access
 
-        CreateMap<AccessTokenDto, AccessTokenViewModel>()
+        CreateMap<CreateAccessTokenDto, CreateAccessTokenViewModel>()
             .ReverseMap();
 
-        CreateMap<AccessTokenResponseDto, AccessTokenResponseViewModel>()
+        CreateMap<CreateAccessTokenResponseDto, AccessTokenResponseViewModel>()
             .ReverseMap();
     }
 }

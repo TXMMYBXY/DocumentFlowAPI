@@ -21,13 +21,18 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
         await _dbContext.Set<T>().AddAsync(template);
     }
 
-    public T UpdateTemplateStatus<T>(T template) where T : Models.Template
+    public async Task<bool> UpdateTemplateStatusAsync<T>(int templateId) where T : Models.Template
     {
-        _dbContext.Attach(template);
-        _dbContext.Entry(template)
-            .Property(t => t.IsActive)
-            .IsModified = true;
-        return template;
+        await _dbContext.Set<T>()
+            .Where(t => t.Id == templateId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(t => t.IsActive, t => !t.IsActive)
+            );
+
+        return await _dbContext.Set<T>()
+            .Where(t => t.Id == templateId)
+            .Select(t => t.IsActive)
+            .FirstAsync();
     }
 
     public async Task<List<T>> GetAllTemplatesAsync<T>(TemplateFilter filter) where T : Models.Template
@@ -45,7 +50,7 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
         {
             query = query
                 .Skip((filter.PageNumber.Value - 1) * filter.PageSize.Value)
-                .Take(filter.PageSize.Value); ;
+                .Take(filter.PageSize.Value);
         }
 
         return await query
@@ -58,15 +63,27 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
         return await _dbContext.Set<T>().FindAsync(templateId);
     }
 
-    public T UpdateTemplate<T>(T template) where T : Models.Template
+    public async Task UpdateTemplatePartialAsync<T>(int templateId, string? title, string? path) where T : Models.Template
     {
-        UpdateFields(template,
-            t => t.Title,
-            t => t.Path,
-            t => t.CreatedBy,
-            t => t.CreatedAt,
-            t => t.IsActive);
-        return template;
+        var query = _dbContext.Set<T>()
+            .Where(t => t.Id == templateId);
+
+        if (title != null && path != null)
+        {
+            await query.ExecuteUpdateAsync(s => s
+                .SetProperty(t => t.Title, title)
+                .SetProperty(t => t.Path, path));
+        }
+        else if (title != null)
+        {
+            await query.ExecuteUpdateAsync(s => s
+                .SetProperty(t => t.Title, title));
+        }
+        else if (path != null)
+        {
+            await query.ExecuteUpdateAsync(s => s
+                .SetProperty(t => t.Path, path));
+        }
     }
 
     public async Task<int> GetTotalCountAsync<T>() where T : Models.Template
@@ -104,5 +121,13 @@ public class TemplateRepository : BaseRepository<Models.Template>, ITemplateRepo
                 FilePath = t.Path
             })
             .SingleAsync();
+    }
+
+    public async Task<string> GetFilePathAsync<T>(int templateId) where T : Models.Template
+    {
+        return await _dbContext.Set<T>()
+            .Where(t => t.Id == templateId)
+            .Select(t => t.Path)
+            .FirstAsync();
     }
 }

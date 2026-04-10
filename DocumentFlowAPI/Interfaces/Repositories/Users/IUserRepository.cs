@@ -10,7 +10,7 @@ public interface IUserRepository : IBaseRepository<Models.User>
     /// <summary>
     /// Обновляет статус пользователя
     /// </summary>
-    Models.User UpdateUserStatus(Models.User userModel);
+    Task<bool> UpdateUserStatusAsync(int userId);
 
     /// <summary>
     /// Возвращает пользователя из таблицы по почте
