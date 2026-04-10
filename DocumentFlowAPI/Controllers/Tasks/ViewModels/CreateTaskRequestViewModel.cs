@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Models;
 
 namespace DocumentFlowAPI.Controllers.Tasks.ViewModels;

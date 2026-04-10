@@ -1,9 +1,11 @@
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
+
 namespace DocumentFlowAPI.Services.Tasks.Dto;
 
 public class TaskResultDto
 {
     public Guid TaskId { get; set; }
-    public Models.TaskStatus Status { get; set; }
+    public TaskStatus Status { get; set; }
     public string? ResultFilePath { get; set; }
     public string? DownloadUrl { get; set; }
     public string? ErrorMessage { get; set; }

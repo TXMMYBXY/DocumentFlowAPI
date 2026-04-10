@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using DocumentFlowAPI.Enums;
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
 
 namespace DocumentFlowAPI.Models;
 
@@ -28,24 +30,4 @@ public class TaskModel : EntityBase
     // Для повторных попыток
     public int RetryCount { get; set; } = 0;
     public DateTime? LastAttemptAt { get; set; }
-}
-public enum TaskPriority
-{
-    Low,
-    Normal,
-    High
-}
-
-public enum TaskStatus
-{
-    Pending,
-    Processing,
-    Completed,
-    Failed
-}
-
-public enum TemplateType
-{
-    Statement,
-    Contract
 }

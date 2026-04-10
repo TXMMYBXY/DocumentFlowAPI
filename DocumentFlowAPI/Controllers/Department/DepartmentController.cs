@@ -1,8 +1,8 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.Department.ViewModels;
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Interfaces.Services;
-using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Department;
 using DocumentFlowAPI.Services.Department.Dto;
 using Microsoft.AspNetCore.Mvc;

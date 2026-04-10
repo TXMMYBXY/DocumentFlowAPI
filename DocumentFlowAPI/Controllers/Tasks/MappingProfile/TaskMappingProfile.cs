@@ -2,6 +2,7 @@ using AutoMapper;
 using DocumentFlowAPI.Controllers.Tasks.ViewModels;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Tasks.Dto;
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
 
 namespace DocumentFlowAPI.Controllers.Tasks.MappingProfile;
 
@@ -18,7 +19,7 @@ public class TaskMappingProfile : Profile
 
         CreateMap<CreateTaskRequestDto, TaskModel>()
             .ForMember(dest => dest.TaskId, opt => opt.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => Models.TaskStatus.Pending))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => TaskStatus.Pending))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
             

@@ -1,7 +1,9 @@
 using System.Text;
 using System.Text.Json;
 using AutoMapper;
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Hubs;
+using DocumentFlowAPI.Hubs.Notifiaction;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;
@@ -26,7 +28,7 @@ public class TemplateService : ITemplateService
     private readonly IFileStorageService _fileStorageService;
     private readonly IDistributedCache _cache;
     private readonly ILogger<TemplateService> _logger;
-    private readonly IHubContext<NotificationHub> _notificationHub;
+    private readonly INotificationService _notificationService;
 
     public TemplateService(
         IMapper mapper,
@@ -36,7 +38,7 @@ public class TemplateService : ITemplateService
         IFileStorageService fileStorageService,
         IDistributedCache cache,
         ILogger<TemplateService> logger,
-        IHubContext<NotificationHub> notificationhub)
+        INotificationService notificationService)
     {
         _mapper = mapper;
         _templateRepository = templateRepository;
@@ -45,7 +47,7 @@ public class TemplateService : ITemplateService
         _fileStorageService = fileStorageService;
         _cache = cache;
         _logger = logger;
-        _notificationHub = notificationhub;
+        _notificationService = notificationService;
     }
 
     public async Task<bool> ChangeTemplateStatusById<T>(int templateId) where T : Models.Template
@@ -60,6 +62,8 @@ public class TemplateService : ITemplateService
             templateId, isActive);
 
         await _InvalidateTemplatesCacheAsync();
+        
+        _logger.LogDebug("Sending notification");
 
         return isActive;
     }
@@ -96,6 +100,15 @@ public class TemplateService : ITemplateService
         await _templateRepository.SaveChangesAsync();
 
         await _InvalidateTemplatesCacheAsync();
+        
+        _logger.LogDebug("Sending notification");
+        
+        await _notificationService.AddNewTemplateNotification(new NotificationDto(
+            NotificationKind.TemplateAdded,
+            NotificationSeverity.Info,
+            "Новый шаблон добавлен",
+            $"Добавлен шаблон {templateDto.Title}"
+            ));
 
         _logger.LogInformation("Template created successfully with title {Title}", templateDto.Title);
     }
