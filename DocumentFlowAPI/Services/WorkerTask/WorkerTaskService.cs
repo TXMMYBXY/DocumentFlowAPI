@@ -2,6 +2,7 @@ using AutoMapper;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.WorkerTask.Dto;
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
 
 namespace DocumentFlowAPI.Services.WorkerTask;
 
@@ -30,7 +31,7 @@ public class WorkerTaskService : IWorkerTaskService
         if (task == null)
             throw new KeyNotFoundException($"Task {taskId} not found");
 
-        task.Status = Models.TaskStatus.Completed;
+        task.Status = TaskStatus.Completed;
         task.ResultFilePath = dto.ResultFilePath;
         task.CompletedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
@@ -51,7 +52,7 @@ public class WorkerTaskService : IWorkerTaskService
         if (task == null)
             throw new KeyNotFoundException($"Task {taskId} not found");
 
-        task.Status = Models.TaskStatus.Failed;
+        task.Status = TaskStatus.Failed;
         task.ErrorMessage = dto.ErrorMessage;
         task.CompletedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;

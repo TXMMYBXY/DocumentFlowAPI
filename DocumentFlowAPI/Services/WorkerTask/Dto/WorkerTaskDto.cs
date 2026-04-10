@@ -1,3 +1,4 @@
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Models;
 
 namespace DocumentFlowAPI.Services.WorkerTask.Dto;

@@ -1,4 +1,6 @@
 using DocumentFlowAPI;
+using DocumentFlowAPI.Hubs;
+using DocumentFlowAPI.Hubs.Notifiaction;
 using DocumentFlowAPI.Services.User;
 using Scalar.AspNetCore;
 
@@ -32,6 +34,7 @@ app.MapSwagger("/openapi/{documentName}.json");
 app.MapScalarApiReference();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notifications");
 
 UserIdentity.Initialize(app.Services);
 

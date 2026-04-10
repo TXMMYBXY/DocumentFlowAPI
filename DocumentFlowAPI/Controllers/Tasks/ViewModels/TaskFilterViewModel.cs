@@ -1,10 +1,12 @@
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Models;
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
 
 namespace DocumentFlowAPI.Controllers.Tasks.ViewModels;
 
 public class TaskFilterViewModel
 {
-    public Models.TaskStatus? Status { get; set; }
+    public TaskStatus? Status { get; set; }
     public TemplateType? TemplateType { get; set; }
     public int? UserId { get; set; }
     public TaskPriority? Priority { get; set; }

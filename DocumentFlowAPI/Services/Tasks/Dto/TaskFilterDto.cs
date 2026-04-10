@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Models;
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
 
 namespace DocumentFlowAPI.Services.Tasks.Dto;
 
 public class TaskFilterDto
 {
-    public Models.TaskStatus? Status { get; set; }
+    public TaskStatus? Status { get; set; }
     public TemplateType? TemplateType { get; set; }
     public int? UserId { get; set; }
     public TaskPriority? Priority { get; set; }

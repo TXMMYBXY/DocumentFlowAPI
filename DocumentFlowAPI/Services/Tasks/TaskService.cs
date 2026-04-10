@@ -1,10 +1,12 @@
 using System.Text.Json;
 using AutoMapper;
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.General;
 using DocumentFlowAPI.Services.Tasks.Dto;
+using TaskStatus = DocumentFlowAPI.Enums.TaskStatus;
 
 namespace DocumentFlowAPI.Services.Tasks;
 
@@ -32,10 +34,10 @@ public class TaskService : GeneralService, ITaskService
 
         if (task == null || 
             task.UserId != dto.UserId ||
-            task.Status != Models.TaskStatus.Pending)
+            task.Status != TaskStatus.Pending)
             return false;
 
-        task.Status = Models.TaskStatus.Failed;
+        task.Status = TaskStatus.Failed;
         task.ErrorMessage = string.IsNullOrWhiteSpace(dto.Reason)
             ? "Отменено пользователем"
             : dto.Reason;
@@ -94,7 +96,7 @@ public class TaskService : GeneralService, ITaskService
         if (userId.HasValue && task.UserId != userId)
             return false;
 
-        if (task.Status != Models.TaskStatus.Failed)
+        if (task.Status != TaskStatus.Failed)
             return false;
 
         _RetryTaskFillFields(task);
@@ -116,7 +118,7 @@ public class TaskService : GeneralService, ITaskService
 
     private void _RetryTaskFillFields(TaskModel task)
     {
-        task.Status = Models.TaskStatus.Pending;
+        task.Status = TaskStatus.Pending;
         task.ErrorMessage = null;
         task.ResultFilePath = null;
         task.StartedAt = null;

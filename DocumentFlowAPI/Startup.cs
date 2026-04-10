@@ -12,6 +12,7 @@ using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
 using DocumentFlowAPI.Services.Department;
 using DocumentFlowAPI.Services.FileStorage;
+using DocumentFlowAPI.Services.Notification;
 using DocumentFlowAPI.Services.Personal;
 using DocumentFlowAPI.Services.Role;
 using DocumentFlowAPI.Services.Tasks;
@@ -37,6 +38,7 @@ public class Startup
     {
         services.AddControllers();
         services.AddHttpContextAccessor();
+        services.AddSignalR();
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ITemplateService, TemplateService>();
         services.AddScoped<ITemplateRepository, TemplateRepository>();
@@ -58,7 +60,7 @@ public class Startup
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IFileStorageService, FileStorageService>();
-
+        services.AddScoped<INotificationService, NotificationService>();
 
         services.AddSingleton(sp =>
         {

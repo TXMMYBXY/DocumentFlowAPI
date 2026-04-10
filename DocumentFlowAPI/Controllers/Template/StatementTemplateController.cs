@@ -1,6 +1,7 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.Template.ViewModels;
+using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template;
