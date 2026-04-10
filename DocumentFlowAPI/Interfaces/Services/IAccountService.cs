@@ -10,17 +10,17 @@ public interface IAccountService
     Task<LoginResponseDto> LoginAsync(LoginUserDto loginUserDto);
 
     /// <summary>
-    /// Метод для создания нового токена доступа
+    /// Метод для входа по токену
     /// </summary>
-    Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(RefreshTokenDto refreshTokenDto);
+    Task<RefreshTokenToLoginResponseDto> LoginByRefreshTokenAsync(RefreshTokenToLoginDto refreshToken);
 
     /// <summary>
     /// Метод для создания нового токена обновления
     /// </summary>
-    Task<AccessTokenResponseDto> CreateAccessTokenAsync(AccessTokenDto accessTokenDto);
+    Task<CreateAccessTokenResponseDto> CreateAccessTokenAsync(string token);
 
     /// <summary>
-    /// Метод для входа по токену
+    /// Метод для создания нового токена доступа
     /// </summary>
-    Task<RefreshTokenToLoginResponseDto> LoginByRefreshTokenAsync(RefreshTokenToLoginDto refreshToken);
+    Task<RefreshTokenResponseDto> CreateRefreshTokenAsync(string token);
 }

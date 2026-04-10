@@ -1,4 +1,4 @@
-namespace DocumentFlowAPI.Services.Department.Dto;
+namespace DocumentFlowAPI.Services.Role.Dto;
 
 public class RoleDto
 {

@@ -21,9 +21,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         await _dbset.AddAsync(entity);
     }
 
-    public void Delete(T entity)
+    public async Task DeleteAsync(int id)
     {
-        _dbset.Remove(entity);
+        await _dbset
+            .Where(e => EF.Property<int>(e, "Id") == id)
+            .ExecuteDeleteAsync();
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
@@ -56,5 +58,12 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         {
             _dbContext.Entry(entity).Property(field).IsModified = true;
         }
+    }
+
+    public async Task DeleteManyAsync(List<int> ids)
+    {
+        await _dbContext.Set<T>()
+            .Where(e => ids.Contains((int)e.GetType().GetProperty("Id").GetValue(e)))
+            .ExecuteDeleteAsync();
     }
 }

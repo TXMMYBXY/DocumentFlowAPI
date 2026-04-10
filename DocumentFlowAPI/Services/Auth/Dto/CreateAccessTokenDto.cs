@@ -1,7 +1,6 @@
 namespace DocumentFlowAPI.Services.Auth.Dto;
 
-public class AccessTokenDto
+public class CreateAccessTokenDto
 {
-    public int UserId { get; set; }
     public string RefreshToken { get; set; }
 }

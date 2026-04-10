@@ -8,7 +8,7 @@ public interface IUserService
     /// <summary>
     /// Метод для получения списка всех пользователей в таблице
     /// </summary>
-    Task<List<GetUserDto>> GetAllUsersAsync(UserFilter userFilter);
+    Task<PagedUserDto> GetAllUsersAsync(UserFilter userFilter);
 
     /// <summary>
     /// Метод для получения пользователя по id
@@ -23,7 +23,7 @@ public interface IUserService
     /// <summary>
     /// Мето для обновления информации о пользователе
     /// </summary>
-    Task UpdateUserAsync(int userId, UpdateUserDto userDto);
+    Task UpdateUserPartialAsync(int userId, UpdateUserDto userDto);
 
     /// <summary>
     /// Метод для блокировки пользователя
@@ -40,5 +40,8 @@ public interface IUserService
     /// </summary>
     Task<bool> ChangeUserStatusByIdAsync(int userId);
 
-    //TODO: После добавления JobQuartz, добавить метод для очистки таблицы от заблокированных пользователей
+    /// <summary>
+    /// Метод для удаления нескольких пользователей по их id
+    /// </summary>
+    Task DeleteManyUserAsync(List<int> userIds);
 }

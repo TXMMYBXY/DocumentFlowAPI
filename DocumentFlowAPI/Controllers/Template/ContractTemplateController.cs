@@ -5,13 +5,12 @@ using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
-[Route("api/contract-templates")]
+[Route("api/contract-template")]
 [AuthorizeByRoleId((int)Permissions.Boss)]
 public class ContractTemplateController : ControllerBase
 {
@@ -29,11 +28,11 @@ public class ContractTemplateController : ControllerBase
     /// Получение шаблона договора по id
     /// </summary>
     /// <returns>ViewModel шаблона</returns>
-    [Authorize]
+    [AuthorizeByRoleId]
     [HttpGet("{templateId}/get-template")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
-        var templateDto = await _templateService.GetTemplateByIdAsync<ContractTemplate>(templateId);
+        var templateDto = await _templateService.GetTemplateForWorkerByIdAsync<ContractTemplate>(templateId);
         var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
 
         return Ok(templateViewModel);
@@ -46,10 +45,10 @@ public class ContractTemplateController : ControllerBase
     /// <returns>Список шаблонов</returns>
     [AuthorizeByRoleId((int)Permissions.Boss, (int)Permissions.Purchaser)]
     [HttpGet]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
+    public async Task<ActionResult<PagedTemplateViewModel>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
     {
         var templatesDto = await _templateService.GetAllTemplatesAsync<ContractTemplate>(templateFilter);
-        var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
+        var templatesViewModel = _mapper.Map<PagedTemplateViewModel>(templatesDto);
 
         return Ok(templatesViewModel);
     }
@@ -85,16 +84,28 @@ public class ContractTemplateController : ControllerBase
     }
 
     /// <summary>
-    /// Только для главы отдел закупок
-    /// Удаляет шаблон договора из тела
+    /// Удаляет шаблон договора 
     /// </summary>
     /// <param name="templateViewModel"></param>
     /// <returns></returns>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpDelete("delete-template")]
-    public async Task<ActionResult> DeleteTemplateById([FromBody] DeleteTemplateViewModel templateViewModel)
+    [HttpDelete("{templateId}")]
+    public async Task<ActionResult> DeleteTemplate([FromRoute] int templateId)
     {
-        await _templateService.DeleteTemplateAsync<ContractTemplate>(templateViewModel.TemplateId);
+        await _templateService.DeleteTemplateAsync<StatementTemplate>(templateId);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Удаление нескольких шаблонов договоров
+    /// </summary>
+    /// <param name="deleteTemplateViewModel">Ids</param>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteManyTemplates([FromBody] DeleteManyTemplatesViewModel deleteTemplateViewModel)
+    {
+        await _templateService.DeleteManyTemplatesAsync<StatementTemplate>(deleteTemplateViewModel.TemplateIds);
 
         return Ok();
     }
@@ -109,16 +120,16 @@ public class ContractTemplateController : ControllerBase
     {
         var templateDto = _mapper.Map<UpdateTemplateDto>(templateViewModel);
 
-        await _templateService.UpdateTemplateAsync<ContractTemplate>(templateId, templateDto);
+        await _templateService.UpdateTemplatePartialAsync<ContractTemplate>(templateId, templateDto);
 
         return Ok();
     }
 
-    [Authorize]
+    [AuthorizeByRoleId]
     [HttpGet("{templateId}/extract-fields")]
     public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
     {
-        var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<ContractTemplate>(templateId);
+        var resultDto = await _templateService.ExtractFieldsFromTemplateAsync<ContractTemplate>(templateId);
         var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
 
         return Ok(resultViewModel);

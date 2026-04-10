@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocumentFlowAPI.Controllers.Tasks;
 
 [ApiController]
-[Route("api/tasks")]
+[Route("api/task")]
 public class TaskController : ControllerBase
 {
     private readonly IMapper _mapper;

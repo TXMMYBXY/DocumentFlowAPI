@@ -1,9 +1,10 @@
 using AutoMapper;
 using DocumentFlowAPI.Controllers.Auth.ViewModels;
+using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Models.AboutUserModels;
 using DocumentFlowAPI.Services.Auth.Dto;
+using DocumentFlowAPI.Services.Personal.Dto;
 using DocumentFlowAPI.Services.User.Dto;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 
 namespace DocumentFlowAPI.Controllers.Auth.MappingProfile;
 
@@ -25,16 +26,13 @@ public class AccountMappingProfile : Profile
             .ForMember(dest => dest.TokenType, opt => opt.MapFrom(src => src.TokenType))
             .ReverseMap();
 
-        CreateMap<UserInfoForLoginDto, Models.User>()
+        CreateMap<Models.User, UserInfoForLoginDto>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
-            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
-            .ReverseMap();
+            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department.Title));
 
-        CreateMap<Models.User, UserInfoForLoginDto>()
-            .ReverseMap();
 
         CreateMap<RefreshTokenToLoginDto, RefreshTokenToLoginViewModel>()
             .ReverseMap();
@@ -42,27 +40,35 @@ public class AccountMappingProfile : Profile
         CreateMap<RefreshTokenToLoginResponseViewModel, RefreshTokenToLoginResponseDto>()
             .ReverseMap();
 
+        CreateMap<NewAuthRecordDto, LoginHistory>();
+
         //profiles for refresh
 
-        CreateMap<RefreshTokenDto, RefreshTokenRequestViewModel>()
+        CreateMap<RefreshTokenRequestDto, RefreshTokenRequestViewModel>()
             .ReverseMap();
 
         CreateMap<RefreshTokenResponseViewModel, RefreshTokenResponseDto>()
             .ForMember(dest => dest.UserId, opt => opt.Ignore())
             .ReverseMap();
 
-        CreateMap<RefreshToken, RefreshTokenDto>()
+        CreateMap<RefreshToken, RefreshTokenRequestDto>()
             .ReverseMap();
 
         CreateMap<RefreshTokenResponseDto, RefreshToken>()
             .ReverseMap();
 
-        //profiles for access
-
-        CreateMap<AccessTokenDto, AccessTokenViewModel>()
+        CreateMap<RefreshToken, RefreshTokenDto>()
             .ReverseMap();
 
-        CreateMap<AccessTokenResponseDto, AccessTokenResponseViewModel>()
+        CreateMap<RefreshTokenDto, RefreshTokenResponseDto>()
+            .ReverseMap();
+
+        //profiles for access
+
+        CreateMap<CreateAccessTokenDto, CreateAccessTokenViewModel>()
+            .ReverseMap();
+
+        CreateMap<CreateAccessTokenResponseDto, AccessTokenResponseViewModel>()
             .ReverseMap();
     }
 }

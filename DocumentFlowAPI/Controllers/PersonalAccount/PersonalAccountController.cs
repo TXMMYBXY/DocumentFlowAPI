@@ -1,16 +1,16 @@
 using AutoMapper;
+using DocumentFlowAPI.Controllers.Auth;
 using DocumentFlowAPI.Controllers.PersonalAccount.ViewModels;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.Personal.Dto;
 using DocumentFlowAPI.Services.User;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.PersonalAccount;
 
 [ApiController]
 [Route("api/personal")]
-[Authorize]
+[AuthorizeByRoleId]
 public class PersonalAccountController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -39,5 +39,14 @@ public class PersonalAccountController : ControllerBase
         await _personalAccountService.ChangePasswordAsync(UserIdentity.User.Id, changePasswordDto);
         
         return Ok();
+    }
+
+    [HttpGet("login-times")]
+    public async Task<ActionResult<List<GetLoginTimesViewModel>>> GetLoginTimes()
+    {
+        var loginTimesDto = await _personalAccountService.GetLoginTimesAsync(UserIdentity.User.Id);
+        var loginTimesViewModel = _mapper.Map<List<GetLoginTimesViewModel>>(loginTimesDto);
+        
+        return Ok(loginTimesViewModel);
     }
 }

@@ -21,10 +21,10 @@ public interface IJwtService
     /// <summary>
     /// Проверка на валидность для токена обновления
     /// </summary>
-    Task<bool> ValidateRefreshTokenAsync(RefreshToken refreshToken);
+    Task<bool> ValidateRefreshTokenAsync(string refreshToken);
     
     /// <summary>
-    /// Метод для проверки валидности токена доступа
+    /// Метод для получения id владельца токена
     /// </summary>
-    Task<bool> ValidateAccessTokenAsync(AccessTokenDto accessTokenDto);
+    Task<int> GetRefreshTokenOwnerAsync(string refreshToken);
 }

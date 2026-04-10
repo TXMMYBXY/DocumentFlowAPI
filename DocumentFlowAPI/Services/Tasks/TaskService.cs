@@ -12,15 +12,22 @@ public class TaskService : GeneralService, ITaskService
 {
     private readonly IMapper _mapper;
     private readonly ITaskRepository _taskRepository;
+    private readonly ILogger<TaskService> _logger;
 
-    public TaskService(IMapper mapper, ITaskRepository taskRepository)
+    public TaskService(
+        IMapper mapper,
+        ITaskRepository taskRepository,
+        ILogger<TaskService> logger)
     {
         _mapper = mapper;
         _taskRepository = taskRepository;
+        _logger = logger;
     }
 
     public async Task<bool> CancelTaskAsync(Guid taskId, TaskCancelDto dto)
     {
+        _logger.LogInformation("User with id: {UserId} tried to canceled task with id: {TaskId}", dto.UserId, taskId);
+        
         var task = await _taskRepository.GetTaskByIdAsync(taskId);
 
         if (task == null || 
@@ -37,11 +44,16 @@ public class TaskService : GeneralService, ITaskService
         task.CompletedAt = DateTime.UtcNow;
 
         await _taskRepository.SaveChangesAsync();
+
+        _logger.LogInformation("User with id: {UserId} successfully canceled task with id: {TaskId}", dto.UserId, taskId);
+
         return true;
     }
 
     public async Task<TaskResultDto> CreateTaskAsync(CreateTaskRequestDto dto)
     {
+        _logger.LogInformation("User with id: {UserId} is creating a task of template type: {TemplateType}", dto.UserId, dto.TemplateType);
+        
         var templateDataJson = JsonSerializer.Serialize(dto.Data);
 
         var task = _mapper.Map<TaskModel>(dto);
@@ -50,6 +62,9 @@ public class TaskService : GeneralService, ITaskService
 
         await _taskRepository.AddAsync(task);
         await _taskRepository.SaveChangesAsync();
+
+        _logger.LogInformation("User with id: {UserId} successfully created a task with id: {TaskId} of type: {TemplateType}",
+        dto.UserId, task.TaskId, dto.TemplateType);
 
         return new TaskResultDto
         {
@@ -69,6 +84,8 @@ public class TaskService : GeneralService, ITaskService
 
     public async Task<bool> RetryTaskAsync(Guid taskId, int? userId)
     {
+        _logger.LogInformation("User with id: {UserId} is trying to retry task with id: {TaskId}", userId, taskId);
+        
         var task = await _taskRepository.GetTaskByIdAsync(taskId);
 
         if (task == null)
@@ -83,6 +100,9 @@ public class TaskService : GeneralService, ITaskService
         _RetryTaskFillFields(task);
 
         await _taskRepository.SaveChangesAsync();
+
+        _logger.LogInformation("User with id: {UserId} successfully retried task with id: {TaskId}", userId, taskId);
+
         return true;
     }
 

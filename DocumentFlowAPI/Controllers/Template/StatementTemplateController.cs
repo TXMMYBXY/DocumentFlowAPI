@@ -5,13 +5,12 @@ using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Models;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.Template.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentFlowAPI.Controllers.Template;
 
 [ApiController]
-[Route("api/statement-templates")]
+[Route("api/statement-template")]
 public class StatementTemplateController : ControllerBase
 {
     private readonly IMapper _mapper;
@@ -26,11 +25,11 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Получение шаблона заявления
     /// </summary>
-    [Authorize]
-    [HttpGet("{templateId}/get-template")]
+    [AuthorizeByRoleId]
+    [HttpGet("{templateId}")]
     public async Task<ActionResult<GetTemplateViewModel>> GetTemplateById([FromRoute] int templateId)
     {
-        var templateDto = await _templateService.GetTemplateByIdAsync<StatementTemplate>(templateId);
+        var templateDto = await _templateService.GetTemplateForWorkerByIdAsync<StatementTemplate>(templateId);
         var templateViewModel = _mapper.Map<GetTemplateViewModel>(templateDto);
 
         return Ok(templateViewModel);
@@ -39,11 +38,12 @@ public class StatementTemplateController : ControllerBase
     /// <summary>
     /// Получение списка шаблонов заявлений
     /// </summary>
+    [AuthorizeByRoleId]
     [HttpGet]
-    public async Task<ActionResult<List<GetTemplateViewModel>>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
+    public async Task<ActionResult<PagedTemplateViewModel>> GetAllTemplates([FromQuery] TemplateFilter templateFilter)
     {
         var templatesDto = await _templateService.GetAllTemplatesAsync<StatementTemplate>(templateFilter);
-        var templatesViewModel = _mapper.Map<List<GetTemplateViewModel>>(templatesDto);
+        var templatesViewModel = _mapper.Map<PagedTemplateViewModel>(templatesDto);
 
         return Ok(templatesViewModel);
     }
@@ -53,7 +53,7 @@ public class StatementTemplateController : ControllerBase
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPost]
-    public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateViewModel templateViewModel)
+    public async Task<ActionResult> CreateTemplate([FromForm] CreateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<CreateTemplateDto>(templateViewModel);
 
@@ -61,7 +61,7 @@ public class StatementTemplateController : ControllerBase
 
         return Ok();
     }
-    
+
     /// <summary>
     /// Смена статуса шаблона
     /// </summary>
@@ -80,10 +80,22 @@ public class StatementTemplateController : ControllerBase
     /// Удаление шаблона заявлений
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
-    [HttpDelete("delete-template")]
-    public async Task<ActionResult> DeleteTemplateById([FromBody] DeleteTemplateViewModel deleteTemplateViewModel)
+    [HttpDelete("{templateId}")]
+    public async Task<ActionResult> DeleteTemplate([FromRoute] int templateId)
     {
-        await _templateService.DeleteTemplateAsync<StatementTemplate>(deleteTemplateViewModel.TemplateId);
+        await _templateService.DeleteTemplateAsync<StatementTemplate>(templateId);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Удаление нескольких шаблонов заявлений
+    /// </summary>
+    [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteManyTemplates([FromBody] DeleteManyTemplatesViewModel deleteTemplateViewModel)
+    {
+        await _templateService.DeleteManyTemplatesAsync<StatementTemplate>(deleteTemplateViewModel.TemplateIds);
 
         return Ok();
     }
@@ -93,22 +105,36 @@ public class StatementTemplateController : ControllerBase
     /// </summary>
     [AuthorizeByRoleId((int)Permissions.Admin, (int)Permissions.Boss)]
     [HttpPatch("{templateId}/update-template")]
-    public async Task<ActionResult> UpdateTemplateById([FromRoute] int templateId, [FromBody] UpdateTemplateViewModel templateViewModel)
+    public async Task<ActionResult> UpdateTemplateByIdPartial([FromRoute] int templateId, 
+        [FromForm] UpdateTemplateViewModel templateViewModel)
     {
         var templateDto = _mapper.Map<UpdateTemplateDto>(templateViewModel);
-
-        await _templateService.UpdateTemplateAsync<StatementTemplate>(templateId, templateDto);
+        
+        await _templateService.UpdateTemplatePartialAsync<StatementTemplate>(templateId, templateDto);
 
         return Ok();
     }
 
-    [Authorize]
+    [AuthorizeByRoleId]
     [HttpGet("{templateId}/extract-fields")]
-    public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExctractFields([FromRoute] int templateId)
+    public async Task<ActionResult<IReadOnlyList<TemplateFieldInfoViewModel>>> ExtractFields([FromRoute] int templateId)
     {
-        var resultDto = await _templateService.ExctractFieldsFromTemplateAsync<StatementTemplate>(templateId);
+        var resultDto = await _templateService.ExtractFieldsFromTemplateAsync<StatementTemplate>(templateId);
         var resultViewModel = _mapper.Map<IReadOnlyList<TemplateFieldInfoViewModel>>(resultDto);
 
         return Ok(resultViewModel);
+    }
+
+    [AuthorizeByRoleId]
+    [HttpGet("{templateId:int}/download")]
+    public async Task<IActionResult> GetDocument([FromRoute] int templateId)
+    {
+        var templateDto = await _templateService.DownloadTemplateAsync<StatementTemplate>(templateId);
+
+        var templateViewModel = _mapper.Map<DownloadTemplateViewModel>(templateDto);
+
+        var stream = new FileStream(templateViewModel.FilePath, FileMode.Open, FileAccess.Read);
+
+        return File(stream, "application/octet-stream", templateViewModel.FileName);
     }
 }

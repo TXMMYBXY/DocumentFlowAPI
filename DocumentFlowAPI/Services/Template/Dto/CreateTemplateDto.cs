@@ -6,9 +6,10 @@ namespace DocumentFlowAPI.Services.Template.Dto;
 public class CreateTemplateDto
 {
     public string Title { get; set; }
-    public string Path { get; set; }
-    [ForeignKey(nameof(CreatedBy))]
+    public bool IsActive { get; set; }
     public int CreatedBy { get; set; } = UserIdentity.User!.Id;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public bool IsActive { get; set; }
+    public string FileName { get; set; }
+    public long FileLength { get; set; }
+    public Stream FileStream { get; set; }
 }

@@ -24,12 +24,12 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<GetDepartmentViewModel>>> GetAllDepartments([FromQuery] DepartmentFilter filter)
+    public async Task<ActionResult<PagedDepartmentViewModel>> GetAllDepartments([FromQuery] DepartmentFilter filter)
     {
-        var listDepartmentDto = await _departmentService.GetAllDepartmentsAsync(filter);
-        var listDepartmentViewModel = _mapper.Map<List<GetDepartmentViewModel>>(listDepartmentDto);
+        var pagedDepartmentDto = await _departmentService.GetAllDepartmentsAsync(filter);
+        var pagedDepartmentViewModel = _mapper.Map<PagedDepartmentViewModel>(pagedDepartmentDto);
         
-        return Ok(listDepartmentViewModel);
+        return Ok(pagedDepartmentViewModel);
     }
 
     [HttpGet("{id:int}/department-info")]
@@ -62,10 +62,10 @@ public class DepartmentController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> DeleteDepartment([FromBody] DeleteDepartmentViewModel deleteDepartmentViewModel)
+    [HttpDelete("{departmentId:int}")]
+    public async Task<ActionResult> DeleteDepartment([FromRoute] int departmentId)
     {
-        await _departmentService.DeleteDepartmentAsync(deleteDepartmentViewModel.DepartmentId);
+        await _departmentService.DeleteDepartmentAsync(departmentId);
         
         return Ok();
     }

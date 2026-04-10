@@ -45,6 +45,8 @@ namespace DocumentFlowAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("RefreshTokens");
                 });
 
@@ -300,6 +302,17 @@ namespace DocumentFlowAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DocumentFlowAPI.Models.AboutUserModels.RefreshToken", b =>
+                {
+                    b.HasOne("DocumentFlowAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DocumentFlowAPI.Models.Contract", b =>

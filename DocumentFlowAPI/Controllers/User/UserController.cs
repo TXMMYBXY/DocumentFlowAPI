@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocumentFlowAPI.Controllers.User;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/user")]
 [AuthorizeByRoleId((int)Permissions.Admin)]
 ///Этим контроллером будет пользоваться администратор, поэтому информация которую он получает - полная
 public class UserController : ControllerBase
@@ -29,12 +29,12 @@ public class UserController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<ActionResult<List<GetUserViewModel>>> GetAllUser([FromQuery] UserFilter userFilter)
+    public async Task<ActionResult<PagedUserViewModel>> GetAllUser([FromQuery] UserFilter userFilter)
     {
         var listUserDto = await _userService.GetAllUsersAsync(userFilter);
-        var listUserViewModel = _mapper.Map<List<GetUserViewModel>>(listUserDto);
+        var pagedUserViewModel = _mapper.Map<PagedUserViewModel>(listUserDto);
 
-        return Ok(listUserViewModel);
+        return Ok(pagedUserViewModel);
     }
 
     /// <summary>
@@ -73,11 +73,11 @@ public class UserController : ControllerBase
     /// <param name="userViewModel"></param>
     /// <returns></returns>
     [HttpPatch("{userId}/user-info")]
-    public async Task<ActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
+    public async Task<ActionResult> UpdateUserPartialAsync([FromRoute] int userId, [FromBody] UpdateUserViewModel userViewModel)
     {
         var userDto = _mapper.Map<UpdateUserDto>(userViewModel);
 
-        await _userService.UpdateUserAsync(userId, userDto);
+        await _userService.UpdateUserPartialAsync(userId, userDto);
 
         return Ok();
     }
@@ -96,10 +96,23 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpDelete]
-    public async Task<ActionResult> DeleteUserAsync([FromBody] DeleteUserViewModel userViewModel)
+    [HttpDelete("{userId:int}")]
+    public async Task<ActionResult> DeleteUserAsync([FromRoute] int userId)
     {
-        await _userService.DeleteUserAsync(userViewModel.UserId);
+        await _userService.DeleteUserAsync(userId);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Удаление нескольких пользователей
+    /// </summary>
+    /// <param name="deleteManyUserViewModel">Объект со списком Id</param>
+    /// <returns></returns>
+    [HttpDelete]
+    public async Task<ActionResult> DeleteManyUserAsync([FromBody] DeleteManyUsersViewModel deleteManyUserViewModel)
+    {
+        await _userService.DeleteManyUserAsync(deleteManyUserViewModel.UserIds);
 
         return Ok();
     }

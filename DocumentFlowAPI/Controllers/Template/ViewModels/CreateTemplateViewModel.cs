@@ -1,12 +1,15 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using DocumentFlowAPI.Services.User;
+using System.Text.Json.Serialization;
 
 namespace DocumentFlowAPI.Controllers.Template.ViewModels;
 
 public class CreateTemplateViewModel
 {
+    [JsonPropertyName("title")]
     public string Title { get; set; }
-    public string Path { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [JsonPropertyName("isActive")]
     public bool IsActive { get; set; }
+
+    [JsonPropertyName("file")]
+    public IFormFile File { get; set; } = null!;
 }

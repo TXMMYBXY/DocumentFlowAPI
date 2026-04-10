@@ -1,3 +1,16 @@
 {
-    "dotnet.defaultSolution": "DocumentFlowAPI.sln"
+    "dotnet.defaultSolution": "DocumentFlowAPI.sln",
+    "files.exclude": {
+    "**/Data": true,
+    "**/Base": true,
+    "**/Middleware": false,
+    "**/bin": true,
+    "**/Migrations": true,
+    "**/obj": true,
+    "**/Properties": true,
+    "**/.gitignore": true,
+    "**/.editorconfig": true,
+    "**.csproj": true,
+    "**.sln": true,
+    },
 }

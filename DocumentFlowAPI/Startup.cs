@@ -11,7 +11,9 @@ using DocumentFlowAPI.Repositories.Template;
 using DocumentFlowAPI.Services.AI;
 using DocumentFlowAPI.Services.Auth;
 using DocumentFlowAPI.Services.Department;
+using DocumentFlowAPI.Services.FileStorage;
 using DocumentFlowAPI.Services.Personal;
+using DocumentFlowAPI.Services.Role;
 using DocumentFlowAPI.Services.Tasks;
 using DocumentFlowAPI.Services.Template;
 using DocumentFlowAPI.Services.User;
@@ -34,6 +36,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.AddHttpContextAccessor();
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ITemplateService, TemplateService>();
         services.AddScoped<ITemplateRepository, TemplateRepository>();
@@ -47,12 +50,15 @@ public class Startup
         services.AddScoped<IWorkerTaskService, WorkerTaskService>();
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IFieldExtractorService, FieldExtractorService>();
-        services.AddHttpContextAccessor();
         services.AddScoped<IContractAiService, ContractAiService>();
         services.AddScoped<IPersonalAccountService, PersonalAccountService>();
-        services.AddScoped<IPersonalAccountRepository, PersonalAccountRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
+
 
         services.AddSingleton(sp =>
         {
@@ -125,14 +131,16 @@ public class Startup
             });
         });
 
-
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = Configuration.GetSection("Redis:Configuration").Value;
+            options.InstanceName = Configuration.GetSection("Redis:InstanceName").Value;
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // Настройка pipeline для разработки
         app.UseErrorHandling();
-    
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

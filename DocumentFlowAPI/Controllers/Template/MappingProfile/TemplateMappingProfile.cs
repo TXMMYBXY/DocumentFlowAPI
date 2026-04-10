@@ -11,20 +11,32 @@ public class TemplateMappingProfile : Profile
     {
         //Profiles for GET
 
-        CreateMap<GetTemplateViewModel, GetTemplateDto>()
-            .ReverseMap();
+        CreateMap<GetTemplateViewModel, GetTemplateDto>().ReverseMap();
 
         CreateMap<Models.Template, GetTemplateDto>().ReverseMap();
+
+        CreateMap<PagedTemplateViewModel, PagedTemplateDto>().ReverseMap();
+
+        CreateMap<DownloadTemplateDto, DownloadTemplateViewModel>().ReverseMap();
+
+        CreateMap<GetTemplateForWorkerDto, GetTemplateForWorkerViewModel>();
+
+        CreateMap<WorkerTemplateDto, GetTemplateForWorkerDto>();
 
         //Profiles for CREATE
 
         CreateMap<CreateTemplateViewModel, CreateTemplateDto>()
-            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
-            .ReverseMap();
+            .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.File.FileName))
+            .ForMember(dest => dest.FileLength, opt => opt.MapFrom(src => src.File.Length))
+            .ForMember(dest => dest.FileStream, opt => opt.MapFrom(src => src.File.OpenReadStream()));
 
         //Profiles for UPDATE
 
-        CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>().ReverseMap();
+        CreateMap<UpdateTemplateViewModel, UpdateTemplateDto>()
+            .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.File.FileName))
+            .ForMember(dest => dest.FileLength, opt => opt.MapFrom(src => src.File.Length))
+            .ForMember(dest => dest.FileStream, opt => opt.MapFrom(src => src.File.OpenReadStream()))
+            .ReverseMap();
 
         //Profiles for Extract
 
