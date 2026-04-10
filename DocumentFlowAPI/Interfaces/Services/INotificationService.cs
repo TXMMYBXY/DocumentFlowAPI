@@ -4,5 +4,5 @@ namespace DocumentFlowAPI.Interfaces.Services;
 
 public interface INotificationService
 {
-    Task AddNewTemplateNotification(NotificationDto notificationDto);
+    Task SendNotificationToAllAsync(NotificationDto notificationDto);
 }

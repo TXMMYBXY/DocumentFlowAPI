@@ -15,11 +15,11 @@ public class NotificationService : INotificationService
         _notificationHub = notificationHub;
     }
     
-    public async Task AddNewTemplateNotification(NotificationDto notificationDto)
+    public async Task SendNotificationToAllAsync(NotificationDto notificationDto)
     {
-        _logger.LogDebug("Adding new template notification {Message}", notificationDto.Kind);
+        _logger.LogDebug("Notification {Kind} {Severity} {Title} {Message}",
+            notificationDto.Kind, notificationDto.Severity, notificationDto.Title, notificationDto.Message);
         
         await _notificationHub.Clients.All.SendAsync("Notification", notificationDto);
     }
-
 }

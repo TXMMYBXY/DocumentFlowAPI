@@ -103,7 +103,7 @@ public class TemplateService : ITemplateService
         
         _logger.LogDebug("Sending notification");
         
-        await _notificationService.AddNewTemplateNotification(new NotificationDto(
+        await _notificationService.SendNotificationToAllAsync(new NotificationDto(
             NotificationKind.TemplateAdded,
             NotificationSeverity.Info,
             "Новый шаблон добавлен",
@@ -214,7 +214,7 @@ public class TemplateService : ITemplateService
         
         string filePath = null;
         
-        if (templateDto.FileLength != 0)
+        if (templateDto.FileStream != null && templateDto.FileLength != 0)
         {
             var uniqueFileName = $"{Guid.NewGuid()}_{templateDto.FileName}";
             var projectFolder = $"{typeof(T)}_{_ClearName(UserIdentity.User.Department)}";
@@ -234,6 +234,10 @@ public class TemplateService : ITemplateService
 
         await _InvalidateTemplatesCacheAsync();
 
+        await _notificationService.SendNotificationToAllAsync(new NotificationDto(NotificationKind.TemplateUpdated,
+            NotificationSeverity.Info,
+            "Шаблон изменен", $"Шаблон номер {templateId} изменен"));
+        
         _logger.LogInformation("Template updated successfully with id {TemplateId}", templateId);
     }
     
