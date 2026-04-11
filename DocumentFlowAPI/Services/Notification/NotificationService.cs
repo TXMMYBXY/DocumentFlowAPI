@@ -1,4 +1,4 @@
-using DocumentFlowAPI.Hubs.Notifiaction;
+using DocumentFlowAPI.Hubs.Notification;
 using DocumentFlowAPI.Interfaces.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -21,5 +21,23 @@ public class NotificationService : INotificationService
             notificationDto.Kind, notificationDto.Severity, notificationDto.Title, notificationDto.Message);
         
         await _notificationHub.Clients.All.SendAsync("Notification", notificationDto);
+    }
+
+    public async Task SendNotificationToRoleAsync(string[] roleIds, NotificationDto notificationDto)
+    {
+        _logger.LogDebug("Notification {Kind} {Severity} {Title} {Message}",
+            notificationDto.Kind, notificationDto.Severity, notificationDto.Title, notificationDto.Message);
+        foreach (var roleId in roleIds)
+        {
+            await _notificationHub.Clients.Group(roleId).SendAsync("Notification", notificationDto);
+        }
+    }
+
+    public async Task SendNotificationToUserAsync(string userId, NotificationDto notificationDto)
+    {
+        _logger.LogDebug("Notification {Kind} {Severity} {Title} {Message}",
+            notificationDto.Kind, notificationDto.Severity, notificationDto.Title, notificationDto.Message);
+        
+        await _notificationHub.Clients.User(userId).SendAsync("Notification", notificationDto);
     }
 }

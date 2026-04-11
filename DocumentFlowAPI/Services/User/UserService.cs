@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json;
 using AutoMapper;
+using DocumentFlowAPI.Enums;
+using DocumentFlowAPI.Hubs.Notification;
 using DocumentFlowAPI.Interfaces.Repositories.Users;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;
@@ -18,20 +20,22 @@ public class UserService : IUserService
     private readonly IJwtService _jwtService;
     private readonly IDistributedCache _cache;
     private readonly ILogger<UserService> _logger;
+    private readonly INotificationService _notificationService;
 
     public UserService(
         IUserRepository userRepository,
         IMapper mapper,
         IJwtService jwtService,
         IDistributedCache cache,
-        ILogger<UserService> logger
-        )
+        ILogger<UserService> logger,
+        INotificationService notificationService)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _jwtService = jwtService;
         _cache = cache;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     public async Task<bool> ChangeUserStatusByIdAsync(int userId)
@@ -75,6 +79,11 @@ public class UserService : IUserService
 
         await _InvalidateUsersCacheAsync();
 
+
+        await _notificationService.SendNotificationToRoleAsync(new []{"1"}, 
+            new NotificationDto(NotificationKind.UserAdded, NotificationSeverity.Info,
+            "Пользователи", $"Добавлен новый пользователь с почтой {newUserDto.Email}"));
+        
         _logger.LogInformation("User created successfully with email {Email}", newUserDto.Email);
     }
 
@@ -103,6 +112,10 @@ public class UserService : IUserService
         await _InvalidateUsersCacheAsync();
 
         _logger.LogInformation("User deleted successfully with id {UserId}", userId);
+        
+        await _notificationService.SendNotificationToRoleAsync(new []{"1"}, 
+            new NotificationDto(NotificationKind.UserDeleted, NotificationSeverity.Info,
+                "Пользователи", $"Удален пользователь номер {userId}"));
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 using DocumentFlowAPI.Enums;
 
-namespace DocumentFlowAPI.Hubs.Notifiaction;
+namespace DocumentFlowAPI.Hubs.Notification;
 
 public sealed record NotificationDto
 (

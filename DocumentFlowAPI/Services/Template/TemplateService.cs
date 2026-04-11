@@ -3,7 +3,7 @@ using System.Text.Json;
 using AutoMapper;
 using DocumentFlowAPI.Enums;
 using DocumentFlowAPI.Hubs;
-using DocumentFlowAPI.Hubs.Notifiaction;
+using DocumentFlowAPI.Hubs.Notification;
 using DocumentFlowAPI.Interfaces.Repositories;
 using DocumentFlowAPI.Interfaces.Services;
 using DocumentFlowAPI.Services.General;

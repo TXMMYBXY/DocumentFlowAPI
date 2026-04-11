@@ -1,7 +1,10 @@
+using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace DocumentFlowAPI.Hubs.Notifiaction;
+namespace DocumentFlowAPI.Hubs.Notification;
 
+[Authorize]
 public class NotificationHub : Hub
 {
     private ILogger<NotificationHub> _logger;
@@ -10,13 +13,16 @@ public class NotificationHub : Hub
     {
         _logger = logger;
     }
-    
+
     public override async Task OnConnectedAsync()
     {
         var connectionId = Context.ConnectionId;
-
+        var roleId = Context.User.FindFirst("RoleId").Value;
+        
         _logger.LogInformation($"Подключился: {connectionId}");
-
+        
+        await Groups.AddToGroupAsync(connectionId, roleId);
+        
         await base.OnConnectedAsync();
     }
 

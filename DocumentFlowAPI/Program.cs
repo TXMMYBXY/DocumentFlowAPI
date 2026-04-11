@@ -1,6 +1,6 @@
 using DocumentFlowAPI;
 using DocumentFlowAPI.Hubs;
-using DocumentFlowAPI.Hubs.Notifiaction;
+using DocumentFlowAPI.Hubs.Notification;
 using DocumentFlowAPI.Services.User;
 using Scalar.AspNetCore;
 
